@@ -29,14 +29,24 @@ Deno.serve(async (req) => {
     if (!api_key || !device) {
       return new Response(JSON.stringify({ status: false, msg: "Missing api_key/device" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const endpoint = cfg.qr_endpoint || "https://app.ayopintar.com/generate-qr";
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ api_key, device, force: true }),
-    });
-    const json = await res.json().catch(() => ({}));
-    return new Response(JSON.stringify(json), { status: res.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const base = cfg.qr_endpoint || "https://app.ayopintar.com/generate-qr";
+    const qs = new URLSearchParams({ api_key, device, force: "true" });
+    const url = `${base}${base.includes("?") ? "&" : "?"}${qs.toString()}`;
+    let res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+    let text = await res.text();
+    // Fallback: jika gateway menolak GET, coba POST
+    if (res.status === 405) {
+      res = await fetch(base, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ api_key, device, force: true }),
+      });
+      text = await res.text();
+    }
+    let json: unknown;
+    try { json = JSON.parse(text); } catch { json = { status: res.ok, msg: text?.slice(0, 200) || "Non-JSON response" }; }
+    // Selalu kembalikan 200 ke client agar pesan/QR bisa ditampilkan; status asli ada di payload
+    return new Response(JSON.stringify({ ...(json as object), upstream_status: res.status }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
