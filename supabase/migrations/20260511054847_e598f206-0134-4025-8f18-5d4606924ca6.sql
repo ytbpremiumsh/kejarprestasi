@@ -1,0 +1,2 @@
+ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS extra JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE public.documents ADD COLUMN IF NOT EXISTS extra JSONB NOT NULL DEFAULT '{}'::jsonb;

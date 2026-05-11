@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           doc_type: string
           email: string
+          extra: Json
           file_url: string
           id: string
           kind: Database["public"]["Enums"]["scholarship_kind"]
@@ -28,6 +29,7 @@ export type Database = {
           created_at?: string
           doc_type: string
           email: string
+          extra?: Json
           file_url: string
           id?: string
           kind: Database["public"]["Enums"]["scholarship_kind"]
@@ -37,6 +39,7 @@ export type Database = {
           created_at?: string
           doc_type?: string
           email?: string
+          extra?: Json
           file_url?: string
           id?: string
           kind?: Database["public"]["Enums"]["scholarship_kind"]
@@ -61,6 +64,7 @@ export type Database = {
           dependents: number | null
           education_level: string
           email: string
+          extra: Json
           full_name: string
           gender: string
           grade: string
@@ -84,6 +88,7 @@ export type Database = {
           dependents?: number | null
           education_level: string
           email: string
+          extra?: Json
           full_name: string
           gender: string
           grade: string
@@ -107,6 +112,7 @@ export type Database = {
           dependents?: number | null
           education_level?: string
           email?: string
+          extra?: Json
           full_name?: string
           gender?: string
           grade?: string
