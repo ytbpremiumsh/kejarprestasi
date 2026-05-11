@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Award, HeartHandshake, Trophy, Users, Wallet, Share2, CalendarClock, ArrowRight, CheckCircle2, GraduationCap, Sparkles } from "lucide-react";
 import heroImg from "@/assets/students-hero.png";
+import { Countdown } from "@/components/Countdown";
+import { AboutMockup } from "@/components/AboutMockup";
+import { FAQSection } from "@/components/FAQSection";
+import { TimelineSection } from "@/components/TimelineSection";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -13,15 +17,6 @@ export const Route = createFileRoute("/")({
 });
 
 const jenjang = ["SD", "SMP", "SMA/SMK/MA", "Mahasiswa"];
-
-const timeline = [
-  { title: "Pendaftaran Dibuka", desc: "Pendaftar mengisi formulir secara online.", status: "Berlangsung" },
-  { title: "Seleksi Administrasi", desc: "Tim verifikasi memeriksa data pendaftar.", status: "Akan Datang" },
-  { title: "Pengumpulan Berkas", desc: "Pendaftar mengunggah berkas pendukung.", status: "Akan Datang" },
-  { title: "Verifikasi", desc: "Validasi berkas dan kelengkapan dokumen.", status: "Akan Datang" },
-  { title: "Pengumuman Finalis", desc: "Pengumuman finalis penerima beasiswa.", status: "Akan Datang" },
-  { title: "Awarding", desc: "Penyerahan beasiswa & merchandise resmi.", status: "Akan Datang" },
-];
 
 function Index() {
   return (
