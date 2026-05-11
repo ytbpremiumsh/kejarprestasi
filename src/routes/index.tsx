@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/FAQSection";
 import { TimelineSection } from "@/components/TimelineSection";
 import { BenefitsSection } from "@/components/BenefitsSection";
 import { AlumniSection } from "@/components/AlumniSection";
+import { InfoBeasiswaInteraktif } from "@/components/InfoBeasiswaInteraktif";
 import { AdSlot } from "@/components/ads/AdSlot";
 
 export const Route = createFileRoute("/")({
