@@ -139,7 +139,8 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }).catch(() => { /* ignore */ });
 
       toast.success("Pendaftaran berhasil dikirim!");
-      navigate({ to: kind === "prestasi" ? "/berkas/prestasi" : "/berkas/ekonomi" });
+      setValues({});
+      setFiles({});
     } catch (err) {
       console.error(err);
       toast.error("Gagal mengirim pendaftaran. Silakan coba lagi.");
