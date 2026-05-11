@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, Gift, PlayCircle, Share2, Trophy, HeartHandshake } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -114,6 +114,3 @@ export function CategoryPage({
     </>
   );
 }
-
-// Route exports for direct usage by file routes
-export const Route = createFileRoute as never;
