@@ -25,7 +25,7 @@ export function CategoryPage({
   title: string;
   tagline: string;
   desc: string;
-  registerTo: "/beasiswa-prestasi" | "/beasiswa-ekonomi";
+  registerTo: "/pendaftaran/prestasi" | "/pendaftaran/ekonomi";
   shareTo: "/bagikan-poster/prestasi" | "/bagikan-poster/ekonomi";
 }) {
   const isGold = kind === "ekonomi";
