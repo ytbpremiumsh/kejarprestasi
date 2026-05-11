@@ -28,10 +28,12 @@ import { Route as BerkasEkonomiRouteImport } from './routes/berkas.ekonomi'
 import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-poster.prestasi'
 import { Route as BagikanPosterEkonomiRouteImport } from './routes/bagikan-poster.ekonomi'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
+import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
 import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
 import { Route as AdminKodeKustomRouteImport } from './routes/admin.kode-kustom'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
+import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
 import { Route as AdminArtikelRouteImport } from './routes/admin.artikel'
 import { Route as AdminAdsenseRouteImport } from './routes/admin.adsense'
 import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
@@ -132,6 +134,11 @@ const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ArtikelRoute,
 } as any)
+const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPengaturanRoute = AdminPengaturanRouteImport.update({
   id: '/pengaturan',
   path: '/pengaturan',
@@ -150,6 +157,11 @@ const AdminKodeKustomRoute = AdminKodeKustomRouteImport.update({
 const AdminFormulirRoute = AdminFormulirRouteImport.update({
   id: '/formulir',
   path: '/formulir',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBerkasRoute = AdminBerkasRouteImport.update({
+  id: '/berkas',
+  path: '/berkas',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminArtikelRoute = AdminArtikelRouteImport.update({
@@ -185,10 +197,12 @@ export interface FileRoutesByFullPath {
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/artikel': typeof AdminArtikelRoute
+  '/admin/berkas': typeof AdminBerkasRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
@@ -213,10 +227,12 @@ export interface FileRoutesByTo {
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/artikel': typeof AdminArtikelRoute
+  '/admin/berkas': typeof AdminBerkasRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
@@ -243,10 +259,12 @@ export interface FileRoutesById {
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/artikel': typeof AdminArtikelRoute
+  '/admin/berkas': typeof AdminBerkasRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
@@ -274,10 +292,12 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/admin/adsense'
     | '/admin/artikel'
+    | '/admin/berkas'
     | '/admin/formulir'
     | '/admin/kode-kustom'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
+    | '/admin/whatsapp'
     | '/artikel/$slug'
     | '/bagikan-poster/ekonomi'
     | '/bagikan-poster/prestasi'
@@ -302,10 +322,12 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/admin/adsense'
     | '/admin/artikel'
+    | '/admin/berkas'
     | '/admin/formulir'
     | '/admin/kode-kustom'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
+    | '/admin/whatsapp'
     | '/artikel/$slug'
     | '/bagikan-poster/ekonomi'
     | '/bagikan-poster/prestasi'
@@ -331,10 +353,12 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/admin/adsense'
     | '/admin/artikel'
+    | '/admin/berkas'
     | '/admin/formulir'
     | '/admin/kode-kustom'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
+    | '/admin/whatsapp'
     | '/artikel/$slug'
     | '/bagikan-poster/ekonomi'
     | '/bagikan-poster/prestasi'
@@ -504,6 +528,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArtikelSlugRouteImport
       parentRoute: typeof ArtikelRoute
     }
+    '/admin/whatsapp': {
+      id: '/admin/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/admin/whatsapp'
+      preLoaderRoute: typeof AdminWhatsappRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/pengaturan': {
       id: '/admin/pengaturan'
       path: '/pengaturan'
@@ -530,6 +561,13 @@ declare module '@tanstack/react-router' {
       path: '/formulir'
       fullPath: '/admin/formulir'
       preLoaderRoute: typeof AdminFormulirRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/berkas': {
+      id: '/admin/berkas'
+      path: '/berkas'
+      fullPath: '/admin/berkas'
+      preLoaderRoute: typeof AdminBerkasRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/artikel': {
@@ -566,20 +604,24 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminAdsenseRoute: typeof AdminAdsenseRoute
   AdminArtikelRoute: typeof AdminArtikelRoute
+  AdminBerkasRoute: typeof AdminBerkasRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
   AdminKodeKustomRoute: typeof AdminKodeKustomRoute
   AdminPendaftarRoute: typeof AdminPendaftarRoute
   AdminPengaturanRoute: typeof AdminPengaturanRoute
+  AdminWhatsappRoute: typeof AdminWhatsappRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAdsenseRoute: AdminAdsenseRoute,
   AdminArtikelRoute: AdminArtikelRoute,
+  AdminBerkasRoute: AdminBerkasRoute,
   AdminFormulirRoute: AdminFormulirRoute,
   AdminKodeKustomRoute: AdminKodeKustomRoute,
   AdminPendaftarRoute: AdminPendaftarRoute,
   AdminPengaturanRoute: AdminPengaturanRoute,
+  AdminWhatsappRoute: AdminWhatsappRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
