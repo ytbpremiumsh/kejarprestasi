@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Download, Share2, Trophy, HeartHandshake, Facebook, Instagram } from "lucide-react";
+import { Download, Share2, Trophy, HeartHandshake, Facebook, Instagram, ListChecks, MessageCircle, Info, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/logo-kp.png";
 
