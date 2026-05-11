@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, LogOut, LayoutDashboard, Users, Settings, Megaphone } from "lucide-react";
+import { Loader2, LogOut, LayoutDashboard, Users, Settings, Megaphone, FileEdit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
