@@ -39,7 +39,7 @@ export function SiteHeader() {
 
         <div className="hidden lg:flex items-center gap-3">
           <Link
-            to="/beasiswa-prestasi"
+            to="/pendaftaran/prestasi"
             className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
           >
             Daftar Sekarang
@@ -69,7 +69,7 @@ export function SiteHeader() {
               </Link>
             ))}
             <Link
-              to="/beasiswa-prestasi"
+              to="/pendaftaran/prestasi"
               onClick={() => setOpen(false)}
               className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
             >
