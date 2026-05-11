@@ -136,13 +136,13 @@ function Index() {
 
       <AdSlot placement="after_benefits" />
 
-      {/* TIMELINE */}
-      <TimelineSection />
-
       {/* PERAIH BEASISWA SEBELUMNYA */}
       <AlumniSection />
 
       <AdSlot placement="after_alumni" />
+
+      {/* TIMELINE */}
+      <TimelineSection />
 
       {/* FAQ */}
       <FAQSection />
