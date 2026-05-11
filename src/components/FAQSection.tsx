@@ -54,19 +54,31 @@ export function FAQSection() {
           </p>
         </div>
 
-        <div className="mt-10 max-w-3xl mx-auto rounded-2xl border border-border bg-card p-2 md:p-4 shadow-card">
-          <Accordion type="single" collapsible className="w-full">
-            {faqs.map((f, i) => (
-              <AccordionItem key={i} value={`item-${i}`} className="border-border">
-                <AccordionTrigger className="text-left text-sm md:text-base font-semibold text-foreground hover:no-underline px-3">
-                  {f.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground px-3">
-                  {f.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+        <div className="mt-10 grid lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
+          <div className="hidden lg:flex justify-center">
+            <img
+              src={faqIllustration}
+              alt="Ilustrasi FAQ Beasiswa Kejar Prestasi"
+              loading="lazy"
+              width={1024}
+              height={1024}
+              className="w-full max-w-md h-auto drop-shadow-xl"
+            />
+          </div>
+          <div className="rounded-2xl border border-border bg-card p-2 md:p-4 shadow-card">
+            <Accordion type="single" collapsible className="w-full">
+              {faqs.map((f, i) => (
+                <AccordionItem key={i} value={`item-${i}`} className="border-border">
+                  <AccordionTrigger className="text-left text-sm md:text-base font-semibold text-foreground hover:no-underline px-3">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground px-3">
+                    {f.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </div>
       </div>
     </section>
