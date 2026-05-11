@@ -99,6 +99,72 @@ export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           </div>
         </div>
       </div>
+
+      {/* KETENTUAN BAGIKAN POSTER */}
+      <div className="mt-10 rounded-3xl border border-border bg-card p-6 md:p-8 shadow-card">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <ListChecks size={18} />
+          </span>
+          <h2 className="text-lg md:text-xl font-bold text-foreground">Ketentuan Bagikan Poster Beasiswa</h2>
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Lengkapi seluruh tahapan berikut agar pendaftaranmu dapat diproses ke tahap selanjutnya.
+        </p>
+
+        <ol className="mt-6 space-y-4">
+          {[
+            {
+              t: "Unggah ke Instagram pribadi",
+              d: "Posting poster beasiswa beserta caption resmi yang sudah disediakan ke akun Instagram kamu — wajib di Feed (Postingan) sekaligus Story.",
+            },
+            {
+              t: "Sebar ke 5 grup chat",
+              d: "Bagikan poster + caption ke minimal 5 grup pada salah satu platform pilihan: WhatsApp, Facebook, Line, atau Telegram.",
+            },
+            {
+              t: "Komentar & tag 3 teman",
+              d: "Tinggalkan komentar di unggahan resmi @ayopintar_ dan mention 3 sahabatmu. Contoh: \"Yuk ikut daftar beasiswa ini 🥳✨ @temanA @temanB @temanC\".",
+            },
+            {
+              t: "Konfirmasi bukti via WhatsApp",
+              d: "Kirim bukti tangkapan layar (Story, postingan, dan grup) melalui tombol konfirmasi di bawah agar tim verifikasi dapat mencatat partisipasimu.",
+            },
+          ].map((item, i) => (
+            <li key={item.t} className="flex gap-4 rounded-2xl border border-border bg-background p-4">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary font-bold">
+                {i + 1}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={16} className="text-primary" />
+                  <h3 className="text-sm font-semibold text-foreground">{item.t}</h3>
+                </div>
+                <p className="mt-1 text-sm text-muted-foreground">{item.d}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent("Halo, saya ingin mengirim bukti bagikan poster Beasiswa Kejar Prestasi.")}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+          >
+            <MessageCircle size={16} /> Konfirmasi Poster via WhatsApp
+          </a>
+          <span className="text-xs text-muted-foreground">Pastikan bukti yang dikirim jelas dan terbaca.</span>
+        </div>
+
+        <div className="mt-6 flex items-start gap-2 rounded-2xl bg-[oklch(0.92_0.14_85)]/30 border border-[oklch(0.85_0.16_85)]/50 p-4 text-sm text-foreground/85">
+          <Info size={16} className="mt-0.5 text-[oklch(0.55_0.16_75)] shrink-0" />
+          <p>
+            <span className="font-semibold">Catatan:</span> Wajib menggunakan poster dan caption resmi yang telah disediakan pada halaman ini. Materi di luar yang disediakan tidak dihitung sebagai partisipasi sah.
+          </p>
+        </div>
+      </div>
     </section>
   );
 }
