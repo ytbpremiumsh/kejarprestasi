@@ -14,6 +14,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { AdSettingsProvider, AdsenseLoader } from "@/components/ads/AdSettings";
+import { AdSlot } from "@/components/ads/AdSlot";
 import { CustomCodeInjector } from "@/components/CustomCodeInjector";
 
 function NotFoundComponent() {
@@ -129,9 +130,11 @@ function RootComponent() {
         ) : (
           <div className="flex min-h-screen flex-col">
             <SiteHeader />
+            <AdSlot placement="header_top" />
             <main className="flex-1">
               <Outlet />
             </main>
+            <AdSlot placement="footer_top" />
             <SiteFooter />
           </div>
         )}
