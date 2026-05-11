@@ -137,61 +137,9 @@ function Index() {
       {/* FAQ */}
       <FAQSection />
 
-      {/* CTA — Pendaftaran Beasiswa */}
-      <section className="container-page pt-20 pb-10">
-        <div className="relative overflow-hidden rounded-3xl p-10 md:p-14 text-primary-foreground shadow-soft" style={{ background: "var(--gradient-primary)" }}>
-          <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-[oklch(0.85_0.16_85)]/30 blur-3xl" />
-          <div className="relative grid md:grid-cols-[1.4fr_1fr] gap-8 items-center">
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
-                <GraduationCap size={14} /> Pendaftaran Beasiswa
-              </span>
-              <h2 className="mt-4 text-3xl md:text-4xl font-extrabold leading-tight">
-                Siap meraih beasiswa hingga<br /> Rp23.000.000/semester?
-              </h2>
-              <p className="mt-3 text-primary-foreground/85 max-w-lg">
-                Daftarkan dirimu sekarang dan jadi bagian dari Kejar Prestasi Section #3.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row md:flex-col gap-3 md:items-stretch">
-              <Link to="/beasiswa-prestasi" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-primary hover:bg-white/95 transition">
-                <Trophy size={16} /> Daftar Beasiswa Prestasi
-              </Link>
-              <Link to="/beasiswa-ekonomi" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition">
-                <HeartHandshake size={16} /> Daftar Beasiswa Ekonomi
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* INFO INTERAKTIF — Nominal beasiswa per jenjang */}
+      <InfoBeasiswaInteraktif />
 
-      {/* CTA — Pengiriman Berkas (terpisah dari pendaftaran) */}
-      <section className="container-page pb-20">
-        <div className="rounded-3xl border border-border bg-card p-8 md:p-12 shadow-card">
-          <div className="grid md:grid-cols-[1.4fr_1fr] gap-8 items-center">
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-                <FileText size={14} /> Pengiriman Berkas
-              </span>
-              <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-foreground leading-tight">
-                Sudah daftar? Kirim berkas pendukungmu
-              </h2>
-              <p className="mt-3 text-muted-foreground max-w-lg">
-                Lengkapi berkas pendukung sesuai jalur beasiswa yang kamu pilih agar dapat
-                lanjut ke tahap verifikasi.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row md:flex-col gap-3 md:items-stretch">
-              <Link to="/berkas/prestasi" className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition">
-                <FileText size={16} /> Kirim Berkas Prestasi
-              </Link>
-              <Link to="/berkas/ekonomi" className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition">
-                <FileText size={16} /> Kirim Berkas Ekonomi
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <AdSlot placement="after_faq" />
     </>
