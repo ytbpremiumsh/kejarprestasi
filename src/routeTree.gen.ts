@@ -18,6 +18,7 @@ import { Route as ArtikelRouteImport } from './routes/artikel'
 import { Route as AdsDottxtRouteImport } from './routes/ads[.]txt'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BerkasIndexRouteImport } from './routes/berkas.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
 import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
@@ -74,6 +75,11 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BerkasIndexRoute = BerkasIndexRouteImport.update({
+  id: '/berkas/',
+  path: '/berkas/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/admin/': typeof AdminIndexRoute
+  '/berkas/': typeof BerkasIndexRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
 }
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/admin': typeof AdminIndexRoute
+  '/berkas': typeof BerkasIndexRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
 }
@@ -203,6 +211,7 @@ export interface FileRoutesById {
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/admin/': typeof AdminIndexRoute
+  '/berkas/': typeof BerkasIndexRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
 }
@@ -228,6 +237,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/admin/'
+    | '/berkas/'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
   fileRoutesByTo: FileRoutesByTo
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/admin'
+    | '/berkas'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
   id:
@@ -273,6 +284,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/admin/'
+    | '/berkas/'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
   fileRoutesById: FileRoutesById
@@ -293,6 +305,7 @@ export interface RootRouteChildren {
   BerkasPrestasiRoute: typeof BerkasPrestasiRouteWithChildren
   PendaftaranEkonomiRoute: typeof PendaftaranEkonomiRoute
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
+  BerkasIndexRoute: typeof BerkasIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berkas/': {
+      id: '/berkas/'
+      path: '/berkas'
+      fullPath: '/berkas/'
+      preLoaderRoute: typeof BerkasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -503,6 +523,7 @@ const rootRouteChildren: RootRouteChildren = {
   BerkasPrestasiRoute: BerkasPrestasiRouteWithChildren,
   PendaftaranEkonomiRoute: PendaftaranEkonomiRoute,
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
+  BerkasIndexRoute: BerkasIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
