@@ -14,7 +14,116 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      documents: {
+        Row: {
+          created_at: string
+          doc_type: string
+          email: string
+          file_url: string
+          id: string
+          kind: Database["public"]["Enums"]["scholarship_kind"]
+          registration_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          doc_type: string
+          email: string
+          file_url: string
+          id?: string
+          kind: Database["public"]["Enums"]["scholarship_kind"]
+          registration_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          doc_type?: string
+          email?: string
+          file_url?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["scholarship_kind"]
+          registration_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      registrations: {
+        Row: {
+          address: string
+          birth_date: string
+          birth_place: string
+          created_at: string
+          dependents: number | null
+          education_level: string
+          email: string
+          full_name: string
+          gender: string
+          grade: string
+          id: string
+          kind: Database["public"]["Enums"]["scholarship_kind"]
+          main_achievement: string | null
+          nik: string
+          parent_income: string | null
+          photo_url: string | null
+          school_name: string
+          status: Database["public"]["Enums"]["registration_status"]
+          student_card_url: string | null
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          address: string
+          birth_date: string
+          birth_place: string
+          created_at?: string
+          dependents?: number | null
+          education_level: string
+          email: string
+          full_name: string
+          gender: string
+          grade: string
+          id?: string
+          kind: Database["public"]["Enums"]["scholarship_kind"]
+          main_achievement?: string | null
+          nik: string
+          parent_income?: string | null
+          photo_url?: string | null
+          school_name: string
+          status?: Database["public"]["Enums"]["registration_status"]
+          student_card_url?: string | null
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          address?: string
+          birth_date?: string
+          birth_place?: string
+          created_at?: string
+          dependents?: number | null
+          education_level?: string
+          email?: string
+          full_name?: string
+          gender?: string
+          grade?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["scholarship_kind"]
+          main_achievement?: string | null
+          nik?: string
+          parent_income?: string | null
+          photo_url?: string | null
+          school_name?: string
+          status?: Database["public"]["Enums"]["registration_status"]
+          student_card_url?: string | null
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +132,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      registration_status: "pending" | "verified" | "approved" | "rejected"
+      scholarship_kind: "prestasi" | "ekonomi"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +260,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      registration_status: ["pending", "verified", "approved", "rejected"],
+      scholarship_kind: ["prestasi", "ekonomi"],
+    },
   },
 } as const
