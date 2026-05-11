@@ -1,36 +1,36 @@
-import a1 from "@/assets/alumni-1.jpg";
-import a2 from "@/assets/alumni-2.jpg";
-import a3 from "@/assets/alumni-3.jpg";
-import a4 from "@/assets/alumni-4.jpg";
+import a1 from "@/assets/peraih-1.png";
+import a2 from "@/assets/peraih-2.png";
+import a3 from "@/assets/peraih-3.png";
+import a4 from "@/assets/peraih-4.png";
 import { Quote, Trophy } from "lucide-react";
 
 const alumni = [
   {
     img: a1,
-    name: "Reza Mahendra",
-    school: "SMA Negeri 3 Bandung",
-    year: "Section #1 — 2023",
+    name: "Fahrana Zarifa Walijismi",
+    school: "SMA Negeri 78 Jakarta",
+    year: "Section #2 — 2024",
     quote: "Beasiswa ini membantu saya fokus belajar tanpa khawatir biaya pendidikan.",
   },
   {
     img: a2,
-    name: "Ayu Lestari",
-    school: "Universitas Indonesia",
+    name: "Salsabila Aulia Rahmadani",
+    school: "Universitas Gadjah Mada",
     year: "Section #2 — 2024",
     quote: "Selain dana, mentoringnya membuka banyak peluang baru bagi saya.",
   },
   {
     img: a3,
-    name: "Bagas Pratama",
-    school: "Universitas Brawijaya",
+    name: "Rahma Fitri Nurhidayah",
+    school: "SMA Negeri 1 Banguntapan",
     year: "Section #2 — 2024",
     quote: "Kejar Prestasi mempertemukan saya dengan komunitas penerima yang inspiratif.",
   },
   {
     img: a4,
-    name: "Nadia Salsabila",
-    school: "SMA Islam Al-Azhar",
-    year: "Section #1 — 2023",
+    name: "Wasil Mubarok",
+    school: "Universitas Galuh Ciamis",
+    year: "Section #2 — 2024",
     quote: "Proses seleksinya transparan dan benar-benar tanpa pungutan biaya.",
   },
 ];
