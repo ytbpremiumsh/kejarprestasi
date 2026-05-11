@@ -55,14 +55,14 @@ export function FAQSection() {
         </div>
 
         <div className="mt-10 grid lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
-          <div className="hidden lg:flex justify-center">
+          <div className="flex justify-center">
             <img
               src={faqIllustration}
               alt="Ilustrasi FAQ Beasiswa Kejar Prestasi"
               loading="lazy"
               width={1024}
               height={1024}
-              className="w-full max-w-md h-auto drop-shadow-xl"
+              className="w-full max-w-xs sm:max-w-sm lg:max-w-md h-auto drop-shadow-xl"
             />
           </div>
           <div className="rounded-2xl border border-border bg-card p-2 md:p-4 shadow-card">
