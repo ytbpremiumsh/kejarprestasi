@@ -99,6 +99,10 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         </div>
       </section>
 
+      <section className="container-page pb-4">
+        <InfoBeasiswaInteraktif />
+      </section>
+
       <section className="container-page pb-20">
         <div className="rounded-3xl border border-border bg-card p-8 md:p-10 shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
