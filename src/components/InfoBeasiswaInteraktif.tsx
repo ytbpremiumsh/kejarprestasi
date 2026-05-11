@@ -35,7 +35,7 @@ const data: Kategori[] = [
     fakta: [
       "Berlaku untuk PTN/PTS di Indonesia",
       "Tanpa minimal IPK",
-      "Bonus mentoring & komunitas penerima",
+      "Bonus mentoring & pembinaan penerima",
     ],
   },
 ];

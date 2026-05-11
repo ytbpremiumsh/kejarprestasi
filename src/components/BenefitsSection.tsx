@@ -1,4 +1,4 @@
-import { Wallet, Award, Gift, Users, BookOpen, ShieldCheck } from "lucide-react";
+import { Wallet, Award, Gift, FileCheck2, BookOpen, ShieldCheck } from "lucide-react";
 
 const benefits = [
   {
@@ -20,9 +20,9 @@ const benefits = [
     accent: "bg-primary-soft text-primary",
   },
   {
-    icon: Users,
-    title: "Komunitas Penerima",
-    desc: "Akses ke jaringan alumni Kejar Prestasi dari berbagai daerah di Indonesia.",
+    icon: FileCheck2,
+    title: "Proses Transparan",
+    desc: "Seleksi terbuka dengan tahapan jelas dan hasil yang dapat dipertanggungjawabkan.",
     accent: "bg-primary-soft text-primary",
   },
   {

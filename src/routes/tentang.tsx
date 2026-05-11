@@ -30,7 +30,7 @@ function TentangPage() {
         {[
           { icon: <Trophy size={20} />, title: "Mendorong Prestasi", desc: "Memberi apresiasi kepada pelajar yang aktif berprestasi akademik & non-akademik." },
           { icon: <HeartHandshake size={20} />, title: "Meringankan Ekonomi", desc: "Membantu biaya pendidikan bagi pelajar dari keluarga prasejahtera." },
-          { icon: <Users size={20} />, title: "Komunitas Aktif", desc: "Membangun jaringan alumni penerima manfaat yang saling menginspirasi." },
+          { icon: <Users size={20} />, title: "Pembinaan Berkelanjutan", desc: "Memberikan mentoring & pendampingan agar penerima terus berkembang." },
         ].map((b) => (
           <div key={b.title} className="rounded-2xl border border-border bg-card p-6 shadow-card">
             <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-primary">{b.icon}</div>
@@ -48,7 +48,7 @@ function TentangPage() {
         <ul className="mt-3 list-disc pl-5 text-muted-foreground space-y-1.5">
           <li>Mendorong pelajar untuk terus berprestasi.</li>
           <li>Memberikan dukungan finansial yang tepat sasaran.</li>
-          <li>Membangun ekosistem mentoring & komunitas alumni.</li>
+          <li>Membangun ekosistem mentoring & pembinaan penerima.</li>
         </ul>
       </section>
     </main>
