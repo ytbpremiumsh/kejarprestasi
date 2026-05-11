@@ -214,7 +214,7 @@ export function SiteFooter() {
             <AlertTriangle size={16} className="mt-0.5 shrink-0" />
             <p className="leading-relaxed">
               <strong>Waspada penipuan!</strong> Seluruh proses pendaftaran Kejar Prestasi{" "}
-              <strong>tidak dipungut biaya apapun</strong>. Laporkan setiap upaya penipuan yang
+              <strong>tidak dipungut biaya apapun</strong>. Laporkan setiap penipuan yang
               mengatasnamakan Kejar Prestasi melalui kontak resmi di atas.
             </p>
           </div>
