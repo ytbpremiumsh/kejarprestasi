@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as BeasiswaPrestasiRouteImport } from './routes/beasiswa-prestasi'
 import { Route as BeasiswaEkonomiRouteImport } from './routes/beasiswa-ekonomi'
 import { Route as ArtikelRouteImport } from './routes/artikel'
@@ -38,6 +39,11 @@ const TentangRoute = TentangRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DaftarRoute = DaftarRouteImport.update({
+  id: '/daftar',
+  path: '/daftar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BeasiswaPrestasiRoute = BeasiswaPrestasiRouteImport.update({
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/artikel': typeof ArtikelRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
+  '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/artikel': typeof ArtikelRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
+  '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/artikel': typeof ArtikelRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
+  '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/artikel'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
+    | '/daftar'
     | '/login'
     | '/tentang'
     | '/admin/adsense'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/artikel'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
+    | '/daftar'
     | '/login'
     | '/tentang'
     | '/admin/adsense'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/artikel'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
+    | '/daftar'
     | '/login'
     | '/tentang'
     | '/admin/adsense'
@@ -272,6 +284,7 @@ export interface RootRouteChildren {
   ArtikelRoute: typeof ArtikelRoute
   BeasiswaEkonomiRoute: typeof BeasiswaEkonomiRoute
   BeasiswaPrestasiRoute: typeof BeasiswaPrestasiRoute
+  DaftarRoute: typeof DaftarRoute
   LoginRoute: typeof LoginRoute
   TentangRoute: typeof TentangRoute
   BagikanPosterEkonomiRoute: typeof BagikanPosterEkonomiRoute
@@ -296,6 +309,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daftar': {
+      id: '/daftar'
+      path: '/daftar'
+      fullPath: '/daftar'
+      preLoaderRoute: typeof DaftarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/beasiswa-prestasi': {
@@ -474,6 +494,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArtikelRoute: ArtikelRoute,
   BeasiswaEkonomiRoute: BeasiswaEkonomiRoute,
   BeasiswaPrestasiRoute: BeasiswaPrestasiRoute,
+  DaftarRoute: DaftarRoute,
   LoginRoute: LoginRoute,
   TentangRoute: TentangRoute,
   BagikanPosterEkonomiRoute: BagikanPosterEkonomiRoute,
@@ -486,3 +507,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
