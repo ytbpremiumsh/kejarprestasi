@@ -56,7 +56,10 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   }, [kind]);
 
   const setSlot = (key: string, patch: Partial<SlotState>) =>
-    setState((s) => ({ ...s, [key]: { file: null, preview: null, progress: 0, error: null, ...s[key], ...patch } }));
+    setState((s) => {
+      const base: SlotState = s[key] ?? { file: null, preview: null, progress: 0, error: null };
+      return { ...s, [key]: { ...base, ...patch } };
+    });
 
   const onPick = (slot: DocSlot, file: File | null) => {
     if (!file) {
