@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
+import faqIllustration from "@/assets/faq-illustration.png";
 
 const faqs = [
   {
