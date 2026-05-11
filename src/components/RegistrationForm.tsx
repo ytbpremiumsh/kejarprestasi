@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -38,7 +38,6 @@ function validate(field: FormField, value: unknown): string | null {
 }
 
 export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
-  const navigate = useNavigate();
   const [schema, setSchema] = useState<FormSchema>(FALLBACK[kind]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -54,7 +53,13 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       .maybeSingle()
       .then(({ data }) => {
         if (data?.value && Array.isArray((data.value as FormSchema).fields)) {
-          setSchema(data.value as FormSchema);
+          const raw = data.value as FormSchema;
+          // Hilangkan field NIK dan semua field upload berkas
+          const filtered: FormSchema = {
+            ...raw,
+            fields: raw.fields.filter((f) => f.name !== "nik" && f.type !== "file"),
+          };
+          setSchema(filtered);
         }
         setLoading(false);
       });
@@ -133,7 +138,8 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }).catch(() => { /* ignore */ });
 
       toast.success("Pendaftaran berhasil dikirim!");
-      navigate({ to: kind === "prestasi" ? "/berkas/prestasi" : "/berkas/ekonomi" });
+      setValues({});
+      setFiles({});
     } catch (err) {
       console.error(err);
       toast.error("Gagal mengirim pendaftaran. Silakan coba lagi.");
@@ -227,7 +233,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
             {submitting ? <><Loader2 size={16} className="animate-spin" /> Mengirim…</> : <>Kirim Pendaftaran <ArrowRight size={16} /></>}
           </button>
           <p className="text-[11px] text-muted-foreground text-center">
-            Setelah mengirim, kamu akan diarahkan ke halaman pengiriman berkas.
+            Pastikan seluruh data sudah benar sebelum mengirim.
           </p>
         </aside>
       </form>
