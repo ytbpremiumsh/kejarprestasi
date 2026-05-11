@@ -28,12 +28,8 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/85 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5">
-          <img src={logo} alt="Logo Kejar Prestasi" width={36} height={36} className="h-9 w-9" />
-          <div className="leading-tight">
-            <div className="text-sm font-bold text-primary">Kejar Prestasi</div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Section #3</div>
-          </div>
+        <Link to="/" className="flex items-center" aria-label="Kejar Prestasi x Atskolla">
+          <img src={logo} alt="Logo Kejar Prestasi x Atskolla" className="h-10 w-auto" />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-7">
