@@ -1,9 +1,11 @@
-import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, LogOut, LayoutDashboard, Users, Settings, Megaphone, FileEdit, FileText, Code2 } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -20,7 +22,6 @@ function AdminLayout() {
   const [checking, setChecking] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
-  const path = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
     let active = true;
@@ -85,79 +86,26 @@ function AdminLayout() {
     );
   }
 
-  const isOverview = path === "/admin";
-
   return (
-    <div className="bg-muted/20 min-h-[80vh]">
-      <div className="border-b bg-background">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <LayoutDashboard className="h-5 w-5" />
-            </div>
-            <div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-muted/20">
+        <AdminSidebar />
+        <SidebarInset>
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background px-4">
+            <SidebarTrigger />
+            <div className="flex-1">
               <p className="text-sm font-semibold text-foreground">Admin Dashboard</p>
-              <p className="text-xs text-muted-foreground">{email}</p>
+              <p className="text-xs text-muted-foreground truncate">{email}</p>
             </div>
-          </div>
-          <nav className="flex items-center gap-1">
-            <Link
-              to="/admin"
-              className={`rounded-md px-3 py-1.5 text-sm font-medium ${isOverview ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              Overview
-            </Link>
-            <Link
-              to="/admin/pendaftar"
-              className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium ${path.startsWith("/admin/pendaftar") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              <Users className="h-4 w-4" />
-              Pendaftar
-            </Link>
-            <Link
-              to="/admin/artikel"
-              className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium ${path.startsWith("/admin/artikel") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              <FileText className="h-4 w-4" />
-              Artikel
-            </Link>
-            <Link
-              to="/admin/formulir"
-              className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium ${path.startsWith("/admin/formulir") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              <FileEdit className="h-4 w-4" />
-              Formulir
-            </Link>
-            <Link
-              to="/admin/pengaturan"
-              className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium ${path.startsWith("/admin/pengaturan") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              <Settings className="h-4 w-4" />
-              Pengaturan
-            </Link>
-            <Link
-              to="/admin/adsense"
-              className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium ${path.startsWith("/admin/adsense") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              <Megaphone className="h-4 w-4" />
-              AdSense
-            </Link>
-            <Link
-              to="/admin/kode-kustom"
-              className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium ${path.startsWith("/admin/kode-kustom") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              <Code2 className="h-4 w-4" />
-              Kode &amp; Performa
-            </Link>
-            <Button variant="ghost" size="sm" onClick={logout} className="ml-2">
+            <Button variant="ghost" size="sm" onClick={logout}>
               <LogOut className="h-4 w-4 mr-1" /> Keluar
             </Button>
-          </nav>
-        </div>
+          </header>
+          <div className="px-4 py-6 md:px-6">
+            <Outlet />
+          </div>
+        </SidebarInset>
       </div>
-      <div className="mx-auto max-w-7xl px-4 py-6">
-        <Outlet />
-      </div>
-    </div>
+    </SidebarProvider>
   );
 }
