@@ -106,3 +106,22 @@
   padding-inline: 1.25rem;
   max-width: 1200px;
 }
+
+/* Lite mode — diaktifkan dari Admin > Mode Performa */
+html.lite-mode *,
+html.lite-mode *::before,
+html.lite-mode *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0ms !important;
+  scroll-behavior: auto !important;
+}
+html.lite-mode img,
+html.lite-mode video {
+  content-visibility: auto;
+}
+html[data-disable-ads="1"] .adsbygoogle,
+html[data-disable-ads="1"] [data-ad-slot] {
+  display: none !important;
+}
