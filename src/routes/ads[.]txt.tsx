@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 
-export const Route = createFileRoute("/ads/txt")({
+export const Route = createFileRoute("/ads.txt")({
   server: {
     handlers: {
       GET: async () => {
