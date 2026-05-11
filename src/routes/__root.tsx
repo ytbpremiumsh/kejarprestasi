@@ -14,7 +14,6 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { AdSettingsProvider, AdsenseLoader } from "@/components/ads/AdSettings";
-import { AdSlot } from "@/components/ads/AdSlot";
 import { CustomCodeInjector } from "@/components/CustomCodeInjector";
 
 function NotFoundComponent() {
@@ -83,10 +82,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Program beasiswa nasional untuk pelajar dan mahasiswa Indonesia dengan total beasiswa Rp23.000.000 per semester. Tidak dipungut biaya." },
       { name: "author", content: "Kejar Prestasi" },
       { property: "og:title", content: "Beasiswa Pendidikan Kejar Prestasi Section #3" },
-      { property: "og:description", content: "Meraih Pendidikan, Mewujudkan Prestasi. Total beasiswa Rp23.000.000/semester." },
+      { property: "og:description", content: "Program beasiswa nasional untuk pelajar dan mahasiswa Indonesia dengan total beasiswa Rp23.000.000 per semester. Tidak dipungut biaya." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Beasiswa Pendidikan Kejar Prestasi Section #3" },
+      { name: "twitter:description", content: "Program beasiswa nasional untuk pelajar dan mahasiswa Indonesia dengan total beasiswa Rp23.000.000 per semester. Tidak dipungut biaya." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2cc649be-7e4b-4aec-a966-a40e589b740f/id-preview-b6051ba4--9c225128-d4b9-467e-9636-c0f33f20ecb8.lovable.app-1778510212725.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2cc649be-7e4b-4aec-a966-a40e589b740f/id-preview-b6051ba4--9c225128-d4b9-467e-9636-c0f33f20ecb8.lovable.app-1778510212725.png" },
     ],
     links: [
       {
@@ -130,11 +133,9 @@ function RootComponent() {
         ) : (
           <div className="flex min-h-screen flex-col">
             <SiteHeader />
-            <AdSlot placement="header_top" />
             <main className="flex-1">
               <Outlet />
             </main>
-            <AdSlot placement="footer_top" />
             <SiteFooter />
           </div>
         )}
