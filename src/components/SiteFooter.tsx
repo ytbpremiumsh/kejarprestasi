@@ -7,12 +7,8 @@ export function SiteFooter() {
     <footer className="mt-24 border-t border-border bg-secondary/40">
       <div className="container-page py-12 grid gap-10 md:grid-cols-4">
         <div className="md:col-span-2">
-          <div className="flex items-center gap-2.5">
-            <img src={logo} alt="" width={36} height={36} className="h-9 w-9" loading="lazy" />
-            <div className="leading-tight">
-              <div className="text-sm font-bold text-primary">Beasiswa Kejar Prestasi</div>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Section #3</div>
-            </div>
+          <div className="flex items-center">
+            <img src={logo} alt="Logo Kejar Prestasi x Atskolla" className="h-10 w-auto" loading="lazy" />
           </div>
           <p className="mt-4 max-w-md text-sm text-muted-foreground">
             Meraih Pendidikan, Mewujudkan Prestasi. Program beasiswa nasional untuk pelajar dan mahasiswa Indonesia.
