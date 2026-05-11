@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, FileText, ShieldCheck, UploadCloud } from "lucide-react";
 import { InfoBeasiswaInteraktif } from "@/components/InfoBeasiswaInteraktif";
+import { AdSlot } from "@/components/ads/AdSlot";
 
 const docsByKind = {
   prestasi: [
@@ -63,6 +64,8 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         </div>
       </section>
 
+      <AdSlot placement="berkas_top" />
+
       <section className="container-page py-16 grid lg:grid-cols-2 gap-8">
         <div className="rounded-3xl border border-border bg-card p-8 shadow-card">
           <h2 className="text-2xl font-bold text-foreground">Daftar Berkas yang Perlu Disiapkan</h2>
@@ -121,6 +124,7 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       <section className="container-page pb-20">
         <InfoBeasiswaInteraktif />
       </section>
+      <AdSlot placement="berkas_bottom" />
     </>
   );
 }

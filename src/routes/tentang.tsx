@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HeartHandshake, Trophy, Users } from "lucide-react";
+import { AdSlot } from "@/components/ads/AdSlot";
 
 export const Route = createFileRoute("/tentang")({
   head: () => ({
@@ -39,6 +40,8 @@ function TentangPage() {
           </div>
         ))}
       </section>
+
+      <AdSlot placement="tentang_middle" />
 
       <section className="mt-12 rounded-2xl border border-border bg-card p-6 md:p-10 shadow-card">
         <h2 className="text-xl md:text-2xl font-bold text-foreground">Visi & Misi</h2>
