@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
