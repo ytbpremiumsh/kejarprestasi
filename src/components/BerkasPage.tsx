@@ -104,6 +104,27 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }
       const { error } = await supabase.from("documents").insert(rows);
       if (error) throw error;
+
+      // Lookup pendaftar's WhatsApp by email for notification
+      const { data: reg } = await supabase
+        .from("registrations")
+        .select("full_name, whatsapp")
+        .eq("email", email.trim())
+        .eq("kind", kind)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      supabase.functions.invoke("send-whatsapp", {
+        body: {
+          type: "berkas",
+          email: email.trim(),
+          full_name: reg?.full_name ?? "",
+          whatsapp: reg?.whatsapp ?? "",
+          kind,
+          doc_count: rows.length,
+        },
+      }).catch(() => { /* ignore */ });
+
       toast.success("Berkas berhasil dikirim!");
       navigate({ to: "/" });
     } catch (err) {

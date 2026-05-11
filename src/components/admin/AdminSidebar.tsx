@@ -4,9 +4,11 @@ import {
   Users,
   FileEdit,
   FileText,
+  FolderArchive,
   Settings,
   Megaphone,
   Code2,
+  MessageCircle,
   ShieldCheck,
   ChevronRight,
 } from "lucide-react";
@@ -35,6 +37,7 @@ const groups: { label: string; items: Item[] }[] = [
     label: "Manajemen Pendaftaran",
     items: [
       { title: "Pendaftar", url: "/admin/pendaftar", icon: Users },
+      { title: "Pengiriman Berkas", url: "/admin/berkas", icon: FolderArchive },
       { title: "Formulir", url: "/admin/formulir", icon: FileEdit },
     ],
   },
@@ -46,6 +49,7 @@ const groups: { label: string; items: Item[] }[] = [
     label: "Pengaturan Situs",
     items: [
       { title: "Pengaturan", url: "/admin/pengaturan", icon: Settings },
+      { title: "WhatsApp", url: "/admin/whatsapp", icon: MessageCircle },
       { title: "AdSense", url: "/admin/adsense", icon: Megaphone },
       { title: "Kode & Performa", url: "/admin/kode-kustom", icon: Code2 },
     ],
