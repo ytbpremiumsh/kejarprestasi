@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BerkasPage } from "@/components/BerkasPage";
+import { BerkasInfoPage } from "@/components/BerkasInfoPage";
 
 export const Route = createFileRoute("/berkas/ekonomi")({
   head: () => ({
     meta: [
       { title: "Pengiriman Berkas Ekonomi — Kejar Prestasi Section #3" },
-      { name: "description", content: "Unggah berkas pendukung Beasiswa Ekonomi." },
+      { name: "description", content: "Persyaratan & informasi pengiriman berkas Beasiswa Ekonomi." },
     ],
   }),
-  component: () => <BerkasPage kind="ekonomi" />,
+  component: () => <BerkasInfoPage kind="ekonomi" />,
 });
