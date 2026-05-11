@@ -57,9 +57,9 @@ function Index() {
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2">
-              <Link to="/beasiswa-prestasi" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition">
+              <a href="#timeline" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition">
                 Daftar Sekarang <ArrowRight size={16} />
-              </Link>
+              </a>
               <a href="#timeline" className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition">
                 <CalendarClock size={16} /> Lihat Timeline
               </a>
