@@ -26,7 +26,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 🎁 Benefit Penerima:
 • Sertifikat resmi Beasiswa Kejar Prestasi
 • Merchandise eksklusif (Plakat, Kaos, Block Note, Goodie Bag, dll)
-• Video motivasi & komunitas penerima
+• Video motivasi & sesi pembinaan penerima
 
 📌 Daftar sekarang di: ${url}
 📷 Info lengkap: @kejarprestasi_id

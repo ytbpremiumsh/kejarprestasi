@@ -1,4 +1,4 @@
-import { Award, BookOpen, Sparkles, Target, Users, Wallet } from "lucide-react";
+import { Award, BookOpen, Sparkles, Target, FileCheck2, Wallet } from "lucide-react";
 
 const features = [
   {
@@ -17,9 +17,9 @@ const features = [
     desc: "Mengapresiasi pelajar berprestasi akademik maupun non-akademik tanpa minimal nilai.",
   },
   {
-    icon: Users,
-    title: "Dukungan Komunitas",
-    desc: "Bergabung dengan jaringan penerima beasiswa & alumni Kejar Prestasi nasional.",
+    icon: FileCheck2,
+    title: "Proses Akuntabel",
+    desc: "Setiap tahapan seleksi terdokumentasi dan dapat dipertanggungjawabkan secara terbuka.",
   },
   {
     icon: Target,
