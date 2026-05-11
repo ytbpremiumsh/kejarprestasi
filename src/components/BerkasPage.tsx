@@ -92,7 +92,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
     setSubmitting(true);
     try {
-      const rows: { email: string; kind: string; doc_type: string; file_url: string }[] = [];
+      const rows: { email: string; kind: "prestasi" | "ekonomi"; doc_type: string; file_url: string }[] = [];
       for (const d of docs) {
         const slot = state[d.key];
         if (!slot?.file) continue;
