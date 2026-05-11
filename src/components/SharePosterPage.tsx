@@ -1,107 +1,73 @@
 import { Link } from "@tanstack/react-router";
-import { Download, Share2, Trophy, HeartHandshake, Facebook, Instagram, ListChecks, MessageCircle, Info, CheckCircle2 } from "lucide-react";
+import { Download, Share2, Facebook, Instagram, ListChecks, MessageCircle, Info, CheckCircle2, Copy, Check } from "lucide-react";
 import { useState } from "react";
-import logo from "@/assets/logo-kp.png";
+import posterImg from "@/assets/poster-beasiswa.png";
 
 export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const isGold = kind === "ekonomi";
   const label = isGold ? "Beasiswa Ekonomi" : "Beasiswa Prestasi";
   const url = typeof window !== "undefined" ? window.location.origin + (isGold ? "/beasiswa-ekonomi" : "/beasiswa-prestasi") : "https://kejarprestasi.id";
-  const text = `Daftar ${label} — Beasiswa Kejar Prestasi Section #3. Total Rp23.000.000/semester. Tidak dipungut biaya. ${url}`;
+
+  const caption = `🎓✨ BEASISWA PENDIDIKAN KEJAR PRESTASI — SECTION #3 ✨🎓
+
+Halo Sobat Pejuang Pendidikan! 👋
+Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
+
+💰 Total Beasiswa hingga Rp23.000.000/semester
+📚 Terbuka untuk SD, SMP, SMA/SMK/MA & Mahasiswa
+🚫 100% TIDAK DIPUNGUT BIAYA
+
+✅ Persyaratan:
+• Warga Negara Indonesia (WNI) & berdomisili di Indonesia
+• Pelajar/Mahasiswa aktif (atau calon mahasiswa D3–S2)
+• Tanpa minimal nilai rapor / IPK
+• Mengikuti seluruh ketentuan yang berlaku
+
+🎁 Benefit Penerima:
+• Sertifikat resmi Beasiswa Kejar Prestasi
+• Merchandise eksklusif (Plakat, Kaos, Block Note, Goodie Bag, dll)
+• Video motivasi & komunitas penerima
+
+📌 Daftar sekarang di: ${url}
+📷 Info lengkap: @kejarprestasi_id
+📞 0812 8001 0302
+
+⚠️ Hati-hati terhadap penipuan yang mengatasnamakan Kejar Prestasi.
+
+#KejarPrestasi #BeasiswaPendidikan #BeasiswaIndonesia #BeasiswaPelajar #BeasiswaMahasiswa #KejarPrestasiSection3`;
+
+  const [copied, setCopied] = useState(false);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(caption);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* noop */
+    }
+  };
 
   const [shares, setShares] = useState({ wa: 0, ig: 0, fb: 0, x: 0 });
-
   const track = (k: keyof typeof shares) => setShares((s) => ({ ...s, [k]: s[k] + 1 }));
 
   const links = [
-    { key: "wa" as const, label: "WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(text)}`, icon: <Share2 size={16} />, color: "bg-[oklch(0.72_0.17_150)]" },
+    { key: "wa" as const, label: "WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(caption)}`, icon: <Share2 size={16} />, color: "bg-[oklch(0.72_0.17_150)]" },
     { key: "fb" as const, label: "Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, icon: <Facebook size={16} />, color: "bg-[oklch(0.50_0.18_260)]" },
-    { key: "x" as const, label: "X (Twitter)", href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, icon: <Share2 size={16} />, color: "bg-foreground" },
+    { key: "x" as const, label: "X (Twitter)", href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(caption)}`, icon: <Share2 size={16} />, color: "bg-foreground" },
     { key: "ig" as const, label: "Instagram", href: `https://www.instagram.com/`, icon: <Instagram size={16} />, color: "bg-gradient-to-tr from-[oklch(0.65_0.20_30)] to-[oklch(0.55_0.23_310)]" },
   ];
 
   return (
     <section className="container-page py-16">
       <Link to="/" className="text-xs font-semibold text-primary hover:underline">← Kembali ke Beranda</Link>
-      <div className="mt-4 grid lg:grid-cols-[1.1fr_1fr] gap-10 items-start">
-        {/* Poster preview */}
-        <div className="rounded-3xl border border-border bg-card p-4 shadow-card">
-          <div
-            className="relative aspect-[3/4] rounded-2xl overflow-hidden p-8 flex flex-col justify-between text-primary-foreground"
-            style={{ background: isGold ? "linear-gradient(160deg, oklch(0.45 0.18 295), oklch(0.65 0.18 80))" : "var(--gradient-primary)" }}
-          >
-            <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-white/15 blur-3xl" />
-            <div className="relative">
-              <div className="flex items-center gap-2">
-                <img src={logo} alt="" width={40} height={40} className="h-10 w-10 rounded-full bg-white p-1" />
-                <div className="text-xs font-semibold uppercase tracking-widest opacity-90">Kejar Prestasi · Section #3</div>
-              </div>
-              <h2 className="mt-8 text-3xl md:text-4xl font-extrabold leading-tight">
-                {label}
-              </h2>
-              <p className="mt-2 text-sm opacity-90 max-w-xs">
-                Meraih Pendidikan, Mewujudkan Prestasi.
-              </p>
-            </div>
 
-            <div className="relative space-y-3">
-              <div className="rounded-2xl bg-white/15 backdrop-blur p-4">
-                <div className="text-[11px] uppercase tracking-wider opacity-80">Total Beasiswa</div>
-                <div className="text-2xl font-extrabold">Rp23.000.000<span className="text-sm font-medium opacity-80"> / semester</span></div>
-              </div>
-              <div className="text-[11px] opacity-80">SD · SMP · SMA/SMK/MA · Mahasiswa · Tidak dipungut biaya</div>
-            </div>
-
-            <div className="absolute bottom-6 right-6 inline-flex items-center gap-1.5 rounded-full bg-[oklch(0.85_0.16_85)] px-3 py-1 text-[11px] font-bold text-gold-foreground">
-              {isGold ? <HeartHandshake size={12} /> : <Trophy size={12} />} {label}
-            </div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-foreground">Bagikan Poster {label}</h1>
-            <p className="mt-2 text-muted-foreground">Bantu sebarkan informasi beasiswa ini kepada teman dan keluarga.</p>
-          </div>
-
-          <a
-            href="#"
-            onClick={(e) => { e.preventDefault(); window.print(); }}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
-          >
-            <Download size={16} /> Download Poster
-          </a>
-
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-card">
-            <div className="text-sm font-semibold text-foreground">Bagikan ke Media Sosial</div>
-            <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              {links.map((l) => (
-                <a
-                  key={l.key}
-                  href={l.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => track(l.key)}
-                  className="group flex items-center justify-between rounded-2xl border border-border bg-background p-3 hover:border-primary transition"
-                >
-                  <span className="flex items-center gap-3">
-                    <span className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-white ${l.color}`}>{l.icon}</span>
-                    <span className="text-sm font-medium text-foreground">{l.label}</span>
-                  </span>
-                  <span className="text-xs font-semibold text-muted-foreground">{shares[l.key]}x</span>
-                </a>
-              ))}
-            </div>
-            <div className="mt-4 text-xs text-muted-foreground">
-              Total share sesi ini: <span className="font-semibold text-foreground">{Object.values(shares).reduce((a, b) => a + b, 0)}</span>
-            </div>
-          </div>
-        </div>
+      <div className="mt-4">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-foreground">Bagikan Poster {label}</h1>
+        <p className="mt-2 text-muted-foreground">Bantu sebarkan informasi beasiswa ini kepada teman dan keluarga.</p>
       </div>
 
-      {/* KETENTUAN BAGIKAN POSTER */}
-      <div className="mt-10 rounded-3xl border border-border bg-card p-6 md:p-8 shadow-card">
+      {/* KETENTUAN BAGIKAN POSTER — di atas */}
+      <div className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-8 shadow-card">
         <div className="flex items-center gap-2">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <ListChecks size={18} />
@@ -112,24 +78,12 @@ export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           Lengkapi seluruh tahapan berikut agar pendaftaranmu dapat diproses ke tahap selanjutnya.
         </p>
 
-        <ol className="mt-6 space-y-4">
+        <ol className="mt-6 grid md:grid-cols-2 gap-4">
           {[
-            {
-              t: "Unggah ke Instagram pribadi",
-              d: "Posting poster beasiswa beserta caption resmi yang sudah disediakan ke akun Instagram kamu — wajib di Feed (Postingan) sekaligus Story.",
-            },
-            {
-              t: "Sebar ke 5 grup chat",
-              d: "Bagikan poster + caption ke minimal 5 grup pada salah satu platform pilihan: WhatsApp, Facebook, Line, atau Telegram.",
-            },
-            {
-              t: "Komentar & tag 3 teman",
-              d: "Tinggalkan komentar di unggahan resmi @ayopintar_ dan mention 3 sahabatmu. Contoh: \"Yuk ikut daftar beasiswa ini 🥳✨ @temanA @temanB @temanC\".",
-            },
-            {
-              t: "Konfirmasi bukti via WhatsApp",
-              d: "Kirim bukti tangkapan layar (Story, postingan, dan grup) melalui tombol konfirmasi di bawah agar tim verifikasi dapat mencatat partisipasimu.",
-            },
+            { t: "Unggah ke Instagram pribadi", d: "Posting poster + caption resmi ke akun Instagram kamu — wajib di Feed (Postingan) sekaligus Story." },
+            { t: "Sebar ke 5 grup chat", d: "Bagikan poster + caption ke minimal 5 grup pada salah satu platform: WhatsApp, Facebook, Line, atau Telegram." },
+            { t: "Komentar & tag 3 teman", d: "Komentari unggahan resmi @ayopintar_ dan mention 3 sahabatmu. Contoh: \"Yuk ikut daftar beasiswa ini 🥳✨ @temanA @temanB @temanC\"." },
+            { t: "Konfirmasi bukti via WhatsApp", d: "Kirim screenshot (Story, postingan, dan grup) melalui tombol konfirmasi di bawah agar tim verifikasi mencatat partisipasimu." },
           ].map((item, i) => (
             <li key={item.t} className="flex gap-4 rounded-2xl border border-border bg-background p-4">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary font-bold">
@@ -161,8 +115,82 @@ export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         <div className="mt-6 flex items-start gap-2 rounded-2xl bg-[oklch(0.92_0.14_85)]/30 border border-[oklch(0.85_0.16_85)]/50 p-4 text-sm text-foreground/85">
           <Info size={16} className="mt-0.5 text-[oklch(0.55_0.16_75)] shrink-0" />
           <p>
-            <span className="font-semibold">Catatan:</span> Wajib menggunakan poster dan caption resmi yang telah disediakan pada halaman ini. Materi di luar yang disediakan tidak dihitung sebagai partisipasi sah.
+            <span className="font-semibold">Catatan:</span> Wajib menggunakan poster dan caption resmi yang telah disediakan di bawah. Materi di luar yang disediakan tidak dihitung sebagai partisipasi sah.
           </p>
+        </div>
+      </div>
+
+      {/* POSTER + CAPTION — di bawah */}
+      <div className="mt-10 grid lg:grid-cols-[1fr_1.1fr] gap-8 items-start">
+        {/* Poster */}
+        <div className="rounded-3xl border border-border bg-card p-4 shadow-card">
+          <div className="rounded-2xl overflow-hidden bg-muted">
+            <img
+              src={posterImg}
+              alt={`Poster Beasiswa Kejar Prestasi ${label}`}
+              className="w-full h-auto block"
+              loading="lazy"
+            />
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <a
+              href={posterImg}
+              download="poster-kejar-prestasi.png"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+            >
+              <Download size={16} /> Download Poster
+            </a>
+          </div>
+        </div>
+
+        {/* Caption + share buttons */}
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-card">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <div className="text-sm font-semibold text-foreground">Caption Resmi</div>
+                <p className="text-xs text-muted-foreground">Salin dan tempel caption ini saat membagikan poster.</p>
+              </div>
+              <button
+                onClick={handleCopy}
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition ${
+                  copied
+                    ? "bg-[oklch(0.72_0.17_150)] text-white"
+                    : "bg-primary text-primary-foreground hover:opacity-95"
+                }`}
+              >
+                {copied ? (<><Check size={14} /> Tersalin</>) : (<><Copy size={14} /> Salin Caption</>)}
+              </button>
+            </div>
+            <pre className="mt-4 max-h-96 overflow-auto whitespace-pre-wrap break-words rounded-2xl bg-background border border-border p-4 text-xs leading-relaxed font-sans text-foreground/90">
+{caption}
+            </pre>
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-card">
+            <div className="text-sm font-semibold text-foreground">Bagikan ke Media Sosial</div>
+            <div className="mt-4 grid sm:grid-cols-2 gap-3">
+              {links.map((l) => (
+                <a
+                  key={l.key}
+                  href={l.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => track(l.key)}
+                  className="group flex items-center justify-between rounded-2xl border border-border bg-background p-3 hover:border-primary transition"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-white ${l.color}`}>{l.icon}</span>
+                    <span className="text-sm font-medium text-foreground">{l.label}</span>
+                  </span>
+                  <span className="text-xs font-semibold text-muted-foreground">{shares[l.key]}x</span>
+                </a>
+              ))}
+            </div>
+            <div className="mt-4 text-xs text-muted-foreground">
+              Total share sesi ini: <span className="font-semibold text-foreground">{Object.values(shares).reduce((a, b) => a + b, 0)}</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
