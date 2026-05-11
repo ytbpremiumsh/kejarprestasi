@@ -106,37 +106,12 @@ function StageActions({ title }: { title: string }) {
 
   if (t.includes("pendaftaran")) {
     return (
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4">
         <Link
-          to="/beasiswa-prestasi"
+          to="/daftar"
           className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
         >
-          <Trophy size={14} /> Daftar Prestasi <ArrowRight size={12} />
-        </Link>
-        <Link
-          to="/beasiswa-ekonomi"
-          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground hover:border-primary hover:text-primary transition"
-        >
-          <HeartHandshake size={14} /> Daftar Ekonomi <ArrowRight size={12} />
-        </Link>
-      </div>
-    );
-  }
-
-  if (t.includes("berkas") || t.includes("pengumpulan")) {
-    return (
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Link
-          to="/berkas/prestasi"
-          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
-        >
-          <FileText size={14} /> Kirim Berkas Prestasi <ArrowRight size={12} />
-        </Link>
-        <Link
-          to="/berkas/ekonomi"
-          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground hover:border-primary hover:text-primary transition"
-        >
-          <FileText size={14} /> Kirim Berkas Ekonomi <ArrowRight size={12} />
+          <Trophy size={14} /> Daftar Sekarang <ArrowRight size={12} />
         </Link>
       </div>
     );
@@ -144,18 +119,25 @@ function StageActions({ title }: { title: string }) {
 
   if (t.includes("poster") || t.includes("bagikan")) {
     return (
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4">
         <Link
-          to="/bagikan-poster/prestasi"
+          to="/bagikan-poster"
           className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
         >
-          <Share2 size={14} /> Poster Prestasi <ArrowRight size={12} />
+          <Share2 size={14} /> Bagikan Poster <ArrowRight size={12} />
         </Link>
+      </div>
+    );
+  }
+
+  if (t.includes("berkas") || t.includes("pengumpulan")) {
+    return (
+      <div className="mt-4">
         <Link
-          to="/bagikan-poster/ekonomi"
-          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground hover:border-primary hover:text-primary transition"
+          to="/berkas"
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
         >
-          <Share2 size={14} /> Poster Ekonomi <ArrowRight size={12} />
+          <FileText size={14} /> Kirim Berkas <ArrowRight size={12} />
         </Link>
       </div>
     );
