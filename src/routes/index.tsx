@@ -56,7 +56,7 @@ function Index() {
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2">
-              <Link to="/pendaftaran/prestasi" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition">
+              <Link to="/beasiswa-prestasi" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition">
                 Daftar Sekarang <ArrowRight size={16} />
               </Link>
               <a href="#timeline" className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition">
@@ -141,10 +141,10 @@ function Index() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row md:flex-col gap-3 md:items-stretch">
-              <Link to="/pendaftaran/prestasi" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-primary hover:bg-white/95 transition">
+              <Link to="/beasiswa-prestasi" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-primary hover:bg-white/95 transition">
                 <Trophy size={16} /> Daftar Beasiswa Prestasi
               </Link>
-              <Link to="/pendaftaran/ekonomi" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition">
+              <Link to="/beasiswa-ekonomi" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition">
                 <HeartHandshake size={16} /> Daftar Beasiswa Ekonomi
               </Link>
             </div>
