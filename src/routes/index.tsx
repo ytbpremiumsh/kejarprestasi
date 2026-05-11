@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Award, HeartHandshake, Trophy, Users, Wallet, Share2, CalendarClock, ArrowRight, CheckCircle2, GraduationCap, Sparkles } from "lucide-react";
 import heroImg from "@/assets/students-hero.png";
+import { Countdown } from "@/components/Countdown";
+import { AboutMockup } from "@/components/AboutMockup";
+import { FAQSection } from "@/components/FAQSection";
+import { TimelineSection } from "@/components/TimelineSection";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -13,15 +17,6 @@ export const Route = createFileRoute("/")({
 });
 
 const jenjang = ["SD", "SMP", "SMA/SMK/MA", "Mahasiswa"];
-
-const timeline = [
-  { title: "Pendaftaran Dibuka", desc: "Pendaftar mengisi formulir secara online.", status: "Berlangsung" },
-  { title: "Seleksi Administrasi", desc: "Tim verifikasi memeriksa data pendaftar.", status: "Akan Datang" },
-  { title: "Pengumpulan Berkas", desc: "Pendaftar mengunggah berkas pendukung.", status: "Akan Datang" },
-  { title: "Verifikasi", desc: "Validasi berkas dan kelengkapan dokumen.", status: "Akan Datang" },
-  { title: "Pengumuman Finalis", desc: "Pengumuman finalis penerima beasiswa.", status: "Akan Datang" },
-  { title: "Awarding", desc: "Penyerahan beasiswa & merchandise resmi.", status: "Akan Datang" },
-];
 
 function Index() {
   return (
@@ -87,7 +82,7 @@ function Index() {
         </div>
       </section>
 
-      {/* KATEGORI */}
+      {/* KATEGORI + COUNTDOWN */}
       <section className="container-page py-20">
         <SectionHeader
           eyebrow="Kategori Beasiswa"
@@ -95,7 +90,11 @@ function Index() {
           desc="Dua kategori, satu tujuan: membuka akses pendidikan untuk seluruh anak Indonesia."
         />
 
-        <div className="mt-12 grid md:grid-cols-2 gap-6">
+        <div className="mt-10">
+          <Countdown />
+        </div>
+
+        <div className="mt-10 grid md:grid-cols-2 gap-6">
           <CategoryCard
             tag="Beasiswa Prestasi"
             icon={<Trophy />}
@@ -114,36 +113,14 @@ function Index() {
         </div>
       </section>
 
-      {/* TIMELINE */}
-      <section id="timeline" className="bg-secondary/40 border-y border-border">
-        <div className="container-page py-20">
-          <SectionHeader
-            eyebrow="Timeline Gelombang Section #3"
-            title="Tahapan Seleksi Beasiswa"
-            desc="Ikuti setiap tahap dengan teliti agar dapat lolos hingga awarding."
-          />
+      {/* TENTANG / MOCKUP */}
+      <AboutMockup />
 
-          <ol className="mt-12 relative max-w-3xl mx-auto">
-            <span className="absolute left-4 md:left-5 top-0 bottom-0 w-px bg-border" aria-hidden />
-            {timeline.map((t, i) => (
-              <li key={t.title} className="relative pl-12 md:pl-16 pb-8 last:pb-0">
-                <span className="absolute left-0 top-0 flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold shadow-soft">
-                  {i + 1}
-                </span>
-                <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-semibold text-foreground">{t.title}</h3>
-                    <span className={`text-[11px] font-semibold rounded-full px-2.5 py-1 whitespace-nowrap ${i === 0 ? "bg-[oklch(0.92_0.13_85)] text-gold-foreground" : "bg-primary-soft text-primary"}`}>
-                      {t.status}
-                    </span>
-                  </div>
-                  <p className="mt-1.5 text-sm text-muted-foreground">{t.desc}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+      {/* TIMELINE */}
+      <TimelineSection />
+
+      {/* FAQ */}
+      <FAQSection />
 
       {/* CTA */}
       <section className="container-page py-20">

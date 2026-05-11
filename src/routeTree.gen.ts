@@ -21,6 +21,7 @@ import { Route as BerkasPrestasiRouteImport } from './routes/berkas.prestasi'
 import { Route as BerkasEkonomiRouteImport } from './routes/berkas.ekonomi'
 import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-poster.prestasi'
 import { Route as BagikanPosterEkonomiRouteImport } from './routes/bagikan-poster.ekonomi'
+import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
 
 const LoginRoute = LoginRouteImport.update({
@@ -83,6 +84,11 @@ const BagikanPosterEkonomiRoute = BagikanPosterEkonomiRouteImport.update({
   path: '/bagikan-poster/ekonomi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPengaturanRoute = AdminPengaturanRouteImport.update({
+  id: '/pengaturan',
+  path: '/pengaturan',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPendaftarRoute = AdminPendaftarRouteImport.update({
   id: '/pendaftar',
   path: '/pendaftar',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/login': typeof LoginRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
+  '/admin/pengaturan': typeof AdminPengaturanRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/login': typeof LoginRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
+  '/admin/pengaturan': typeof AdminPengaturanRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/login': typeof LoginRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
+  '/admin/pengaturan': typeof AdminPengaturanRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/beasiswa-prestasi'
     | '/login'
     | '/admin/pendaftar'
+    | '/admin/pengaturan'
     | '/bagikan-poster/ekonomi'
     | '/bagikan-poster/prestasi'
     | '/berkas/ekonomi'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/beasiswa-prestasi'
     | '/login'
     | '/admin/pendaftar'
+    | '/admin/pengaturan'
     | '/bagikan-poster/ekonomi'
     | '/bagikan-poster/prestasi'
     | '/berkas/ekonomi'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/beasiswa-prestasi'
     | '/login'
     | '/admin/pendaftar'
+    | '/admin/pengaturan'
     | '/bagikan-poster/ekonomi'
     | '/bagikan-poster/prestasi'
     | '/berkas/ekonomi'
@@ -281,6 +293,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BagikanPosterEkonomiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pengaturan': {
+      id: '/admin/pengaturan'
+      path: '/pengaturan'
+      fullPath: '/admin/pengaturan'
+      preLoaderRoute: typeof AdminPengaturanRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/pendaftar': {
       id: '/admin/pendaftar'
       path: '/pendaftar'
@@ -293,11 +312,13 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminPendaftarRoute: typeof AdminPendaftarRoute
+  AdminPengaturanRoute: typeof AdminPengaturanRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminPendaftarRoute: AdminPendaftarRoute,
+  AdminPengaturanRoute: AdminPengaturanRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
