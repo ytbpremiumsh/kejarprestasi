@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { AdSlot } from "@/components/ads/AdSlot";
 
 export const Route = createFileRoute("/artikel")({
   head: () => ({
@@ -74,6 +75,8 @@ function ArtikelPage() {
         </div>
       )}
 
+      <AdSlot placement="article_list_top" />
+
       {loading ? (
         <div className="mt-16 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
       ) : filtered.length === 0 ? (
@@ -104,6 +107,7 @@ function ArtikelPage() {
           ))}
         </section>
       )}
+      <AdSlot placement="article_list_bottom" />
     </main>
   );
 }
