@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, FileText, ShieldCheck, UploadCloud } from "lucide-react";
+import { InfoBeasiswaInteraktif } from "@/components/InfoBeasiswaInteraktif";
 
 const docsByKind = {
   prestasi: [
@@ -96,6 +97,10 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
             ))}
           </ul>
         </div>
+      </section>
+
+      <section className="container-page pb-4">
+        <InfoBeasiswaInteraktif />
       </section>
 
       <section className="container-page pb-20">

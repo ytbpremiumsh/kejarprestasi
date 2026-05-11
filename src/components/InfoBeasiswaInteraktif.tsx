@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { GraduationCap, BookOpen, School, Backpack, Wallet, Users, CheckCircle2, Sparkles } from "lucide-react";
+import { GraduationCap, Backpack, Wallet, CheckCircle2, Sparkles, Info } from "lucide-react";
 
-type Jenjang = {
+type Kategori = {
   key: string;
   label: string;
   icon: React.ReactNode;
@@ -11,81 +11,55 @@ type Jenjang = {
   fakta: string[];
 };
 
-const data: Jenjang[] = [
+const data: Kategori[] = [
   {
-    key: "sd",
-    label: "SD",
+    key: "pelajar",
+    label: "Pelajar",
     icon: <Backpack size={20} />,
     nominal: "Rp800.000",
     periode: "per semester",
-    highlight: "Membantu kebutuhan sekolah dasar",
+    highlight: "Untuk jenjang SD, SMP, dan SMA/SMK/MA",
     fakta: [
-      "Untuk siswa SD kelas 1–6",
+      "Berlaku untuk seluruh sekolah di Indonesia",
       "Tanpa minimal nilai rapor",
-      "Berlaku seluruh Indonesia",
+      "Jalur prestasi & ekonomi tersedia",
     ],
   },
   {
-    key: "smp",
-    label: "SMP",
-    icon: <BookOpen size={20} />,
-    nominal: "Rp800.000",
-    periode: "per semester",
-    highlight: "Mendukung transisi ke jenjang menengah",
-    fakta: [
-      "Untuk siswa SMP/MTs kelas 7–9",
-      "Akademik & non-akademik",
-      "Tanpa biaya pendaftaran",
-    ],
-  },
-  {
-    key: "sma",
-    label: "SMA / SMK / MA",
-    icon: <School size={20} />,
-    nominal: "Rp800.000",
-    periode: "per semester",
-    highlight: "Persiapan menuju kuliah & dunia kerja",
-    fakta: [
-      "Semua jurusan diterima",
-      "Prestasi & jalur ekonomi",
-      "Disertai sertifikat resmi",
-    ],
-  },
-  {
-    key: "mhs",
-    label: "Mahasiswa S1",
+    key: "mahasiswa",
+    label: "Mahasiswa",
     icon: <GraduationCap size={20} />,
     nominal: "Rp1.000.000",
     periode: "per semester",
-    highlight: "Mendukung biaya kuliah & buku",
+    highlight: "Mendukung biaya kuliah, buku, dan kebutuhan akademik",
     fakta: [
-      "Seluruh PTN/PTS di Indonesia",
+      "Berlaku untuk PTN/PTS di Indonesia",
       "Tanpa minimal IPK",
-      "Bonus mentoring & komunitas",
+      "Bonus mentoring & komunitas penerima",
     ],
   },
 ];
 
 export function InfoBeasiswaInteraktif() {
-  const [active, setActive] = useState<string>("sd");
+  const [active, setActive] = useState<string>("pelajar");
   const current = data.find((d) => d.key === active)!;
 
   return (
-    <section className="container-page py-20">
+    <section className="py-4">
       <div className="text-center max-w-2xl mx-auto">
         <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-          <Sparkles size={14} /> Informasi Beasiswa
+          <Sparkles size={14} /> Nominal Bantuan
         </span>
-        <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-foreground">
-          Nominal Beasiswa per Jenjang Pendidikan
+        <h2 className="mt-3 text-2xl md:text-3xl font-extrabold text-foreground">
+          Besaran Beasiswa per Kategori
         </h2>
-        <p className="mt-3 text-muted-foreground">
-          Pilih jenjangmu dan lihat detail dukungan beasiswa yang akan diterima.
+        <p className="mt-2 text-sm text-muted-foreground">
+          Pilih kategori untuk melihat detail dukungan yang akan diterima.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="mt-10 flex flex-wrap justify-center gap-2">
+      <div className="mt-6 flex flex-wrap justify-center gap-2">
         {data.map((d) => {
           const isActive = active === d.key;
           return (
@@ -110,7 +84,7 @@ export function InfoBeasiswaInteraktif() {
       {/* Detail card */}
       <div
         key={current.key}
-        className="mt-8 grid md:grid-cols-[1.1fr_1fr] gap-6 rounded-3xl border border-border bg-card p-8 md:p-10 shadow-card animate-in fade-in slide-in-from-bottom-2 duration-500"
+        className="mt-6 grid md:grid-cols-[1.1fr_1fr] gap-6 rounded-3xl border border-border bg-card p-6 md:p-8 shadow-card animate-in fade-in slide-in-from-bottom-2 duration-500"
       >
         <div>
           <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
@@ -124,9 +98,11 @@ export function InfoBeasiswaInteraktif() {
           </div>
           <p className="mt-3 text-muted-foreground">{current.highlight}</p>
 
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <Stat icon={<Users size={16} />} label="Penerima" value="500+" />
-            <Stat icon={<GraduationCap size={16} />} label="Section" value="#3 / 2026" />
+          <div className="mt-5 flex items-start gap-2 rounded-2xl bg-[oklch(0.92_0.14_85)]/30 border border-[oklch(0.85_0.16_85)]/50 p-3 text-sm text-foreground/85">
+            <Info size={16} className="mt-0.5 text-[oklch(0.55_0.16_75)] shrink-0" />
+            <p>
+              <span className="font-semibold">Penting:</span> Setiap penerima hanya berhak menerima bantuan <span className="font-semibold">satu kali</span> dalam satu program beasiswa.
+            </p>
           </div>
         </div>
 
@@ -145,16 +121,5 @@ export function InfoBeasiswaInteraktif() {
         </div>
       </div>
     </section>
-  );
-}
-
-function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-border bg-background p-3">
-      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        {icon} {label}
-      </div>
-      <div className="mt-1 text-base font-bold text-foreground">{value}</div>
-    </div>
   );
 }
