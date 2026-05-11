@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Calendar, FileText, HeartHandshake, Trophy } from "lucide-react";
 
 export type Stage = { title: string; desc: string; date: string };
 
