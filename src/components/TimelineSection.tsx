@@ -3,17 +3,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Calendar, FileText, Share2, Trophy } from "lucide-react";
 
-export type Stage = { title: string; desc: string; date: string };
+export type Stage = { title: string; desc: string; date: string; singleDay?: boolean };
 
 const fallback: Stage[] = [
-  { title: "Pendaftaran Dibuka", desc: "Calon peserta mengisi formulir pendaftaran beasiswa secara online.", date: "2026-11-11" },
-  { title: "Bagikan Poster", desc: "Peserta membagikan poster beasiswa ke media sosial sebagai bagian dari tahapan seleksi.", date: "2026-11-11" },
-  { title: "Berkas Administrasi", desc: "Peserta mengunggah seluruh berkas pendukung sesuai persyaratan yang ditentukan.", date: "2026-11-11" },
+  { title: "Pendaftaran Dibuka", desc: "Calon peserta mengisi formulir pendaftaran beasiswa secara online.", date: "2026-11-16" },
+  { title: "Bagikan Poster", desc: "Peserta membagikan poster beasiswa ke media sosial sebagai bagian dari tahapan seleksi.", date: "2026-11-16" },
+  { title: "Berkas Administrasi", desc: "Peserta mengunggah seluruh berkas pendukung sesuai persyaratan yang ditentukan.", date: "2026-11-16" },
   { title: "Seleksi Administrasi", desc: "Tim panitia memeriksa kelengkapan data dan keabsahan berkas pendaftar.", date: "2026-11-21" },
-  { title: "Verifikasi", desc: "Validasi akhir terhadap dokumen dan data peserta yang lolos administrasi.", date: "2026-11-28" },
-  { title: "Tes Potensi Akademik (TPA)", desc: "Peserta mengikuti tes online serentak untuk mengukur kemampuan akademik.", date: "2026-11-29" },
-  { title: "Pengumuman Finalis", desc: "Pengumuman peserta yang lolos sebagai finalis penerima beasiswa.", date: "2026-12-08" },
-  { title: "Awarding", desc: "Penyerahan beasiswa dan merchandise resmi kepada para penerima.", date: "2026-12-19" },
+  { title: "Verifikasi", desc: "Validasi akhir terhadap dokumen dan data peserta yang lolos administrasi.", date: "2026-11-27" },
+  { title: "Pengumuman Kandidat", desc: "Pengumuman peserta yang lolos sebagai kandidat dan berhak mengikuti TPA.", date: "2026-11-28", singleDay: true },
+  { title: "Tes Potensi Akademik (TPA)", desc: "Peserta mengikuti tes online serentak untuk mengukur kemampuan akademik.", date: "2026-11-29", singleDay: true },
+  { title: "Pengumuman Finalis", desc: "Pengumuman peserta yang lolos sebagai finalis penerima beasiswa.", date: "2026-12-05", singleDay: true },
+  { title: "Awarding", desc: "Penyerahan beasiswa dan merchandise resmi kepada para penerima.", date: "2026-12-19", singleDay: true },
 ];
 
 function fmt(d: string) {
@@ -89,7 +90,7 @@ export function TimelineSection() {
                   <p className="mt-1.5 text-sm text-muted-foreground">{t.desc}</p>
                   <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-foreground/80">
                     <Calendar size={14} className="text-primary" />
-                    {t.date ? `Hingga ${fmt(t.date)}` : "—"}
+                    {t.date ? (t.singleDay ? fmt(t.date) : `Hingga ${fmt(t.date)}`) : "—"}
                   </div>
                   <StageActions title={t.title} />
                 </div>
