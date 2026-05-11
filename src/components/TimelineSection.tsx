@@ -89,6 +89,7 @@ export function TimelineSection() {
                     <Calendar size={14} className="text-primary" />
                     {fmt(t.date)}
                   </div>
+                  <StageActions title={t.title} />
                 </div>
               </li>
             );
@@ -97,4 +98,48 @@ export function TimelineSection() {
       </div>
     </section>
   );
+}
+
+function StageActions({ title }: { title: string }) {
+  const t = title.toLowerCase();
+
+  if (t.includes("pendaftaran")) {
+    return (
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Link
+          to="/beasiswa-prestasi"
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+        >
+          <Trophy size={14} /> Daftar Prestasi <ArrowRight size={12} />
+        </Link>
+        <Link
+          to="/beasiswa-ekonomi"
+          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground hover:border-primary hover:text-primary transition"
+        >
+          <HeartHandshake size={14} /> Daftar Ekonomi <ArrowRight size={12} />
+        </Link>
+      </div>
+    );
+  }
+
+  if (t.includes("berkas") || t.includes("pengumpulan")) {
+    return (
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Link
+          to="/berkas/prestasi"
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+        >
+          <FileText size={14} /> Kirim Berkas Prestasi <ArrowRight size={12} />
+        </Link>
+        <Link
+          to="/berkas/ekonomi"
+          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground hover:border-primary hover:text-primary transition"
+        >
+          <FileText size={14} /> Kirim Berkas Ekonomi <ArrowRight size={12} />
+        </Link>
+      </div>
+    );
+  }
+
+  return null;
 }
