@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import logo from "@/assets/logo-kp.png";
@@ -12,6 +12,20 @@ const nav = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const goToTimeline = async () => {
+    setOpen(false);
+    if (window.location.pathname !== "/") {
+      await navigate({ to: "/" });
+    }
+    // Defer to next tick so the section is mounted before scrolling
+    setTimeout(() => {
+      const el = document.getElementById("timeline");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/85 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between">
@@ -38,12 +52,13 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-3">
-          <Link
-            to="/pendaftaran/prestasi"
+          <button
+            type="button"
+            onClick={goToTimeline}
             className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
           >
             Daftar Sekarang
-          </Link>
+          </button>
         </div>
 
         <button
@@ -68,13 +83,13 @@ export function SiteHeader() {
                 {n.label}
               </Link>
             ))}
-            <Link
-              to="/pendaftaran/prestasi"
-              onClick={() => setOpen(false)}
+            <button
+              type="button"
+              onClick={goToTimeline}
               className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
             >
               Daftar Sekarang
-            </Link>
+            </button>
           </div>
         </div>
       )}
