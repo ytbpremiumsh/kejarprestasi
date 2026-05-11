@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as BeasiswaPrestasiRouteImport } from './routes/beasiswa-prestasi'
 import { Route as BeasiswaEkonomiRouteImport } from './routes/beasiswa-ekonomi'
@@ -29,6 +30,11 @@ import { Route as AdminAdsenseRouteImport } from './routes/admin.adsense'
 import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
 
+const TentangRoute = TentangRouteImport.update({
+  id: '/tentang',
+  path: '/tentang',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -133,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/login': typeof LoginRoute
+  '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/login': typeof LoginRoute
+  '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -175,6 +183,7 @@ export interface FileRoutesById {
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/login': typeof LoginRoute
+  '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/login'
+    | '/tentang'
     | '/admin/adsense'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/login'
+    | '/tentang'
     | '/admin/adsense'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/login'
+    | '/tentang'
     | '/admin/adsense'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
@@ -261,6 +273,7 @@ export interface RootRouteChildren {
   BeasiswaEkonomiRoute: typeof BeasiswaEkonomiRoute
   BeasiswaPrestasiRoute: typeof BeasiswaPrestasiRoute
   LoginRoute: typeof LoginRoute
+  TentangRoute: typeof TentangRoute
   BagikanPosterEkonomiRoute: typeof BagikanPosterEkonomiRoute
   BagikanPosterPrestasiRoute: typeof BagikanPosterPrestasiRoute
   BerkasEkonomiRoute: typeof BerkasEkonomiRouteWithChildren
@@ -271,6 +284,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tentang': {
+      id: '/tentang'
+      path: '/tentang'
+      fullPath: '/tentang'
+      preLoaderRoute: typeof TentangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -455,6 +475,7 @@ const rootRouteChildren: RootRouteChildren = {
   BeasiswaEkonomiRoute: BeasiswaEkonomiRoute,
   BeasiswaPrestasiRoute: BeasiswaPrestasiRoute,
   LoginRoute: LoginRoute,
+  TentangRoute: TentangRoute,
   BagikanPosterEkonomiRoute: BagikanPosterEkonomiRoute,
   BagikanPosterPrestasiRoute: BagikanPosterPrestasiRoute,
   BerkasEkonomiRoute: BerkasEkonomiRouteWithChildren,
