@@ -30,7 +30,17 @@ function Index() {
         style={{ background: "var(--gradient-hero)" }}
       >
         <div className="container-page py-12 md:py-24 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          <div className="order-1 lg:order-2 relative">
+          {/* Title block — first on mobile, part of left column on desktop */}
+          <div className="order-1 lg:order-1 lg:hidden space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
+              <Sparkles size={14} /> Meraih Pendidikan, Mewujudkan Prestasi
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-extrabold leading-[1.1] text-foreground">
+              Beasiswa <span className="text-primary">Kejar Prestasi</span> Section <span className="text-[oklch(0.65_0.18_80)]">#3</span>
+            </h1>
+          </div>
+
+          <div className="order-2 lg:order-2 relative">
             <img
               src={heroImg}
               alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi"
@@ -41,11 +51,11 @@ function Index() {
             />
           </div>
 
-          <div className="order-2 lg:order-1 space-y-6 md:space-y-7 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
+          <div className="order-3 lg:order-1 space-y-6 md:space-y-7 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <span className="hidden lg:inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
               <Sparkles size={14} /> Meraih Pendidikan, Mewujudkan Prestasi
             </span>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] text-foreground">
+            <h1 className="hidden lg:block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] text-foreground">
               Beasiswa <span className="text-primary">Kejar Prestasi</span> Section <span className="text-[oklch(0.65_0.18_80)]">#3</span>
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-xl">
