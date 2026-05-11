@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, FileText, ShieldCheck, UploadCloud } from "lucide-react";
+import { InfoBeasiswaInteraktif } from "@/components/InfoBeasiswaInteraktif";
 
 const docsByKind = {
   prestasi: [
