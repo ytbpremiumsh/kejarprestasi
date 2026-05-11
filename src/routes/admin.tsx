@@ -115,6 +115,13 @@ function AdminLayout() {
               Pendaftar
             </Link>
             <Link
+              to="/admin/formulir"
+              className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium ${path.startsWith("/admin/formulir") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              <FileEdit className="h-4 w-4" />
+              Formulir
+            </Link>
+            <Link
               to="/admin/pengaturan"
               className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium ${path.startsWith("/admin/pengaturan") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
             >
