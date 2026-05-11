@@ -29,12 +29,23 @@ function Index() {
         className="relative overflow-hidden"
         style={{ background: "var(--gradient-hero)" }}
       >
-        <div className="container-page py-16 md:py-24 grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-7 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="container-page py-12 md:py-24 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="order-1 lg:order-2 relative">
+            <img
+              src={heroImg}
+              alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi"
+              width={1024}
+              height={1024}
+              className="w-full h-auto max-w-md mx-auto lg:max-w-none"
+              fetchPriority="high"
+            />
+          </div>
+
+          <div className="order-2 lg:order-1 space-y-6 md:space-y-7 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
               <Sparkles size={14} /> Meraih Pendidikan, Mewujudkan Prestasi
             </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.05] text-foreground">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] text-foreground">
               Beasiswa <span className="text-primary">Kejar Prestasi</span> Section <span className="text-[oklch(0.65_0.18_80)]">#3</span>
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-xl">
@@ -67,17 +78,6 @@ function Index() {
                 <Share2 size={16} /> Bagikan Poster
               </Link>
             </div>
-          </div>
-
-          <div className="relative">
-            <img
-              src={heroImg}
-              alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi"
-              width={1024}
-              height={1024}
-              className="w-full h-auto"
-              fetchPriority="high"
-            />
           </div>
         </div>
       </section>
