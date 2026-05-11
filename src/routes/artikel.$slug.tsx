@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, ArrowLeft } from "lucide-react";
+import { AdSlot } from "@/components/ads/AdSlot";
 
 export const Route = createFileRoute("/artikel/$slug")({
   head: ({ params }) => ({
@@ -111,6 +112,7 @@ function ArticleDetail() {
         {article.cover_url && (
           <img src={article.cover_url} alt={article.title} className="mt-6 w-full rounded-2xl border border-border" />
         )}
+        <AdSlot placement="in_article_top" />
         <div
           className="prose prose-slate dark:prose-invert mt-8 max-w-none text-foreground
             [&>h1]:text-2xl [&>h1]:font-bold [&>h1]:mt-8 [&>h1]:mb-3
@@ -122,6 +124,8 @@ function ArticleDetail() {
             [&>ul>li]:my-1 [&>ol>li]:my-1"
           dangerouslySetInnerHTML={{ __html: renderMarkdown(article.content) }}
         />
+        <AdSlot placement="in_article_middle" />
+        <AdSlot placement="in_article_bottom" />
       </article>
     </main>
   );
