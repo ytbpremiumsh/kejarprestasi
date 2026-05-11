@@ -138,8 +138,7 @@ function Index() {
       {/* FAQ */}
       <FAQSection />
 
-      {/* INFO INTERAKTIF — Nominal beasiswa per jenjang */}
-      <InfoBeasiswaInteraktif />
+
 
 
       <AdSlot placement="after_faq" />
