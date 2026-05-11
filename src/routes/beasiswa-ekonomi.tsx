@@ -1,0 +1,23 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { CategoryPage } from "@/components/CategoryPage";
+
+export const Route = createFileRoute("/beasiswa-ekonomi")({
+  head: () => ({
+    meta: [
+      { title: "Beasiswa Ekonomi — Kejar Prestasi Section #3" },
+      { name: "description", content: "Beasiswa untuk pelajar dan mahasiswa yang membutuhkan dukungan finansial. Total Rp23.000.000/semester." },
+      { property: "og:title", content: "Beasiswa Ekonomi — Kejar Prestasi Section #3" },
+      { property: "og:description", content: "Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial." },
+    ],
+  }),
+  component: () => (
+    <CategoryPage
+      kind="ekonomi"
+      tagline="Beasiswa Ekonomi"
+      title="Beasiswa untuk Dukungan Pendidikan yang Setara"
+      desc="Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial untuk pendidikan. Pendidikan berkualitas adalah hak semua anak Indonesia."
+      registerTo="/beasiswa-ekonomi"
+      shareTo="/bagikan-poster/ekonomi"
+    />
+  ),
+});

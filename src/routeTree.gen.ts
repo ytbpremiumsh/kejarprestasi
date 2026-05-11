@@ -9,38 +9,108 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as BeasiswaPrestasiRouteImport } from './routes/beasiswa-prestasi'
+import { Route as BeasiswaEkonomiRouteImport } from './routes/beasiswa-ekonomi'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-poster.prestasi'
+import { Route as BagikanPosterEkonomiRouteImport } from './routes/bagikan-poster.ekonomi'
 
+const BeasiswaPrestasiRoute = BeasiswaPrestasiRouteImport.update({
+  id: '/beasiswa-prestasi',
+  path: '/beasiswa-prestasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BeasiswaEkonomiRoute = BeasiswaEkonomiRouteImport.update({
+  id: '/beasiswa-ekonomi',
+  path: '/beasiswa-ekonomi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BagikanPosterPrestasiRoute = BagikanPosterPrestasiRouteImport.update({
+  id: '/bagikan-poster/prestasi',
+  path: '/bagikan-poster/prestasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BagikanPosterEkonomiRoute = BagikanPosterEkonomiRouteImport.update({
+  id: '/bagikan-poster/ekonomi',
+  path: '/bagikan-poster/ekonomi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
+  '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
+  '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
+  '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
+  '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
+  '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
+  '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
+  '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
+  '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
+  '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/beasiswa-ekonomi'
+    | '/beasiswa-prestasi'
+    | '/bagikan-poster/ekonomi'
+    | '/bagikan-poster/prestasi'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/beasiswa-ekonomi'
+    | '/beasiswa-prestasi'
+    | '/bagikan-poster/ekonomi'
+    | '/bagikan-poster/prestasi'
+  id:
+    | '__root__'
+    | '/'
+    | '/beasiswa-ekonomi'
+    | '/beasiswa-prestasi'
+    | '/bagikan-poster/ekonomi'
+    | '/bagikan-poster/prestasi'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BeasiswaEkonomiRoute: typeof BeasiswaEkonomiRoute
+  BeasiswaPrestasiRoute: typeof BeasiswaPrestasiRoute
+  BagikanPosterEkonomiRoute: typeof BagikanPosterEkonomiRoute
+  BagikanPosterPrestasiRoute: typeof BagikanPosterPrestasiRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/beasiswa-prestasi': {
+      id: '/beasiswa-prestasi'
+      path: '/beasiswa-prestasi'
+      fullPath: '/beasiswa-prestasi'
+      preLoaderRoute: typeof BeasiswaPrestasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/beasiswa-ekonomi': {
+      id: '/beasiswa-ekonomi'
+      path: '/beasiswa-ekonomi'
+      fullPath: '/beasiswa-ekonomi'
+      preLoaderRoute: typeof BeasiswaEkonomiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +118,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bagikan-poster/prestasi': {
+      id: '/bagikan-poster/prestasi'
+      path: '/bagikan-poster/prestasi'
+      fullPath: '/bagikan-poster/prestasi'
+      preLoaderRoute: typeof BagikanPosterPrestasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bagikan-poster/ekonomi': {
+      id: '/bagikan-poster/ekonomi'
+      path: '/bagikan-poster/ekonomi'
+      fullPath: '/bagikan-poster/ekonomi'
+      preLoaderRoute: typeof BagikanPosterEkonomiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BeasiswaEkonomiRoute: BeasiswaEkonomiRoute,
+  BeasiswaPrestasiRoute: BeasiswaPrestasiRoute,
+  BagikanPosterEkonomiRoute: BagikanPosterEkonomiRoute,
+  BagikanPosterPrestasiRoute: BagikanPosterPrestasiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
