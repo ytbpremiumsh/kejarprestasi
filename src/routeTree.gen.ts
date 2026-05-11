@@ -29,6 +29,7 @@ import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-post
 import { Route as BagikanPosterEkonomiRouteImport } from './routes/bagikan-poster.ekonomi'
 import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
+import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminAdsenseRouteImport } from './routes/admin.adsense'
 import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
@@ -133,6 +134,11 @@ const AdminPendaftarRoute = AdminPendaftarRouteImport.update({
   path: '/pendaftar',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFormulirRoute = AdminFormulirRouteImport.update({
+  id: '/formulir',
+  path: '/formulir',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAdsenseRoute = AdminAdsenseRouteImport.update({
   id: '/adsense',
   path: '/adsense',
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
+  '/admin/formulir': typeof AdminFormulirRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -184,6 +191,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
+  '/admin/formulir': typeof AdminFormulirRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -210,6 +218,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
+  '/admin/formulir': typeof AdminFormulirRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -237,6 +246,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/tentang'
     | '/admin/adsense'
+    | '/admin/formulir'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
     | '/bagikan-poster/ekonomi'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/tentang'
     | '/admin/adsense'
+    | '/admin/formulir'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
     | '/bagikan-poster/ekonomi'
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/tentang'
     | '/admin/adsense'
+    | '/admin/formulir'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
     | '/bagikan-poster/ekonomi'
@@ -463,6 +475,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPendaftarRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/formulir': {
+      id: '/admin/formulir'
+      path: '/formulir'
+      fullPath: '/admin/formulir'
+      preLoaderRoute: typeof AdminFormulirRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/adsense': {
       id: '/admin/adsense'
       path: '/adsense'
@@ -489,6 +508,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAdsenseRoute: typeof AdminAdsenseRoute
+  AdminFormulirRoute: typeof AdminFormulirRoute
   AdminPendaftarRoute: typeof AdminPendaftarRoute
   AdminPengaturanRoute: typeof AdminPengaturanRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -496,6 +516,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAdsenseRoute: AdminAdsenseRoute,
+  AdminFormulirRoute: AdminFormulirRoute,
   AdminPendaftarRoute: AdminPendaftarRoute,
   AdminPengaturanRoute: AdminPengaturanRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -549,3 +570,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
