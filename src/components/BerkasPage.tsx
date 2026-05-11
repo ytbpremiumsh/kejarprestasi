@@ -1,29 +1,18 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { ArrowRight, CheckCircle2, Loader2, UploadCloud, FileText } from "lucide-react";
+import { ArrowRight, CheckCircle2, FileText, Image as ImageIcon, Loader2, UploadCloud, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
 
-const docsByKind = {
-  prestasi: [
-    { key: "ktp", label: "KTP / Kartu Pelajar", required: true },
-    { key: "kk", label: "Kartu Keluarga (KK)", required: true },
-    { key: "rapor", label: "Rapor / Transkrip", required: true },
-    { key: "sertifikat", label: "Sertifikat Prestasi", required: true },
-    { key: "essay", label: "Essay Motivasi (PDF/DOC)", required: true },
-    { key: "video", label: "Video Motivasi (link/file)", required: false },
-  ],
-  ekonomi: [
-    { key: "ktp", label: "KTP / Kartu Pelajar", required: true },
-    { key: "kk", label: "Kartu Keluarga (KK)", required: true },
-    { key: "penghasilan", label: "Surat Keterangan Penghasilan Orang Tua", required: true },
-    { key: "tidakmampu", label: "Surat Tidak Mampu (opsional)", required: false },
-    { key: "rapor", label: "Rapor / Transkrip", required: true },
-    { key: "video", label: "Video Motivasi (link/file)", required: false },
-  ],
-} as const;
+type SlotState = {
+  file: File | null;
+  preview: string | null;
+  progress: number;
+  error: string | null;
+};
 
-async function uploadFile(file: File, kind: string, key: string) {
+async function uploadFile(file: File, kind: string, key: string): Promise<string> {
   const ext = file.name.split(".").pop() ?? "bin";
   const path = `${kind}/docs/${key}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const { error } = await supabase.storage.from("kp-uploads").upload(path, file, { upsert: false });
@@ -31,12 +20,63 @@ async function uploadFile(file: File, kind: string, key: string) {
   return supabase.storage.from("kp-uploads").getPublicUrl(path).data.publicUrl;
 }
 
+function fileMatches(file: File, accept?: string) {
+  if (!accept) return true;
+  const tokens = accept.split(",").map((s) => s.trim().toLowerCase());
+  const name = file.name.toLowerCase();
+  const type = file.type.toLowerCase();
+  return tokens.some((t) => {
+    if (!t) return false;
+    if (t.startsWith(".")) return name.endsWith(t);
+    if (t.endsWith("/*")) return type.startsWith(t.slice(0, -1));
+    return type === t;
+  });
+}
+
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [files, setFiles] = useState<Record<string, File | null>>({});
+  const [docs, setDocs] = useState<DocSlot[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState<Record<string, SlotState>>({});
   const [submitting, setSubmitting] = useState(false);
-  const docs = docsByKind[kind];
+
+  useEffect(() => {
+    supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", `form_berkas_${kind}`)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value && Array.isArray((data.value as BerkasSchema).fields)) {
+          setDocs((data.value as BerkasSchema).fields);
+        }
+        setLoading(false);
+      });
+  }, [kind]);
+
+  const setSlot = (key: string, patch: Partial<SlotState>) =>
+    setState((s) => {
+      const base: SlotState = s[key] ?? { file: null, preview: null, progress: 0, error: null };
+      return { ...s, [key]: { ...base, ...patch } };
+    });
+
+  const onPick = (slot: DocSlot, file: File | null) => {
+    if (!file) {
+      setSlot(slot.key, { file: null, preview: null, error: null, progress: 0 });
+      return;
+    }
+    if (!fileMatches(file, slot.accept)) {
+      setSlot(slot.key, { file: null, preview: null, error: `Format tidak didukung (${slot.accept})`, progress: 0 });
+      return;
+    }
+    if (slot.maxSize && file.size > slot.maxSize * 1024 * 1024) {
+      setSlot(slot.key, { file: null, preview: null, error: `Ukuran maksimum ${slot.maxSize}MB`, progress: 0 });
+      return;
+    }
+    const preview = file.type.startsWith("image/") ? URL.createObjectURL(file) : null;
+    setSlot(slot.key, { file, preview, error: null, progress: 0 });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +84,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       toast.error("Masukkan email pendaftaran terlebih dahulu");
       return;
     }
-    const missing = docs.filter((d) => d.required && !files[d.key]);
+    const missing = docs.filter((d) => d.required && !state[d.key]?.file);
     if (missing.length > 0) {
       toast.error(`Lengkapi: ${missing.map((d) => d.label).join(", ")}`);
       return;
@@ -52,11 +92,14 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
     setSubmitting(true);
     try {
-      const rows = [];
+      const rows: { email: string; kind: "prestasi" | "ekonomi"; doc_type: string; file_url: string }[] = [];
       for (const d of docs) {
-        const f = files[d.key];
-        if (!f) continue;
-        const url = await uploadFile(f, kind, d.key);
+        const slot = state[d.key];
+        if (!slot?.file) continue;
+        // simulate progress (Supabase JS client doesn't expose upload progress)
+        setSlot(d.key, { progress: 30 });
+        const url = await uploadFile(slot.file, kind, d.key);
+        setSlot(d.key, { progress: 100 });
         rows.push({ email: email.trim(), kind, doc_type: d.label, file_url: url });
       }
       const { error } = await supabase.from("documents").insert(rows);
@@ -70,6 +113,14 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <section className="container-page py-12 md:py-16">
@@ -104,32 +155,68 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
             <h2 className="text-base font-bold text-foreground">Daftar Berkas</h2>
             <div className="mt-5 space-y-3">
-              {docs.map((d) => (
-                <div key={d.key} className="flex items-center gap-3 rounded-2xl border border-border bg-background p-4">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
-                    <FileText size={18} />
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-medium text-foreground">{d.label}</span>
-                      {d.required ? (
-                        <span className="text-[10px] font-bold uppercase rounded-full bg-destructive/10 text-destructive px-2 py-0.5">Wajib</span>
-                      ) : (
-                        <span className="text-[10px] font-semibold uppercase rounded-full bg-secondary text-muted-foreground px-2 py-0.5">Opsional</span>
-                      )}
+              {docs.map((d) => {
+                const s = state[d.key];
+                return (
+                  <div key={d.id} className="rounded-2xl border border-border bg-background p-4">
+                    <div className="flex items-start gap-3">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary shrink-0">
+                        {s?.preview ? <ImageIcon size={18} /> : <FileText size={18} />}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-medium text-foreground">{d.label}</span>
+                          {d.required ? (
+                            <span className="text-[10px] font-bold uppercase rounded-full bg-destructive/10 text-destructive px-2 py-0.5">Wajib</span>
+                          ) : (
+                            <span className="text-[10px] font-semibold uppercase rounded-full bg-secondary text-muted-foreground px-2 py-0.5">Opsional</span>
+                          )}
+                        </div>
+                        <div className="mt-1 text-[11px] text-muted-foreground">
+                          {d.accept ?? "Semua format"} · maks {d.maxSize ?? 20}MB
+                        </div>
+                        {s?.file && (
+                          <div className="mt-2 text-[11px] text-foreground/80 truncate">
+                            {s.file.name} · {(s.file.size / 1024 / 1024).toFixed(2)}MB
+                          </div>
+                        )}
+                        {s?.error && <div className="mt-1 text-[11px] text-destructive">{s.error}</div>}
+                        {s && s.progress > 0 && s.progress < 100 && (
+                          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                            <div className="h-full bg-primary transition-all" style={{ width: `${s.progress}%` }} />
+                          </div>
+                        )}
+                        {s?.preview && (
+                          <img src={s.preview} alt="" className="mt-3 max-h-32 rounded-lg border border-border object-cover" />
+                        )}
+                      </div>
+                      <div className="flex flex-col items-end gap-1.5">
+                        <label className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground hover:border-primary hover:text-primary cursor-pointer transition">
+                          <UploadCloud size={14} /> {s?.file ? "Ganti" : "Pilih"}
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept={d.accept}
+                            onChange={(e) => onPick(d, e.target.files?.[0] ?? null)}
+                          />
+                        </label>
+                        {s?.file && (
+                          <button
+                            type="button"
+                            onClick={() => onPick(d, null)}
+                            className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-destructive"
+                          >
+                            <X size={12} /> Hapus
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    {files[d.key] && <div className="mt-1 text-[11px] text-muted-foreground truncate">{files[d.key]!.name}</div>}
                   </div>
-                  <label className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground hover:border-primary hover:text-primary cursor-pointer transition">
-                    <UploadCloud size={14} /> {files[d.key] ? "Ganti" : "Pilih"}
-                    <input
-                      type="file"
-                      className="hidden"
-                      onChange={(e) => setFiles((s) => ({ ...s, [d.key]: e.target.files?.[0] ?? null }))}
-                    />
-                  </label>
-                </div>
-              ))}
+                );
+              })}
+              {docs.length === 0 && (
+                <p className="text-sm text-muted-foreground">Belum ada daftar berkas. Admin belum mengonfigurasi.</p>
+              )}
             </div>
           </div>
         </div>
@@ -139,9 +226,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
             <h3 className="font-semibold text-foreground">Catatan</h3>
             <ul className="mt-4 space-y-3 text-sm text-foreground/85">
               {[
-                "Format file: PDF, JPG, PNG, MP4",
-                "Ukuran maksimum: 20MB per file",
-                "Nama file gunakan huruf/angka",
+                "Format & ukuran sesuai pada tiap berkas",
+                "Ukuran maksimum default 20MB",
+                "Pastikan dokumen jelas terbaca",
                 "Berkas akan diverifikasi oleh tim",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}</li>

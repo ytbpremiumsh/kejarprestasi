@@ -1,86 +1,123 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
-import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { FormField, FormSchema } from "@/lib/form-schema";
+import { STANDARD_REG_COLUMNS } from "@/lib/form-schema";
 
-const baseSchema = z.object({
-  full_name: z.string().trim().min(2, "Nama minimal 2 karakter").max(200),
-  nik: z.string().trim().regex(/^\d{5,32}$/, "NIK harus berupa angka"),
-  birth_place: z.string().trim().min(2).max(100),
-  birth_date: z.string().min(1, "Wajib diisi"),
-  gender: z.enum(["Laki-laki", "Perempuan"]),
-  address: z.string().trim().min(5).max(500),
-  whatsapp: z.string().trim().regex(/^[+\d\s-]{6,25}$/, "Nomor tidak valid"),
-  email: z.string().trim().email("Email tidak valid").max(200),
-  education_level: z.enum(["SD", "SMP", "SMA/SMK/MA", "Mahasiswa"]),
-  school_name: z.string().trim().min(2).max(200),
-  grade: z.string().trim().min(1).max(50),
-});
+const FALLBACK: Record<"prestasi" | "ekonomi", FormSchema> = {
+  prestasi: { fields: [] },
+  ekonomi: { fields: [] },
+};
 
-const prestasiSchema = baseSchema.extend({
-  main_achievement: z.string().trim().min(3, "Wajib diisi").max(500),
-});
-
-const ekonomiSchema = baseSchema.extend({
-  parent_income: z.string().trim().min(1, "Wajib diisi").max(100),
-  dependents: z.coerce.number().int().min(0).max(50),
-});
-
-async function uploadFile(file: File, prefix: string): Promise<string | null> {
-  if (!file) return null;
+async function uploadFile(file: File, prefix: string): Promise<string> {
   const ext = file.name.split(".").pop() ?? "bin";
   const path = `${prefix}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await supabase.storage.from("kp-uploads").upload(path, file, {
-    cacheControl: "3600",
-    upsert: false,
-  });
+  const { error } = await supabase.storage.from("kp-uploads").upload(path, file, { upsert: false });
   if (error) throw error;
-  const { data } = supabase.storage.from("kp-uploads").getPublicUrl(path);
-  return data.publicUrl;
+  return supabase.storage.from("kp-uploads").getPublicUrl(path).data.publicUrl;
+}
+
+function validate(field: FormField, value: unknown): string | null {
+  if (field.required && (value === "" || value == null || (Array.isArray(value) && value.length === 0))) {
+    return `${field.label} wajib diisi`;
+  }
+  if (!value) return null;
+  if (field.type === "email" && typeof value === "string" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    return "Email tidak valid";
+  }
+  if (field.type === "tel" && typeof value === "string" && !/^[+\d\s-]{6,25}$/.test(value)) {
+    return "Nomor tidak valid";
+  }
+  if (field.name === "nik" && typeof value === "string" && !/^\d{5,32}$/.test(value)) {
+    return "NIK harus berupa angka";
+  }
+  return null;
 }
 
 export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
+  const [schema, setSchema] = useState<FormSchema>(FALLBACK[kind]);
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [card, setCard] = useState<File | null>(null);
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [files, setFiles] = useState<Record<string, File | null>>({});
+
+  useEffect(() => {
+    supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", `form_pendaftaran_${kind}`)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value && Array.isArray((data.value as FormSchema).fields)) {
+          setSchema(data.value as FormSchema);
+        }
+        setLoading(false);
+      });
+  }, [kind]);
 
   const isPrestasi = kind === "prestasi";
   const title = isPrestasi ? "Pendaftaran Beasiswa Prestasi" : "Pendaftaran Beasiswa Ekonomi";
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setErrors({});
-    const fd = new FormData(e.currentTarget);
-    const raw = Object.fromEntries(fd.entries());
+  const setVal = (name: string, v: string) => setValues((s) => ({ ...s, [name]: v }));
+  const setFile = (name: string, f: File | null) => setFiles((s) => ({ ...s, [name]: f }));
 
-    const schema = isPrestasi ? prestasiSchema : ekonomiSchema;
-    const parsed = schema.safeParse(raw);
-    if (!parsed.success) {
-      const map: Record<string, string> = {};
-      for (const issue of parsed.error.issues) {
-        map[issue.path[0] as string] = issue.message;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const newErrors: Record<string, string> = {};
+    for (const f of schema.fields) {
+      if (f.type === "file") {
+        if (f.required && !files[f.name]) newErrors[f.name] = `${f.label} wajib diisi`;
+        const file = files[f.name];
+        if (file && f.maxSize && file.size > f.maxSize * 1024 * 1024) {
+          newErrors[f.name] = `Ukuran maksimum ${f.maxSize}MB`;
+        }
+        continue;
       }
-      setErrors(map);
+      const err = validate(f, values[f.name] ?? "");
+      if (err) newErrors[f.name] = err;
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       toast.error("Periksa kembali isian formulir");
       return;
     }
-
+    setErrors({});
     setSubmitting(true);
-    try {
-      const photoUrl = photo ? await uploadFile(photo, `${kind}/photo`) : null;
-      const cardUrl = card ? await uploadFile(card, `${kind}/card`) : null;
 
-      const { error } = await supabase.from("registrations").insert({
-        kind,
-        status: "pending",
-        ...parsed.data,
-        photo_url: photoUrl,
-        student_card_url: cardUrl,
-      });
+    try {
+      // Upload files
+      const fileUrls: Record<string, string> = {};
+      for (const f of schema.fields) {
+        if (f.type !== "file") continue;
+        const file = files[f.name];
+        if (!file) continue;
+        fileUrls[f.name] = await uploadFile(file, `${kind}/${f.name}`);
+      }
+
+      // Build payload mapping standard names to columns; rest into extra
+      const payload: Record<string, unknown> = { kind, status: "pending" };
+      const extra: Record<string, unknown> = {};
+      for (const f of schema.fields) {
+        const isFile = f.type === "file";
+        const v = isFile ? fileUrls[f.name] ?? null : values[f.name] ?? "";
+        if (f.standard && STANDARD_REG_COLUMNS.has(f.name)) {
+          if (f.name === "dependents") payload[f.name] = v ? Number(v) : null;
+          else payload[f.name] = v || null;
+        } else {
+          extra[f.name] = v;
+        }
+      }
+      // Required-by-DB fallbacks (NOT NULL columns)
+      for (const k of ["full_name", "nik", "birth_place", "birth_date", "gender", "address", "whatsapp", "email", "education_level", "school_name", "grade"]) {
+        if (payload[k] == null) payload[k] = "";
+      }
+      payload.extra = extra;
+
+      const { error } = await supabase.from("registrations").insert(payload as never);
       if (error) throw error;
 
       toast.success("Pendaftaran berhasil dikirim!");
@@ -92,6 +129,20 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       setSubmitting(false);
     }
   };
+
+  const grouped = useMemo(() => {
+    const fileFields = schema.fields.filter((f) => f.type === "file");
+    const dataFields = schema.fields.filter((f) => f.type !== "file");
+    return { dataFields, fileFields };
+  }, [schema]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <section className="container-page py-12 md:py-16">
@@ -108,46 +159,36 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <Card title="Data Pribadi">
-            <Grid>
-              <Field label="Nama lengkap" name="full_name" error={errors.full_name} />
-              <Field label="NIK" name="nik" inputMode="numeric" error={errors.nik} />
-              <Field label="Tempat lahir" name="birth_place" error={errors.birth_place} />
-              <Field label="Tanggal lahir" name="birth_date" type="date" error={errors.birth_date} />
-              <Select label="Jenis kelamin" name="gender" error={errors.gender} options={["Laki-laki", "Perempuan"]} />
-              <Field label="No WhatsApp" name="whatsapp" placeholder="08xxxxxxxxxx" error={errors.whatsapp} />
-              <Field label="Email" name="email" type="email" className="sm:col-span-2" error={errors.email} />
-              <Field label="Alamat lengkap" name="address" textarea className="sm:col-span-2" error={errors.address} />
-            </Grid>
+          <Card title="Formulir Pendaftaran">
+            <div className="grid sm:grid-cols-2 gap-4">
+              {grouped.dataFields.map((f) => (
+                <FieldRenderer
+                  key={f.id}
+                  field={f}
+                  value={values[f.name] ?? ""}
+                  error={errors[f.name]}
+                  onChange={(v) => setVal(f.name, v)}
+                  fullWidth={f.type === "textarea" || f.name === "address" || f.name === "email"}
+                />
+              ))}
+            </div>
           </Card>
 
-          <Card title="Pendidikan">
-            <Grid>
-              <Select label="Jenjang pendidikan" name="education_level" error={errors.education_level} options={["SD", "SMP", "SMA/SMK/MA", "Mahasiswa"]} />
-              <Field label="Nama sekolah/kampus" name="school_name" error={errors.school_name} />
-              <Field label="Kelas / Semester" name="grade" error={errors.grade} />
-            </Grid>
-          </Card>
-
-          {isPrestasi ? (
-            <Card title="Prestasi">
-              <Field label="Prestasi utama" name="main_achievement" textarea placeholder="Contoh: Juara 1 Olimpiade Matematika Provinsi 2024" error={errors.main_achievement} />
-            </Card>
-          ) : (
-            <Card title="Kondisi Ekonomi">
-              <Grid>
-                <Field label="Penghasilan orang tua / bulan" name="parent_income" placeholder="Contoh: Rp2.000.000" error={errors.parent_income} />
-                <Field label="Jumlah tanggungan" name="dependents" type="number" inputMode="numeric" error={errors.dependents} />
-              </Grid>
+          {grouped.fileFields.length > 0 && (
+            <Card title="Unggah Berkas">
+              <div className="grid sm:grid-cols-2 gap-4">
+                {grouped.fileFields.map((f) => (
+                  <FileFieldRenderer
+                    key={f.id}
+                    field={f}
+                    file={files[f.name] ?? null}
+                    onChange={(file) => setFile(f.name, file)}
+                    error={errors[f.name]}
+                  />
+                ))}
+              </div>
             </Card>
           )}
-
-          <Card title="Unggah Berkas">
-            <Grid>
-              <FileField label="Foto diri" onChange={setPhoto} file={photo} accept="image/*" />
-              <FileField label="Kartu pelajar / mahasiswa" onChange={setCard} file={card} accept="image/*,application/pdf" />
-            </Grid>
-          </Card>
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
@@ -164,7 +205,6 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
               ))}
             </ul>
           </div>
-
           <button
             type="submit"
             disabled={submitting}
@@ -173,7 +213,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
             {submitting ? <><Loader2 size={16} className="animate-spin" /> Mengirim…</> : <>Kirim Pendaftaran <ArrowRight size={16} /></>}
           </button>
           <p className="text-[11px] text-muted-foreground text-center">
-            Setelah mengirim, kamu akan diarahkan ke halaman pengiriman berkas pendukung.
+            Setelah mengirim, kamu akan diarahkan ke halaman pengiriman berkas.
           </p>
         </aside>
       </form>
@@ -190,25 +230,35 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
   );
 }
 
-function Grid({ children }: { children: React.ReactNode }) {
-  return <div className="grid sm:grid-cols-2 gap-4">{children}</div>;
-}
-
-function Field({
-  label, name, type = "text", placeholder, textarea, className, error, inputMode,
+function FieldRenderer({
+  field, value, onChange, error, fullWidth,
 }: {
-  label: string; name: string; type?: string; placeholder?: string; textarea?: boolean;
-  className?: string; error?: string; inputMode?: "numeric" | "text";
+  field: FormField; value: string; onChange: (v: string) => void; error?: string; fullWidth?: boolean;
 }) {
   const cls = `w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${error ? "border-destructive" : "border-border focus:border-primary"}`;
+
   return (
-    <label className={`block ${className ?? ""}`}>
-      <span className="text-xs font-medium text-foreground/80">{label}</span>
+    <label className={`block ${fullWidth ? "sm:col-span-2" : ""}`}>
+      <span className="text-xs font-medium text-foreground/80">
+        {field.label}
+        {field.required && <span className="text-destructive"> *</span>}
+      </span>
       <div className="mt-1.5">
-        {textarea ? (
-          <textarea name={name} placeholder={placeholder} rows={3} className={cls} />
+        {field.type === "textarea" ? (
+          <textarea rows={3} value={value} onChange={(e) => onChange(e.target.value)} placeholder={field.placeholder} className={cls} />
+        ) : field.type === "select" ? (
+          <select value={value} onChange={(e) => onChange(e.target.value)} className={cls}>
+            <option value="">Pilih…</option>
+            {(field.options ?? []).map((o) => <option key={o} value={o}>{o}</option>)}
+          </select>
         ) : (
-          <input name={name} type={type} placeholder={placeholder} inputMode={inputMode} className={cls} />
+          <input
+            type={field.type === "number" ? "number" : field.type === "date" ? "date" : field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text"}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={field.placeholder}
+            className={cls}
+          />
         )}
       </div>
       {error && <span className="mt-1 block text-[11px] text-destructive">{error}</span>}
@@ -216,33 +266,28 @@ function Field({
   );
 }
 
-function Select({ label, name, options, error }: { label: string; name: string; options: string[]; error?: string }) {
+function FileFieldRenderer({
+  field, file, onChange, error,
+}: {
+  field: FormField; file: File | null; onChange: (f: File | null) => void; error?: string;
+}) {
   return (
     <label className="block">
-      <span className="text-xs font-medium text-foreground/80">{label}</span>
-      <select name={name} defaultValue="" className={`mt-1.5 w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/30 ${error ? "border-destructive" : "border-border focus:border-primary"}`}>
-        <option value="" disabled>Pilih…</option>
-        {options.map((o) => <option key={o} value={o}>{o}</option>)}
-      </select>
-      {error && <span className="mt-1 block text-[11px] text-destructive">{error}</span>}
-    </label>
-  );
-}
-
-function FileField({ label, onChange, file, accept }: { label: string; onChange: (f: File | null) => void; file: File | null; accept?: string }) {
-  return (
-    <label className="block">
-      <span className="text-xs font-medium text-foreground/80">{label}</span>
-      <div className="mt-1.5 flex items-center gap-3 rounded-xl border border-dashed border-border bg-background px-3.5 py-3 hover:border-primary transition cursor-pointer">
+      <span className="text-xs font-medium text-foreground/80">
+        {field.label}
+        {field.required && <span className="text-destructive"> *</span>}
+      </span>
+      <div className={`mt-1.5 flex items-center gap-3 rounded-xl border border-dashed bg-background px-3.5 py-3 hover:border-primary transition cursor-pointer ${error ? "border-destructive" : "border-border"}`}>
         <UploadCloud size={18} className="text-primary shrink-0" />
         <input
           type="file"
-          accept={accept}
+          accept={field.accept}
           className="text-xs text-foreground/80 file:mr-3 file:rounded-full file:border-0 file:bg-primary-soft file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-primary"
           onChange={(e) => onChange(e.target.files?.[0] ?? null)}
         />
       </div>
-      {file && <span className="mt-1 block text-[11px] text-muted-foreground">{file.name}</span>}
+      {file && <span className="mt-1 block text-[11px] text-muted-foreground">{file.name} · {(file.size / 1024 / 1024).toFixed(2)}MB</span>}
+      {error && <span className="mt-1 block text-[11px] text-destructive">{error}</span>}
     </label>
   );
 }
