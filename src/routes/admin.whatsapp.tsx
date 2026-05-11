@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, MessageCircle, QrCode, Send, Save } from "lucide-react";
+import { Loader2, MessageCircle, QrCode, Send, Save, CheckCircle2, PowerOff, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/whatsapp")({
@@ -45,6 +45,27 @@ function AdminWhatsApp() {
   const [testNumber, setTestNumber] = useState("");
   const [testMsg, setTestMsg] = useState("Halo, ini pesan tes dari Kejar Prestasi.");
   const [testing, setTesting] = useState(false);
+  const [connected, setConnected] = useState<boolean | null>(null);
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
+
+  const checkStatus = useCallback(async (silent = false) => {
+    if (!cfg.api_key || !cfg.device) return;
+    setStatusLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("wa-device", {
+        body: { action: "status", api_key: cfg.api_key, device: cfg.device },
+      });
+      if (error) throw error;
+      const r = data as { connected?: boolean };
+      setConnected(!!r.connected);
+      if (r.connected) setQr(null);
+    } catch (e: unknown) {
+      if (!silent) toast.error(e instanceof Error ? e.message : "Gagal cek status");
+    } finally {
+      setStatusLoading(false);
+    }
+  }, [cfg.api_key, cfg.device]);
 
   useEffect(() => {
     (async () => {
@@ -53,6 +74,18 @@ function AdminWhatsApp() {
       setLoading(false);
     })();
   }, []);
+
+  // Auto-check status when config ready
+  useEffect(() => {
+    if (!loading && cfg.api_key && cfg.device) checkStatus(true);
+  }, [loading, cfg.api_key, cfg.device, checkStatus]);
+
+  // Poll while QR shown
+  useEffect(() => {
+    if (!qr) return;
+    const id = setInterval(() => checkStatus(true), 4000);
+    return () => clearInterval(id);
+  }, [qr, checkStatus]);
 
   const save = async () => {
     setSaving(true);
@@ -72,14 +105,34 @@ function AdminWhatsApp() {
         body: { api_key: cfg.api_key, device: cfg.device },
       });
       if (error) throw error;
-      const r = data as { status?: boolean; qrcode?: string; msg?: string; upstream_status?: number };
+      const r = data as { status?: boolean; qrcode?: string; msg?: string };
       if (r.qrcode) setQr(r.qrcode);
       setQrMsg(r.msg ?? (r.qrcode ? "Scan QR dengan WhatsApp Anda" : "Tidak ada respons"));
       if (!r.qrcode && r.msg) toast.message(r.msg);
+      checkStatus(true);
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Gagal generate QR");
     } finally {
       setQrLoading(false);
+    }
+  };
+
+  const disconnect = async () => {
+    if (!confirm("Putuskan koneksi device WhatsApp?")) return;
+    setDisconnecting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("wa-device", {
+        body: { action: "disconnect", api_key: cfg.api_key, device: cfg.device },
+      });
+      if (error) throw error;
+      const r = data as { status?: boolean; message?: string };
+      toast.success(r.message || "Device diputus");
+      setConnected(false);
+      setQr(null);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Gagal disconnect");
+    } finally {
+      setDisconnecting(false);
     }
   };
 
@@ -91,7 +144,7 @@ function AdminWhatsApp() {
         body: { type: "test", to: testNumber, message: testMsg },
       });
       if (error) throw error;
-      const r = data as { ok?: boolean; results?: unknown; error?: string; skipped?: string };
+      const r = data as { ok?: boolean; error?: string; skipped?: string };
       if (r.skipped === "wa_disabled") return toast.error("WA dinonaktifkan. Aktifkan dulu lalu simpan.");
       if (!r.ok) return toast.error(r.error || "Gagal kirim");
       toast.success("Pesan test terkirim (cek log device)");
@@ -112,6 +165,47 @@ function AdminWhatsApp() {
         </h1>
         <p className="text-sm text-muted-foreground">Kirim notifikasi otomatis saat pendaftaran & pengiriman berkas via gateway app.ayopintar.com.</p>
       </div>
+
+      {/* Status Card */}
+      <Card className={`rounded-2xl p-6 shadow-soft border-2 transition-colors ${connected ? "border-emerald-500/40 bg-emerald-500/5" : connected === false ? "border-destructive/30 bg-destructive/5" : "border-border"}`}>
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className={`flex h-14 w-14 items-center justify-center rounded-2xl ${connected ? "bg-emerald-500/15 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
+                {connected ? <Wifi className="h-7 w-7" /> : <WifiOff className="h-7 w-7" />}
+              </div>
+              {connected && (
+                <>
+                  <span className="absolute inset-0 rounded-2xl bg-emerald-500/30 animate-ping" />
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+                    <span className="relative inline-flex h-4 w-4 rounded-full bg-emerald-500 ring-2 ring-background" />
+                  </span>
+                </>
+              )}
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Status Device</p>
+              <p className={`text-xl font-bold ${connected ? "text-emerald-600" : connected === false ? "text-destructive" : "text-foreground"}`}>
+                {connected === null ? "Belum dicek" : connected ? "Terhubung" : "Tidak Terhubung"}
+              </p>
+              {cfg.device && <p className="text-xs text-muted-foreground mt-0.5">Device: {cfg.device}</p>}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => checkStatus()} disabled={statusLoading}>
+              {statusLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+              Cek Status
+            </Button>
+            {connected && (
+              <Button variant="destructive" size="sm" onClick={disconnect} disabled={disconnecting}>
+                {disconnecting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <PowerOff className="h-4 w-4 mr-2" />}
+                Disconnect
+              </Button>
+            )}
+          </div>
+        </div>
+      </Card>
 
       <Card className="rounded-2xl p-6 shadow-soft space-y-4">
         <div className="flex items-center justify-between">
@@ -165,23 +259,29 @@ function AdminWhatsApp() {
       </Card>
 
       <Card className="rounded-2xl p-6 shadow-soft space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h2 className="text-lg font-semibold flex items-center gap-2"><QrCode className="h-5 w-5 text-primary" />Hubungkan Device</h2>
             <p className="text-xs text-muted-foreground">Klik Generate QR lalu scan di WhatsApp → Perangkat Tertaut.</p>
           </div>
-          <Button onClick={generateQr} disabled={qrLoading} variant="outline">
+          <Button onClick={generateQr} disabled={qrLoading || connected === true} variant="outline">
             {qrLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <QrCode className="h-4 w-4 mr-2" />}
             Generate QR
           </Button>
         </div>
+        {connected && (
+          <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 text-emerald-700 p-3 text-sm">
+            <CheckCircle2 className="h-4 w-4" /> Device sudah terhubung. Tidak perlu generate QR lagi.
+          </div>
+        )}
         {qr && (
           <div className="flex flex-col items-center gap-2 rounded-xl bg-muted/30 p-4">
             <img src={qr} alt="QR WhatsApp" className="h-64 w-64 rounded-lg border bg-white p-2" />
             <p className="text-xs text-muted-foreground">{qrMsg}</p>
+            <p className="text-[11px] text-muted-foreground">Mengecek status koneksi otomatis setiap 4 detik…</p>
           </div>
         )}
-        {!qr && qrMsg && <p className="text-sm text-center text-muted-foreground">{qrMsg}</p>}
+        {!qr && qrMsg && !connected && <p className="text-sm text-center text-muted-foreground">{qrMsg}</p>}
       </Card>
 
       <Card className="rounded-2xl p-6 shadow-soft space-y-3">
