@@ -70,17 +70,14 @@ function Index() {
           </div>
 
           <div className="relative">
-            <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/15 via-transparent to-[oklch(0.85_0.16_85)]/25 blur-2xl" />
-            <div className="relative rounded-[2rem] bg-card/60 backdrop-blur p-4 shadow-soft border border-border/60">
-              <img
-                src={heroImg}
-                alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi"
-                width={1024}
-                height={1024}
-                className="w-full h-auto"
-                fetchPriority="high"
-              />
-            </div>
+            <img
+              src={heroImg}
+              alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi"
+              width={1024}
+              height={1024}
+              className="w-full h-auto"
+              fetchPriority="high"
+            />
           </div>
         </div>
       </section>
