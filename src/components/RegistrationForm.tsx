@@ -38,7 +38,6 @@ function validate(field: FormField, value: unknown): string | null {
 }
 
 export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
-  const navigate = useNavigate();
   const [schema, setSchema] = useState<FormSchema>(FALLBACK[kind]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
