@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
+import { AdSettingsProvider, AdsenseLoader } from "@/components/ads/AdSettings";
 
 function NotFoundComponent() {
   return (
@@ -119,18 +120,21 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {isBareLayout ? (
-        <Outlet />
-      ) : (
-        <div className="flex min-h-screen flex-col">
-          <SiteHeader />
-          <main className="flex-1">
-            <Outlet />
-          </main>
-          <SiteFooter />
-        </div>
-      )}
-      <Toaster richColors position="top-center" />
+      <AdSettingsProvider>
+        <AdsenseLoader />
+        {isBareLayout ? (
+          <Outlet />
+        ) : (
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            <main className="flex-1">
+              <Outlet />
+            </main>
+            <SiteFooter />
+          </div>
+        )}
+        <Toaster richColors position="top-center" />
+      </AdSettingsProvider>
     </QueryClientProvider>
   );
 }

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Award, HeartHandshake, Trophy, Users, Wallet, Share2, CalendarClock, ArrowRight, CheckCircle2, GraduationCap, Sparkles } from "lucide-react";
+import { Award, HeartHandshake, Trophy, Users, Wallet, Share2, CalendarClock, ArrowRight, CheckCircle2, GraduationCap, Sparkles, FileText } from "lucide-react";
 import heroImg from "@/assets/students-hero.png";
 import { Countdown } from "@/components/Countdown";
 import { AboutMockup } from "@/components/AboutMockup";
@@ -7,6 +7,7 @@ import { FAQSection } from "@/components/FAQSection";
 import { TimelineSection } from "@/components/TimelineSection";
 import { BenefitsSection } from "@/components/BenefitsSection";
 import { AlumniSection } from "@/components/AlumniSection";
+import { AdSlot } from "@/components/ads/AdSlot";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -84,19 +85,22 @@ function Index() {
         </div>
       </section>
 
-      {/* KATEGORI + COUNTDOWN */}
-      <section className="container-page py-20">
+      <AdSlot placement="after_hero" />
+
+      {/* COUNTDOWN — di atas Kategori Beasiswa */}
+      <section className="container-page pt-16 pb-4">
+        <Countdown />
+      </section>
+
+      {/* KATEGORI */}
+      <section className="container-page py-16">
         <SectionHeader
           eyebrow="Kategori Beasiswa"
           title="Pilih Jalur Beasiswamu"
           desc="Dua kategori, satu tujuan: membuka akses pendidikan untuk seluruh anak Indonesia."
         />
 
-        <div className="mt-10">
-          <Countdown />
-        </div>
-
-        <div className="mt-10 grid md:grid-cols-2 gap-6">
+        <div className="mt-12 grid md:grid-cols-2 gap-6">
           <CategoryCard
             tag="Beasiswa Prestasi"
             icon={<Trophy />}
@@ -115,11 +119,15 @@ function Index() {
         </div>
       </section>
 
+      <AdSlot placement="after_categories" />
+
       {/* TENTANG / MOCKUP */}
       <AboutMockup />
 
       {/* BENEFIT */}
       <BenefitsSection />
+
+      <AdSlot placement="after_benefits" />
 
       {/* TIMELINE */}
       <TimelineSection />
@@ -127,17 +135,19 @@ function Index() {
       {/* PERAIH BEASISWA SEBELUMNYA */}
       <AlumniSection />
 
+      <AdSlot placement="after_alumni" />
+
       {/* FAQ */}
       <FAQSection />
 
-      {/* CTA */}
-      <section className="container-page py-20">
+      {/* CTA — Pendaftaran Beasiswa */}
+      <section className="container-page pt-20 pb-10">
         <div className="relative overflow-hidden rounded-3xl p-10 md:p-14 text-primary-foreground shadow-soft" style={{ background: "var(--gradient-primary)" }}>
           <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-[oklch(0.85_0.16_85)]/30 blur-3xl" />
           <div className="relative grid md:grid-cols-[1.4fr_1fr] gap-8 items-center">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
-                <GraduationCap size={14} /> Tidak dipungut biaya
+                <GraduationCap size={14} /> Pendaftaran Beasiswa
               </span>
               <h2 className="mt-4 text-3xl md:text-4xl font-extrabold leading-tight">
                 Siap meraih beasiswa hingga<br /> Rp23.000.000/semester?
@@ -157,6 +167,36 @@ function Index() {
           </div>
         </div>
       </section>
+
+      {/* CTA — Pengiriman Berkas (terpisah dari pendaftaran) */}
+      <section className="container-page pb-20">
+        <div className="rounded-3xl border border-border bg-card p-8 md:p-12 shadow-card">
+          <div className="grid md:grid-cols-[1.4fr_1fr] gap-8 items-center">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
+                <FileText size={14} /> Pengiriman Berkas
+              </span>
+              <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-foreground leading-tight">
+                Sudah daftar? Kirim berkas pendukungmu
+              </h2>
+              <p className="mt-3 text-muted-foreground max-w-lg">
+                Lengkapi berkas pendukung sesuai jalur beasiswa yang kamu pilih agar dapat
+                lanjut ke tahap verifikasi.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row md:flex-col gap-3 md:items-stretch">
+              <Link to="/berkas/prestasi" className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition">
+                <FileText size={16} /> Kirim Berkas Prestasi
+              </Link>
+              <Link to="/berkas/ekonomi" className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition">
+                <FileText size={16} /> Kirim Berkas Ekonomi
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <AdSlot placement="after_faq" />
     </>
   );
 }

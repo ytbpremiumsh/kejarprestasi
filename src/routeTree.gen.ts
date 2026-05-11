@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as BeasiswaPrestasiRouteImport } from './routes/beasiswa-prestasi'
 import { Route as BeasiswaEkonomiRouteImport } from './routes/beasiswa-ekonomi'
+import { Route as AdsDottxtRouteImport } from './routes/ads[.]txt'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -23,6 +24,7 @@ import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-post
 import { Route as BagikanPosterEkonomiRouteImport } from './routes/bagikan-poster.ekonomi'
 import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
+import { Route as AdminAdsenseRouteImport } from './routes/admin.adsense'
 import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
 
@@ -39,6 +41,11 @@ const BeasiswaPrestasiRoute = BeasiswaPrestasiRouteImport.update({
 const BeasiswaEkonomiRoute = BeasiswaEkonomiRouteImport.update({
   id: '/beasiswa-ekonomi',
   path: '/beasiswa-ekonomi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdsDottxtRoute = AdsDottxtRouteImport.update({
+  id: '/ads.txt',
+  path: '/ads.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -96,6 +103,11 @@ const AdminPendaftarRoute = AdminPendaftarRouteImport.update({
   path: '/pendaftar',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAdsenseRoute = AdminAdsenseRouteImport.update({
+  id: '/adsense',
+  path: '/adsense',
+  getParentRoute: () => AdminRoute,
+} as any)
 const BerkasPrestasiUploadRoute = BerkasPrestasiUploadRouteImport.update({
   id: '/upload',
   path: '/upload',
@@ -110,9 +122,11 @@ const BerkasEkonomiUploadRoute = BerkasEkonomiUploadRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/ads.txt': typeof AdsDottxtRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/login': typeof LoginRoute
+  '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -127,9 +141,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ads.txt': typeof AdsDottxtRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/login': typeof LoginRoute
+  '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -146,9 +162,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/ads.txt': typeof AdsDottxtRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/login': typeof LoginRoute
+  '/admin/adsense': typeof AdminAdsenseRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -166,9 +184,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/ads.txt'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/login'
+    | '/admin/adsense'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
     | '/bagikan-poster/ekonomi'
@@ -183,9 +203,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ads.txt'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/login'
+    | '/admin/adsense'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
     | '/bagikan-poster/ekonomi'
@@ -201,9 +223,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/ads.txt'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/login'
+    | '/admin/adsense'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
     | '/bagikan-poster/ekonomi'
@@ -220,6 +244,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AdsDottxtRoute: typeof AdsDottxtRoute
   BeasiswaEkonomiRoute: typeof BeasiswaEkonomiRoute
   BeasiswaPrestasiRoute: typeof BeasiswaPrestasiRoute
   LoginRoute: typeof LoginRoute
@@ -252,6 +277,13 @@ declare module '@tanstack/react-router' {
       path: '/beasiswa-ekonomi'
       fullPath: '/beasiswa-ekonomi'
       preLoaderRoute: typeof BeasiswaEkonomiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ads.txt': {
+      id: '/ads.txt'
+      path: '/ads.txt'
+      fullPath: '/ads.txt'
+      preLoaderRoute: typeof AdsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -331,6 +363,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPendaftarRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/adsense': {
+      id: '/admin/adsense'
+      path: '/adsense'
+      fullPath: '/admin/adsense'
+      preLoaderRoute: typeof AdminAdsenseRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/berkas/prestasi/upload': {
       id: '/berkas/prestasi/upload'
       path: '/upload'
@@ -349,12 +388,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAdsenseRoute: typeof AdminAdsenseRoute
   AdminPendaftarRoute: typeof AdminPendaftarRoute
   AdminPengaturanRoute: typeof AdminPengaturanRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAdsenseRoute: AdminAdsenseRoute,
   AdminPendaftarRoute: AdminPendaftarRoute,
   AdminPengaturanRoute: AdminPengaturanRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -389,6 +430,7 @@ const BerkasPrestasiRouteWithChildren = BerkasPrestasiRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  AdsDottxtRoute: AdsDottxtRoute,
   BeasiswaEkonomiRoute: BeasiswaEkonomiRoute,
   BeasiswaPrestasiRoute: BeasiswaPrestasiRoute,
   LoginRoute: LoginRoute,

@@ -7,6 +7,8 @@ const nav = [
   { to: "/", label: "Beranda" },
   { to: "/beasiswa-prestasi", label: "Beasiswa Prestasi" },
   { to: "/beasiswa-ekonomi", label: "Beasiswa Ekonomi" },
+  { to: "/berkas/prestasi", label: "Berkas Prestasi" },
+  { to: "/berkas/ekonomi", label: "Berkas Ekonomi" },
   { to: "/bagikan-poster/prestasi", label: "Bagikan Poster" },
 ] as const;
 

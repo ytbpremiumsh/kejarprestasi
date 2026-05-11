@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, Gift, PlayCircle, Share2, Trophy, HeartHandshake } from "lucide-react";
+import { ArrowRight, CheckCircle2, FileText, Gift, PlayCircle, Share2, Trophy, HeartHandshake } from "lucide-react";
 import type { ReactNode } from "react";
+import { AdSlot } from "@/components/ads/AdSlot";
 
 const persyaratan = [
   "Warga Negara Indonesia (WNI)",
@@ -99,18 +100,40 @@ export function CategoryPage({
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="container-page pb-20">
+      <AdSlot placement="category_middle" />
+
+      {/* CTA — Pendaftaran (terpisah dari berkas) */}
+      <section className="container-page pb-10">
         <div className="rounded-3xl border border-border bg-card p-8 md:p-10 shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <h3 className="text-xl md:text-2xl font-bold text-foreground">Sudah memenuhi persyaratan?</h3>
-            <p className="mt-1.5 text-sm text-muted-foreground">Lengkapi formulir pendaftaran dan unggah berkas yang dibutuhkan.</p>
+            <p className="mt-1.5 text-sm text-muted-foreground">Lengkapi formulir pendaftaran beasiswa.</p>
           </div>
           <Link to={registerTo} className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition">
             Daftar Sekarang <ArrowRight size={16} />
           </Link>
         </div>
       </section>
+
+      {/* CTA — Pengiriman Berkas (terpisah dari pendaftaran) */}
+      <section className="container-page pb-20">
+        <div className="rounded-3xl border border-border bg-secondary/40 p-8 md:p-10 shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div>
+            <h3 className="text-xl md:text-2xl font-bold text-foreground">Sudah daftar? Kirim berkas pendukung</h3>
+            <p className="mt-1.5 text-sm text-muted-foreground">
+              Unggah berkas khusus jalur {kind === "prestasi" ? "Prestasi" : "Ekonomi"}.
+            </p>
+          </div>
+          <Link
+            to={kind === "prestasi" ? "/berkas/prestasi" : "/berkas/ekonomi"}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition"
+          >
+            <FileText size={16} /> Kirim Berkas
+          </Link>
+        </div>
+      </section>
+
+      <AdSlot placement="category_bottom" />
     </>
   );
 }
