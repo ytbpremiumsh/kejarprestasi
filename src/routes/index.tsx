@@ -5,6 +5,8 @@ import { Countdown } from "@/components/Countdown";
 import { AboutMockup } from "@/components/AboutMockup";
 import { FAQSection } from "@/components/FAQSection";
 import { TimelineSection } from "@/components/TimelineSection";
+import { BenefitsSection } from "@/components/BenefitsSection";
+import { AlumniSection } from "@/components/AlumniSection";
 
 export const Route = createFileRoute("/")({
   head: () => ({
