@@ -72,9 +72,10 @@ function AdminWhatsApp() {
         body: { api_key: cfg.api_key, device: cfg.device },
       });
       if (error) throw error;
-      const r = data as { status?: boolean; qrcode?: string; msg?: string };
+      const r = data as { status?: boolean; qrcode?: string; msg?: string; upstream_status?: number };
       if (r.qrcode) setQr(r.qrcode);
       setQrMsg(r.msg ?? (r.qrcode ? "Scan QR dengan WhatsApp Anda" : "Tidak ada respons"));
+      if (!r.qrcode && r.msg) toast.message(r.msg);
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Gagal generate QR");
     } finally {
