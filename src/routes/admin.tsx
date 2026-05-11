@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, LogOut, LayoutDashboard, Users, Settings, Megaphone, FileEdit } from "lucide-react";
+import { Loader2, LogOut, LayoutDashboard, Users, Settings, Megaphone, FileEdit, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -113,6 +113,13 @@ function AdminLayout() {
             >
               <Users className="h-4 w-4" />
               Pendaftar
+            </Link>
+            <Link
+              to="/admin/artikel"
+              className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium ${path.startsWith("/admin/artikel") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              <FileText className="h-4 w-4" />
+              Artikel
             </Link>
             <Link
               to="/admin/formulir"
