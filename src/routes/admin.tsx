@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, LogOut, LayoutDashboard, Users, Settings, Megaphone, FileEdit, FileText } from "lucide-react";
+import { Loader2, LogOut, LayoutDashboard, Users, Settings, Megaphone, FileEdit, FileText, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -141,6 +141,13 @@ function AdminLayout() {
             >
               <Megaphone className="h-4 w-4" />
               AdSense
+            </Link>
+            <Link
+              to="/admin/kode-kustom"
+              className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium ${path.startsWith("/admin/kode-kustom") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              <Code2 className="h-4 w-4" />
+              Kode &amp; Performa
             </Link>
             <Button variant="ghost" size="sm" onClick={logout} className="ml-2">
               <LogOut className="h-4 w-4 mr-1" /> Keluar

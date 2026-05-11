@@ -14,6 +14,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { AdSettingsProvider, AdsenseLoader } from "@/components/ads/AdSettings";
+import { CustomCodeInjector } from "@/components/CustomCodeInjector";
 
 function NotFoundComponent() {
   return (
@@ -122,6 +123,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AdSettingsProvider>
         <AdsenseLoader />
+        <CustomCodeInjector />
         {isBareLayout ? (
           <Outlet />
         ) : (
