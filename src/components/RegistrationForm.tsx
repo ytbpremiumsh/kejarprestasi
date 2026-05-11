@@ -234,7 +234,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
             {submitting ? <><Loader2 size={16} className="animate-spin" /> Mengirim…</> : <>Kirim Pendaftaran <ArrowRight size={16} /></>}
           </button>
           <p className="text-[11px] text-muted-foreground text-center">
-            Setelah mengirim, kamu akan diarahkan ke halaman pengiriman berkas.
+            Pastikan seluruh data sudah benar sebelum mengirim.
           </p>
         </aside>
       </form>
