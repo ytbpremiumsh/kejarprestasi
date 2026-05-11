@@ -6,13 +6,14 @@ import { ArrowRight, Calendar, FileText, Share2, Trophy } from "lucide-react";
 export type Stage = { title: string; desc: string; date: string };
 
 const fallback: Stage[] = [
-  { title: "Pendaftaran Dibuka", desc: "Pendaftar mengisi formulir secara online.", date: "" },
-  { title: "Bagikan Poster", desc: "Bagikan poster beasiswa ke media sosial sebagai bagian dari tahapan.", date: "" },
-  { title: "Seleksi Administrasi", desc: "Tim verifikasi memeriksa data pendaftar.", date: "" },
-  { title: "Pengumpulan Berkas", desc: "Pendaftar mengunggah berkas pendukung.", date: "" },
-  { title: "Verifikasi", desc: "Validasi berkas dan kelengkapan dokumen.", date: "" },
-  { title: "Pengumuman Finalis", desc: "Pengumuman finalis penerima beasiswa.", date: "" },
-  { title: "Awarding", desc: "Penyerahan beasiswa & merchandise resmi.", date: "" },
+  { title: "Pendaftaran Dibuka", desc: "Pendaftaran berlangsung selama 6 bulan (11 Mei – 11 November 2026). Isi formulir pendaftaran secara online.", date: "2026-05-11" },
+  { title: "Bagikan Poster", desc: "Mulai 7 hari setelah pendaftaran dibuka (18 Mei – 11 November 2026). Bagikan poster beasiswa ke media sosial.", date: "2026-05-18" },
+  { title: "Berkas Administrasi", desc: "Mulai 7 hari setelah pendaftaran dibuka (18 Mei – 11 November 2026). Unggah berkas pendukung sesuai persyaratan.", date: "2026-05-18" },
+  { title: "Seleksi Administrasi", desc: "Tim verifikasi memeriksa data & berkas pendaftar (12 – 21 November 2026).", date: "2026-11-12" },
+  { title: "Verifikasi", desc: "Validasi akhir berkas dan kelengkapan dokumen (23 – 28 November 2026).", date: "2026-11-23" },
+  { title: "Tes Potensi Akademik (TPA)", desc: "Tes online serentak — Minggu, 29 November 2026.", date: "2026-11-29" },
+  { title: "Pengumuman Finalis", desc: "Pengumuman finalis penerima beasiswa (Selasa, 8 Desember 2026).", date: "2026-12-08" },
+  { title: "Awarding", desc: "Penyerahan beasiswa & merchandise resmi (Sabtu, 19 Desember 2026).", date: "2026-12-19" },
 ];
 
 function fmt(d: string) {
