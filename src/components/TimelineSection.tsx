@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Calendar, FileText, HeartHandshake, Trophy } from "lucide-react";
+import { ArrowRight, Calendar, FileText, HeartHandshake, Share2, Trophy } from "lucide-react";
 
 export type Stage = { title: string; desc: string; date: string };
 
 const fallback: Stage[] = [
   { title: "Pendaftaran Dibuka", desc: "Pendaftar mengisi formulir secara online.", date: "" },
+  { title: "Bagikan Poster", desc: "Bagikan poster beasiswa ke media sosial sebagai bagian dari tahapan.", date: "" },
   { title: "Seleksi Administrasi", desc: "Tim verifikasi memeriksa data pendaftar.", date: "" },
   { title: "Pengumpulan Berkas", desc: "Pendaftar mengunggah berkas pendukung.", date: "" },
   { title: "Verifikasi", desc: "Validasi berkas dan kelengkapan dokumen.", date: "" },
