@@ -1,10 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/artikel")({
   head: () => ({
     meta: [
       { title: "Artikel — Kejar Prestasi" },
-      { name: "description", content: "Kumpulan artikel seputar beasiswa Kejar Prestasi, tips persiapan, dan kisah inspiratif." },
+      { name: "description", content: "Kumpulan artikel seputar beasiswa, tips persiapan, dan kisah inspiratif pendidikan." },
       { property: "og:title", content: "Artikel — Kejar Prestasi" },
       { property: "og:description", content: "Kumpulan artikel seputar beasiswa Kejar Prestasi." },
     ],
@@ -12,13 +15,41 @@ export const Route = createFileRoute("/artikel")({
   component: ArtikelPage,
 });
 
-const articles = [
-  { title: "Tips Lolos Seleksi Beasiswa Prestasi", excerpt: "Strategi persiapan berkas, motivasi, dan wawancara agar peluang lolosmu meningkat.", date: "10 Mei 2026" },
-  { title: "Beasiswa Ekonomi: Syarat & Cara Daftar", excerpt: "Pahami persyaratan dokumen pendukung dan alur seleksi beasiswa jalur ekonomi.", date: "5 Mei 2026" },
-  { title: "Kisah Alumni Kejar Prestasi", excerpt: "Cerita inspiratif para penerima beasiswa angkatan sebelumnya.", date: "1 Mei 2026" },
-];
+type Article = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  category: string;
+  cover_url: string | null;
+  published_at: string;
+  author: string | null;
+};
 
 function ArtikelPage() {
+  const [items, setItems] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [cat, setCat] = useState<string>("Semua");
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("articles")
+        .select("id,title,slug,excerpt,category,cover_url,published_at,author")
+        .eq("status", "published")
+        .order("published_at", { ascending: false });
+      setItems((data ?? []) as Article[]);
+      setLoading(false);
+    })();
+  }, []);
+
+  const categories = useMemo(() => {
+    const set = new Set<string>(items.map((a) => a.category));
+    return ["Semua", ...Array.from(set)];
+  }, [items]);
+
+  const filtered = cat === "Semua" ? items : items.filter((a) => a.category === cat);
+
   return (
     <main className="container-page py-16">
       <header className="max-w-2xl">
@@ -27,15 +58,52 @@ function ArtikelPage() {
         <p className="mt-3 text-muted-foreground">Informasi terbaru, tips, dan inspirasi seputar beasiswa Kejar Prestasi.</p>
       </header>
 
-      <section className="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {articles.map((a) => (
-          <article key={a.title} className="rounded-2xl border border-border bg-card p-6 shadow-card hover:shadow-soft transition">
-            <div className="text-xs text-muted-foreground">{a.date}</div>
-            <h2 className="mt-2 text-lg font-semibold text-foreground">{a.title}</h2>
-            <p className="mt-2 text-sm text-muted-foreground">{a.excerpt}</p>
-          </article>
-        ))}
-      </section>
+      {!loading && items.length > 0 && (
+        <div className="mt-8 flex flex-wrap gap-2">
+          {categories.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCat(c)}
+              className={`rounded-full px-3 py-1.5 text-xs font-medium border transition ${
+                cat === c ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border hover:bg-muted"
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="mt-16 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+      ) : filtered.length === 0 ? (
+        <p className="mt-16 text-center text-muted-foreground">Belum ada artikel.</p>
+      ) : (
+        <section className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtered.map((a) => (
+            <Link
+              key={a.id}
+              to="/artikel/$slug"
+              params={{ slug: a.slug }}
+              className="group rounded-2xl border border-border bg-card overflow-hidden shadow-card hover:shadow-soft transition"
+            >
+              {a.cover_url && (
+                <div className="aspect-[16/9] overflow-hidden bg-muted">
+                  <img src={a.cover_url} alt={a.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition" />
+                </div>
+              )}
+              <div className="p-5">
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="rounded-full bg-primary/10 text-primary px-2 py-0.5 font-medium">{a.category}</span>
+                  <span className="text-muted-foreground">{new Date(a.published_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>
+                </div>
+                <h2 className="mt-2 text-lg font-semibold text-foreground group-hover:text-primary transition">{a.title}</h2>
+                {a.excerpt && <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{a.excerpt}</p>}
+              </div>
+            </Link>
+          ))}
+        </section>
+      )}
     </main>
   );
 }
