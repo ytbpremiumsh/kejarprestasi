@@ -118,8 +118,14 @@ function Index() {
       {/* TENTANG / MOCKUP */}
       <AboutMockup />
 
+      {/* BENEFIT */}
+      <BenefitsSection />
+
       {/* TIMELINE */}
       <TimelineSection />
+
+      {/* PERAIH BEASISWA SEBELUMNYA */}
+      <AlumniSection />
 
       {/* FAQ */}
       <FAQSection />
