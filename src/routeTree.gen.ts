@@ -19,6 +19,7 @@ import { Route as AdsDottxtRouteImport } from './routes/ads[.]txt'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BerkasIndexRouteImport } from './routes/berkas.index'
+import { Route as BagikanPosterIndexRouteImport } from './routes/bagikan-poster.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
 import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
@@ -80,6 +81,11 @@ const IndexRoute = IndexRouteImport.update({
 const BerkasIndexRoute = BerkasIndexRouteImport.update({
   id: '/berkas/',
   path: '/berkas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BagikanPosterIndexRoute = BagikanPosterIndexRouteImport.update({
+  id: '/bagikan-poster/',
+  path: '/bagikan-poster/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/admin/': typeof AdminIndexRoute
+  '/bagikan-poster/': typeof BagikanPosterIndexRoute
   '/berkas/': typeof BerkasIndexRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/admin': typeof AdminIndexRoute
+  '/bagikan-poster': typeof BagikanPosterIndexRoute
   '/berkas': typeof BerkasIndexRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/admin/': typeof AdminIndexRoute
+  '/bagikan-poster/': typeof BagikanPosterIndexRoute
   '/berkas/': typeof BerkasIndexRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -237,6 +246,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/admin/'
+    | '/bagikan-poster/'
     | '/berkas/'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -260,6 +270,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/admin'
+    | '/bagikan-poster'
     | '/berkas'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/admin/'
+    | '/bagikan-poster/'
     | '/berkas/'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -305,6 +317,7 @@ export interface RootRouteChildren {
   BerkasPrestasiRoute: typeof BerkasPrestasiRouteWithChildren
   PendaftaranEkonomiRoute: typeof PendaftaranEkonomiRoute
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
+  BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
   BerkasIndexRoute: typeof BerkasIndexRoute
 }
 
@@ -378,6 +391,13 @@ declare module '@tanstack/react-router' {
       path: '/berkas'
       fullPath: '/berkas/'
       preLoaderRoute: typeof BerkasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bagikan-poster/': {
+      id: '/bagikan-poster/'
+      path: '/bagikan-poster'
+      fullPath: '/bagikan-poster/'
+      preLoaderRoute: typeof BagikanPosterIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -523,6 +543,7 @@ const rootRouteChildren: RootRouteChildren = {
   BerkasPrestasiRoute: BerkasPrestasiRouteWithChildren,
   PendaftaranEkonomiRoute: PendaftaranEkonomiRoute,
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
+  BagikanPosterIndexRoute: BagikanPosterIndexRoute,
   BerkasIndexRoute: BerkasIndexRoute,
 }
 export const routeTree = rootRouteImport
