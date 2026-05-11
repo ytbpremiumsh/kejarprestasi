@@ -32,6 +32,8 @@ type AdSlot = {
 };
 
 const PLACEMENTS = [
+  { value: "header_top", label: "Global — Bawah Header (semua halaman)" },
+  { value: "footer_top", label: "Global — Atas Footer (semua halaman)" },
   { value: "after_hero", label: "Beranda — Setelah Hero" },
   { value: "after_categories", label: "Beranda — Setelah Kategori" },
   { value: "after_benefits", label: "Beranda — Setelah Benefit" },
@@ -39,6 +41,18 @@ const PLACEMENTS = [
   { value: "after_faq", label: "Beranda — Setelah FAQ" },
   { value: "category_middle", label: "Halaman Kategori — Tengah" },
   { value: "category_bottom", label: "Halaman Kategori — Bawah" },
+  { value: "article_list_top", label: "Daftar Artikel — Atas" },
+  { value: "article_list_bottom", label: "Daftar Artikel — Bawah" },
+  { value: "in_article_top", label: "Detail Artikel — Atas (high CPC)" },
+  { value: "in_article_middle", label: "Detail Artikel — Tengah (high CPC)" },
+  { value: "in_article_bottom", label: "Detail Artikel — Bawah" },
+  { value: "form_top", label: "Form Pendaftaran — Atas" },
+  { value: "form_bottom", label: "Form Pendaftaran — Bawah" },
+  { value: "berkas_top", label: "Halaman Berkas — Atas" },
+  { value: "berkas_bottom", label: "Halaman Berkas — Bawah" },
+  { value: "share_top", label: "Bagikan Poster — Atas" },
+  { value: "share_bottom", label: "Bagikan Poster — Bawah" },
+  { value: "tentang_middle", label: "Tentang — Tengah" },
 ];
 
 const FORMATS = [

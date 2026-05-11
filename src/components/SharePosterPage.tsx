@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Download, Share2, Facebook, Instagram, ListChecks, MessageCircle, Info, CheckCircle2, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import posterImg from "@/assets/poster-beasiswa.png";
+import { AdSlot } from "@/components/ads/AdSlot";
 
 export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const isGold = kind === "ekonomi";
@@ -120,6 +121,8 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
         </div>
       </div>
 
+      <AdSlot placement="share_top" />
+
       {/* POSTER + CAPTION — di bawah */}
       <div className="mt-10 grid lg:grid-cols-[1fr_1.1fr] gap-8 items-start">
         {/* Poster */}
@@ -193,6 +196,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
           </div>
         </div>
       </div>
+      <AdSlot placement="share_bottom" />
     </section>
   );
 }

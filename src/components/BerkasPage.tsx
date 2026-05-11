@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle2, FileText, Image as ImageIcon, Loader2, Upload
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
+import { AdSlot } from "@/components/ads/AdSlot";
 
 type SlotState = {
   file: File | null;
@@ -156,6 +157,8 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         </p>
       </div>
 
+      <AdSlot placement="berkas_top" />
+
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
@@ -265,6 +268,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           </button>
         </aside>
       </form>
+      <AdSlot placement="berkas_bottom" />
     </section>
   );
 }

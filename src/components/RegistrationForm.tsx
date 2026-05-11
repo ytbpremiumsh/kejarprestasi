@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { FormField, FormSchema } from "@/lib/form-schema";
 import { STANDARD_REG_COLUMNS } from "@/lib/form-schema";
+import { AdSlot } from "@/components/ads/AdSlot";
 
 const FALLBACK: Record<"prestasi" | "ekonomi", FormSchema> = {
   prestasi: { fields: [] },
@@ -168,6 +169,8 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
         </p>
       </div>
 
+      <AdSlot placement="form_top" />
+
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card title="Formulir Pendaftaran">
@@ -228,6 +231,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
           </p>
         </aside>
       </form>
+      <AdSlot placement="form_bottom" />
     </section>
   );
 }
