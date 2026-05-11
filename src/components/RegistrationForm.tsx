@@ -54,7 +54,13 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       .maybeSingle()
       .then(({ data }) => {
         if (data?.value && Array.isArray((data.value as FormSchema).fields)) {
-          setSchema(data.value as FormSchema);
+          const raw = data.value as FormSchema;
+          // Hilangkan field NIK dan semua field upload berkas
+          const filtered: FormSchema = {
+            ...raw,
+            fields: raw.fields.filter((f) => f.name !== "nik" && f.type !== "file"),
+          };
+          setSchema(filtered);
         }
         setLoading(false);
       });
