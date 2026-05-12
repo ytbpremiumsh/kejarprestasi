@@ -39,6 +39,11 @@ type RegInfo = {
   whatsapp: string;
   school_name?: string | null;
   education_level?: string | null;
+  gender?: string | null;
+  birth_place?: string | null;
+  birth_date?: string | null;
+  address?: string | null;
+  grade?: string | null;
 };
 
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
