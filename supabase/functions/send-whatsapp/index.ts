@@ -89,12 +89,30 @@ Deno.serve(async (req) => {
 
     const endpoint = cfg.send_endpoint || "https://app.ayopintar.com/send-message";
     const tpls = ((cfg as { templates?: Templates }).templates) || {};
+
+    // Lookup nomor WA + nama dari registrations jika tidak diberikan / kosong
+    if (!body.to && (!body.whatsapp || !body.full_name) && body.email && body.kind) {
+      const { data: reg } = await supabase
+        .from("registrations")
+        .select("full_name, whatsapp")
+        .ilike("email", body.email)
+        .eq("kind", body.kind)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (reg) {
+        if (!body.whatsapp) body.whatsapp = reg.whatsapp ?? "";
+        if (!body.full_name) body.full_name = reg.full_name ?? "";
+      }
+    }
+
     const targets: Array<{ to: string; audience: "user" | "admin" }> = [];
     if (body.to) targets.push({ to: body.to, audience: "user" });
     else {
       if (cfg.notify_user !== false && body.whatsapp) targets.push({ to: body.whatsapp, audience: "user" });
       if (cfg.notify_admin !== false && cfg.admin_number) targets.push({ to: cfg.admin_number, audience: "admin" });
     }
+    console.log("send-whatsapp targets", { type: body.type, kind: body.kind, email: body.email, count: targets.length });
 
     const results: Array<{ to: string; ok: boolean; resp?: unknown }> = [];
     for (const t of targets) {
