@@ -27,7 +27,7 @@ export type DocSlot = {
 export type BerkasSchema = { fields: DocSlot[] };
 
 export const STANDARD_REG_COLUMNS = new Set([
-  "full_name", "nik", "birth_place", "birth_date", "gender", "address", "whatsapp", "email",
+  "full_name", "birth_place", "birth_date", "gender", "address", "whatsapp", "email",
   "education_level", "school_name", "grade", "main_achievement", "parent_income", "dependents",
   "photo_url", "student_card_url",
 ]);

@@ -125,7 +125,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
         }
       }
       // Required-by-DB fallbacks (NOT NULL columns)
-      for (const k of ["full_name", "nik", "birth_place", "birth_date", "gender", "address", "whatsapp", "email", "education_level", "school_name", "grade"]) {
+      for (const k of ["full_name", "birth_place", "birth_date", "gender", "address", "whatsapp", "email", "education_level", "school_name", "grade"]) {
         if (payload[k] == null) payload[k] = "";
       }
       payload.extra = extra;
