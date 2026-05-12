@@ -280,15 +280,6 @@ function DetailDialog({
           </div>
         </div>
 
-        <div className="mt-6 flex flex-wrap justify-end gap-2 border-t pt-4">
-          <Button variant="outline" onClick={onPending}>Set Pending</Button>
-          <Button variant="outline" onClick={onReject} className="border-red-300 text-red-700 hover:bg-red-50">
-            <XCircle className="h-4 w-4 mr-1" />Reject
-          </Button>
-          <Button onClick={onApprove} className="bg-green-600 hover:bg-green-700">
-            <CheckCircle2 className="h-4 w-4 mr-1" />Approve
-          </Button>
-        </div>
       </div>
     </div>
   );
