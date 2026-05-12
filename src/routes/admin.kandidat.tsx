@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Search, Download, RotateCcw, Trophy, RotateCw, X, FileText, ExternalLink } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Loader2, Search, Download, RotateCcw, Trophy, RotateCw, X, FileText, ExternalLink, Eye } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
@@ -46,6 +47,7 @@ function AdminKandidat() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
+  const [detail, setDetail] = useState<Registration | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -96,6 +98,7 @@ function AdminKandidat() {
     if (error) return toast.error(error.message);
     toast.success(status === "pending" ? "Dikembalikan ke review" : "Dipindahkan ke daftar ditolak");
     setRegs((prev) => prev.filter((r) => r.id !== id));
+    setDetail(null);
   };
 
   const exportExcel = () => {
@@ -119,6 +122,8 @@ function AdminKandidat() {
     XLSX.utils.book_append_sheet(wb, ws, "Kandidat");
     XLSX.writeFile(wb, `kandidat-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
+
+  const detailDocs = detail ? docsFor(detail) : [];
 
   return (
     <div className="space-y-4">
@@ -165,8 +170,7 @@ function AdminKandidat() {
                 <TableHead>NAMA</TableHead>
                 <TableHead>KATEGORI</TableHead>
                 <TableHead>SEKOLAH</TableHead>
-                <TableHead>KONTAK</TableHead>
-                <TableHead>BERKAS</TableHead>
+                <TableHead className="text-center">BERKAS</TableHead>
                 <TableHead>DISETUJUI</TableHead>
                 <TableHead className="text-right">AKSI</TableHead>
               </TableRow>
@@ -175,44 +179,26 @@ function AdminKandidat() {
               {filtered.map((r) => {
                 const files = docsFor(r);
                 return (
-                  <TableRow key={r.id} className="align-top">
+                  <TableRow key={r.id}>
                     <TableCell>
                       <div className="font-medium">{r.full_name}</div>
                       <div className="text-xs text-muted-foreground">{r.email}</div>
-                      <div className="text-xs text-muted-foreground">{r.gender} · {r.birth_place}, {r.birth_date}</div>
                     </TableCell>
                     <TableCell><Badge variant="secondary" className="capitalize">{r.kind}</Badge></TableCell>
                     <TableCell className="text-sm">
-                      <div>{r.school_name || "-"}</div>
-                      <div className="text-xs text-muted-foreground">{r.education_level} {r.grade && `· ${r.grade}`}</div>
+                      <div className="truncate max-w-[200px]">{r.school_name || "-"}</div>
+                      <div className="text-xs text-muted-foreground">{r.education_level}</div>
                     </TableCell>
-                    <TableCell className="text-sm">
-                      <div>{r.whatsapp}</div>
-                      <div className="text-xs text-muted-foreground truncate max-w-[200px]">{r.address}</div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        {files.length === 0 && <span className="text-xs text-muted-foreground">-</span>}
-                        {files.slice(0, 3).map((f) => (
-                          <a key={f.id} href={f.file_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
-                            <FileText className="h-3 w-3" />
-                            <span className="truncate max-w-[160px]">{f.doc_type}</span>
-                            <ExternalLink className="h-3 w-3" />
-                          </a>
-                        ))}
-                        {files.length > 3 && <span className="text-xs text-muted-foreground">+{files.length - 3} lagi</span>}
-                      </div>
+                    <TableCell className="text-center">
+                      <Badge variant="outline" className="font-mono">{files.length}</Badge>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {r.candidate_reviewed_at ? new Date(r.candidate_reviewed_at).toLocaleDateString("id-ID") : "-"}
                     </TableCell>
                     <TableCell>
-                      <div className="flex justify-end gap-1">
-                        <Button size="sm" variant="outline" onClick={() => setStatus(r.id, "pending")} className="h-8" title="Kembalikan ke review">
-                          <RotateCw className="h-3.5 w-3.5 mr-1" />Reset
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => setStatus(r.id, "rejected")} className="h-8 border-red-500/40 text-red-700 hover:bg-red-500/10">
-                          <X className="h-3.5 w-3.5 mr-1" />Tolak
+                      <div className="flex justify-end">
+                        <Button size="sm" variant="outline" onClick={() => setDetail(r)} className="h-8">
+                          <Eye className="h-3.5 w-3.5 mr-1" />Detail
                         </Button>
                       </div>
                     </TableCell>
@@ -223,6 +209,81 @@ function AdminKandidat() {
           </Table>
         </Card>
       )}
+
+      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-amber-500" />
+              Detail Kandidat
+            </DialogTitle>
+          </DialogHeader>
+          {detail && (
+            <div className="space-y-5">
+              <div>
+                <div className="text-lg font-semibold">{detail.full_name}</div>
+                <Badge variant="secondary" className="capitalize mt-1">{detail.kind}</Badge>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <Field label="Email" value={detail.email} />
+                <Field label="WhatsApp" value={detail.whatsapp} />
+                <Field label="Jenis Kelamin" value={detail.gender} />
+                <Field label="Tempat, Tanggal Lahir" value={`${detail.birth_place}, ${detail.birth_date}`} />
+                <Field label="Jenjang" value={detail.education_level} />
+                <Field label="Kelas" value={detail.grade || "-"} />
+                <Field label="Sekolah" value={detail.school_name || "-"} className="col-span-2" />
+                <Field label="Alamat" value={detail.address} className="col-span-2" />
+                <Field
+                  label="Disetujui Pada"
+                  value={detail.candidate_reviewed_at ? new Date(detail.candidate_reviewed_at).toLocaleString("id-ID") : "-"}
+                  className="col-span-2"
+                />
+              </div>
+
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                  Berkas ({detailDocs.length})
+                </div>
+                <div className="space-y-1.5">
+                  {detailDocs.length === 0 && <div className="text-sm text-muted-foreground">Tidak ada berkas.</div>}
+                  {detailDocs.map((f) => (
+                    <a
+                      key={f.id}
+                      href={f.file_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-sm hover:bg-muted/60 transition"
+                    >
+                      <FileText className="h-4 w-4 text-primary shrink-0" />
+                      <span className="flex-1 truncate">{f.doc_type}</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t">
+                <Button variant="outline" onClick={() => setStatus(detail.id, "pending")}>
+                  <RotateCw className="h-4 w-4 mr-1" />Reset ke Review
+                </Button>
+                <Button variant="outline" onClick={() => setStatus(detail.id, "rejected")} className="border-red-500/40 text-red-700 hover:bg-red-500/10">
+                  <X className="h-4 w-4 mr-1" />Tolak
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function Field({ label, value, className }: { label: string; value: string; className?: string }) {
+  return (
+    <div className={className}>
+      <div className="text-xs font-medium text-muted-foreground">{label}</div>
+      <div className="text-sm">{value}</div>
     </div>
   );
 }
