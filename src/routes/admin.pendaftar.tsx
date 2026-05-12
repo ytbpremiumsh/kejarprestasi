@@ -211,9 +211,6 @@ function AdminPendaftar() {
           row={selected}
           docs={docsForRow(selected)}
           onClose={() => setSelected(null)}
-          onApprove={() => updateStatus(selected.id, "approved")}
-          onReject={() => updateStatus(selected.id, "rejected")}
-          onPending={() => updateStatus(selected.id, "pending")}
         />
       )}
     </div>
