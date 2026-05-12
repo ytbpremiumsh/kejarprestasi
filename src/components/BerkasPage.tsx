@@ -216,6 +216,8 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
               )}
             </div>
           </div>
+        </div>
+
 
         <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
           <div className="rounded-3xl border border-border bg-card p-6 shadow-card">
