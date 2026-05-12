@@ -180,14 +180,6 @@ export function SiteFooter() {
           <h4 className="text-sm font-semibold text-foreground">Hubungi Kami</h4>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
             <li className="flex items-start gap-3">
-              <MapPin size={16} className="mt-0.5 text-primary shrink-0" />
-              <span>
-                Sekretariat Kejar Prestasi
-                <br />
-                Jakarta, Indonesia
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
               <Phone size={16} className="mt-0.5 text-primary shrink-0" />
               <a href="tel:+6281280010300" className="hover:text-primary transition">
                 0812 8001 0300
