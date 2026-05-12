@@ -30,8 +30,7 @@ const tips = [
 
 export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const docs = docsByKind[kind];
-  const uploadTo: "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" =
-    kind === "prestasi" ? "/berkas/prestasi/upload" : "/berkas/ekonomi/upload";
+  const uploadHref = kind === "prestasi" ? "/berkas/prestasi/upload" : "/berkas/ekonomi/upload";
 
   return (
     <>
