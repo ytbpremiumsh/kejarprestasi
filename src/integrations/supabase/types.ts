@@ -111,6 +111,8 @@ export type Database = {
           address: string
           birth_date: string
           birth_place: string
+          candidate_reviewed_at: string | null
+          candidate_status: Database["public"]["Enums"]["candidate_status"]
           created_at: string
           dependents: number | null
           education_level: string
@@ -134,6 +136,8 @@ export type Database = {
           address: string
           birth_date: string
           birth_place: string
+          candidate_reviewed_at?: string | null
+          candidate_status?: Database["public"]["Enums"]["candidate_status"]
           created_at?: string
           dependents?: number | null
           education_level: string
@@ -157,6 +161,8 @@ export type Database = {
           address?: string
           birth_date?: string
           birth_place?: string
+          candidate_reviewed_at?: string | null
+          candidate_status?: Database["public"]["Enums"]["candidate_status"]
           created_at?: string
           dependents?: number | null
           education_level?: string
@@ -232,6 +238,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      candidate_status: "pending" | "approved" | "rejected"
       doc_review_status: "pending" | "approved" | "rejected"
       registration_status: "pending" | "verified" | "approved" | "rejected"
       scholarship_kind: "prestasi" | "ekonomi"
@@ -363,6 +370,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      candidate_status: ["pending", "approved", "rejected"],
       doc_review_status: ["pending", "approved", "rejected"],
       registration_status: ["pending", "verified", "approved", "rejected"],
       scholarship_kind: ["prestasi", "ekonomi"],
