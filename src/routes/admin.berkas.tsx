@@ -336,7 +336,7 @@ function Info({ label, value, className }: { label: string; value: string; class
   return (
     <div className={className}>
       <span className="text-muted-foreground">{label}: </span>
-      <span className="text-foreground">{value || "-"}</span>
+      <span className="text-foreground break-words">{value || "-"}</span>
     </div>
   );
 }
