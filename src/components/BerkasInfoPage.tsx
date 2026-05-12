@@ -5,16 +5,15 @@ import { AdSlot } from "@/components/ads/AdSlot";
 
 const docsByKind = {
   prestasi: [
-    "KTP / Kartu Pelajar",
-    "Kartu Keluarga (KK)",
+    "Kartu Pelajar / Kartu Mahasiswa",
     "Rapor / Transkrip",
     "Sertifikat Prestasi",
+    "Prestasi Utama (deskripsi singkat)",
     "Essay Motivasi (PDF/DOC)",
     "Video Motivasi (link/file) — opsional",
   ],
   ekonomi: [
-    "KTP / Kartu Pelajar",
-    "Kartu Keluarga (KK)",
+    "Kartu Pelajar / Kartu Mahasiswa",
     "Surat Keterangan Penghasilan Orang Tua",
     "Surat Tidak Mampu (opsional)",
     "Rapor / Transkrip",

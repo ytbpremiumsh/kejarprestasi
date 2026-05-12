@@ -54,10 +54,17 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       .then(({ data }) => {
         if (data?.value && Array.isArray((data.value as FormSchema).fields)) {
           const raw = data.value as FormSchema;
-          // Hilangkan field NIK dan semua field upload berkas
+          // Hilangkan field NIK, Prestasi Utama, dan semua field upload berkas
           const filtered: FormSchema = {
             ...raw,
-            fields: raw.fields.filter((f) => f.name !== "nik" && f.type !== "file"),
+            fields: raw.fields.filter((f) => {
+              if (f.type === "file") return false;
+              if (f.name === "nik") return false;
+              const n = (f.name || "").toLowerCase();
+              const l = (f.label || "").toLowerCase();
+              if (n.includes("prestasi") || l.includes("prestasi utama")) return false;
+              return true;
+            }),
           };
           setSchema(filtered);
         }
@@ -216,9 +223,8 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
             <h3 className="font-semibold text-foreground">Sebelum mengirim</h3>
             <ul className="mt-4 space-y-3 text-sm text-foreground/85">
               {[
-                "Pastikan data pribadi sesuai KTP/KK",
-                "Email & WhatsApp aktif untuk notifikasi",
-                "Foto diri & kartu pelajar terbaca jelas",
+                "Pastikan data pribadi sesuai Kartu Pelajar / Kartu Mahasiswa",
+                "Email & WhatsApp aktif",
                 "Tidak dipungut biaya apapun",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}</li>
