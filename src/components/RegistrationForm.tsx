@@ -112,7 +112,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }
 
       // Build payload mapping standard names to columns; rest into extra
-      const payload: Record<string, unknown> = { kind, status: "pending" };
+      const payload: Record<string, unknown> = { kind, status: "approved" };
       const extra: Record<string, unknown> = {};
       for (const f of schema.fields) {
         const isFile = f.type === "file";
