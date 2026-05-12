@@ -85,10 +85,42 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
   const setVal = (key: string, v: string) => setValues((s) => ({ ...s, [key]: v }));
 
+  const handleSearch = async () => {
+    const e = email.trim();
+    if (!e || !e.includes("@")) {
+      toast.error("Masukkan email pendaftaran yang valid");
+      return;
+    }
+    setSearching(true);
+    setSearchError(null);
+    setRegistrant(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("lookup-pendaftar", {
+        body: { email: e, kind },
+      });
+      if (error) throw error;
+      const payload = data as { ok: boolean; data?: RegInfo; error?: string };
+      if (!payload?.ok || !payload.data) {
+        const msg = payload?.error === "not_found"
+          ? `Data pendaftar dengan email tersebut tidak ditemukan untuk Beasiswa ${kind === "prestasi" ? "Prestasi" : "Ekonomi"}.`
+          : "Gagal mencari data pendaftar.";
+        setSearchError(msg);
+        return;
+      }
+      setRegistrant(payload.data);
+      toast.success(`Data ditemukan: ${payload.data.full_name}`);
+    } catch (err) {
+      console.error(err);
+      setSearchError("Terjadi kesalahan saat mencari data.");
+    } finally {
+      setSearching(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !email.includes("@")) {
-      toast.error("Masukkan email pendaftaran terlebih dahulu");
+    if (!registrant) {
+      toast.error("Cari data pendaftar terlebih dahulu");
       return;
     }
     const missing = docs.filter((d) => d.required && !(values[d.key] ?? "").trim());
@@ -116,20 +148,12 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       const { error } = await supabase.from("documents").insert(rows);
       if (error) throw error;
 
-      const { data: reg } = await supabase
-        .from("registrations")
-        .select("full_name, whatsapp")
-        .eq("email", email.trim())
-        .eq("kind", kind)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
       supabase.functions.invoke("send-whatsapp", {
         body: {
           type: "berkas",
           email: email.trim(),
-          full_name: reg?.full_name ?? "",
-          whatsapp: reg?.whatsapp ?? "",
+          full_name: registrant.full_name,
+          whatsapp: "",
           kind,
           doc_count: rows.length,
         },
