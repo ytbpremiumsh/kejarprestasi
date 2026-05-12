@@ -181,14 +181,14 @@ const BerkasEkonomiIndexRoute = BerkasEkonomiIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const BerkasPrestasiUploadRoute = BerkasPrestasiUploadRouteImport.update({
-  id: '/upload',
-  path: '/upload',
-  getParentRoute: () => BerkasPrestasiRoute,
+  id: '/berkas/prestasi/upload',
+  path: '/berkas/prestasi/upload',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BerkasEkonomiUploadRoute = BerkasEkonomiUploadRouteImport.update({
-  id: '/upload',
-  path: '/upload',
-  getParentRoute: () => BerkasEkonomiRoute,
+  id: '/berkas/ekonomi/upload',
+  path: '/berkas/ekonomi/upload',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -402,6 +402,8 @@ export interface RootRouteChildren {
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
   BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
   BerkasIndexRoute: typeof BerkasIndexRoute
+  BerkasEkonomiUploadRoute: typeof BerkasEkonomiUploadRoute
+  BerkasPrestasiUploadRoute: typeof BerkasPrestasiUploadRoute
   BerkasEkonomiIndexRoute: typeof BerkasEkonomiIndexRoute
   BerkasPrestasiIndexRoute: typeof BerkasPrestasiIndexRoute
 }
@@ -606,17 +608,17 @@ declare module '@tanstack/react-router' {
     }
     '/berkas/prestasi/upload': {
       id: '/berkas/prestasi/upload'
-      path: '/upload'
+      path: '/berkas/prestasi/upload'
       fullPath: '/berkas/prestasi/upload'
       preLoaderRoute: typeof BerkasPrestasiUploadRouteImport
-      parentRoute: typeof BerkasPrestasiRoute
+      parentRoute: typeof rootRouteImport
     }
     '/berkas/ekonomi/upload': {
       id: '/berkas/ekonomi/upload'
-      path: '/upload'
+      path: '/berkas/ekonomi/upload'
       fullPath: '/berkas/ekonomi/upload'
       preLoaderRoute: typeof BerkasEkonomiUploadRouteImport
-      parentRoute: typeof BerkasEkonomiRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -675,19 +677,11 @@ const rootRouteChildren: RootRouteChildren = {
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
   BagikanPosterIndexRoute: BagikanPosterIndexRoute,
   BerkasIndexRoute: BerkasIndexRoute,
+  BerkasEkonomiUploadRoute: BerkasEkonomiUploadRoute,
+  BerkasPrestasiUploadRoute: BerkasPrestasiUploadRoute,
   BerkasEkonomiIndexRoute: BerkasEkonomiIndexRoute,
   BerkasPrestasiIndexRoute: BerkasPrestasiIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
