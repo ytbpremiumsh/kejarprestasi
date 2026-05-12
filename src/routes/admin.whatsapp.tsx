@@ -6,12 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, MessageCircle, QrCode, Send, Save, CheckCircle2, PowerOff, RefreshCw, Wifi, WifiOff } from "lucide-react";
+import { Loader2, MessageCircle, QrCode, Send, Save, CheckCircle2, PowerOff, RefreshCw, Wifi, WifiOff, FileText, RotateCcw } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/whatsapp")({
   component: AdminWhatsApp,
 });
+
+type WaTemplates = {
+  pendaftaran_user: string;
+  pendaftaran_admin: string;
+  berkas_user: string;
+  berkas_admin: string;
+  status_user: string;
+};
 
 type WaConfig = {
   enabled: boolean;
@@ -22,6 +31,15 @@ type WaConfig = {
   qr_endpoint: string;
   notify_user: boolean;
   notify_admin: boolean;
+  templates: WaTemplates;
+};
+
+const DEFAULT_TEMPLATES: WaTemplates = {
+  pendaftaran_user: `*Kejar Prestasi*\n\nHalo {nama}, pendaftaran {jenis} Anda telah kami terima.\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website.\n\nTerima kasih.`,
+  pendaftaran_admin: `*Pendaftar Baru — Kejar Prestasi*\n\nNama: {nama}\nJenis: {jenis}\nEmail: {email}\nWhatsApp: {whatsapp}`,
+  berkas_user: `*Kejar Prestasi*\n\nBerkas {jenis} dari email {email} ({jumlah_berkas} file) berhasil kami terima dan sedang dalam tahap verifikasi.\n\nKami akan menghubungi Anda kembali setelah proses selesai.`,
+  berkas_admin: `*Berkas Masuk — Kejar Prestasi*\n\nJenis: {jenis}\nEmail: {email}\nJumlah file: {jumlah_berkas}`,
+  status_user: `*Kejar Prestasi*\n\nHalo {nama}, status pendaftaran {jenis} Anda saat ini: *{status}*.`,
 };
 
 const DEFAULT: WaConfig = {
@@ -33,6 +51,7 @@ const DEFAULT: WaConfig = {
   qr_endpoint: "https://app.ayopintar.com/generate-qr",
   notify_user: true,
   notify_admin: true,
+  templates: DEFAULT_TEMPLATES,
 };
 
 function AdminWhatsApp() {
@@ -70,7 +89,10 @@ function AdminWhatsApp() {
   useEffect(() => {
     (async () => {
       const { data } = await supabase.from("site_settings").select("value").eq("key", "whatsapp").maybeSingle();
-      if (data?.value) setCfg({ ...DEFAULT, ...(data.value as Partial<WaConfig>) });
+      if (data?.value) {
+        const v = data.value as Partial<WaConfig>;
+        setCfg({ ...DEFAULT, ...v, templates: { ...DEFAULT_TEMPLATES, ...(v.templates ?? {}) } });
+      }
       setLoading(false);
     })();
   }, []);
@@ -282,6 +304,45 @@ function AdminWhatsApp() {
           </div>
         )}
         {!qr && qrMsg && !connected && <p className="text-sm text-center text-muted-foreground">{qrMsg}</p>}
+      </Card>
+
+      <Card className="rounded-2xl p-6 shadow-soft space-y-4">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <h2 className="text-lg font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary" />Template Pesan WhatsApp</h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Variabel: <code className="px-1 rounded bg-muted">{"{nama}"}</code> <code className="px-1 rounded bg-muted">{"{jenis}"}</code> <code className="px-1 rounded bg-muted">{"{email}"}</code> <code className="px-1 rounded bg-muted">{"{whatsapp}"}</code> <code className="px-1 rounded bg-muted">{"{jumlah_berkas}"}</code> <code className="px-1 rounded bg-muted">{"{status}"}</code>
+            </p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setCfg({ ...cfg, templates: DEFAULT_TEMPLATES })}>
+            <RotateCcw className="h-4 w-4 mr-2" /> Reset Default
+          </Button>
+        </div>
+
+        {([
+          { key: "pendaftaran_user", label: "Pendaftaran — ke Pendaftar" },
+          { key: "pendaftaran_admin", label: "Pendaftaran — ke Admin" },
+          { key: "berkas_user", label: "Pengiriman Berkas — ke Pendaftar" },
+          { key: "berkas_admin", label: "Pengiriman Berkas — ke Admin" },
+          { key: "status_user", label: "Update Status — ke Pendaftar" },
+        ] as const).map((t) => (
+          <div key={t.key} className="space-y-1.5">
+            <Label className="text-sm font-medium">{t.label}</Label>
+            <Textarea
+              rows={5}
+              value={cfg.templates[t.key]}
+              onChange={(e) => setCfg({ ...cfg, templates: { ...cfg.templates, [t.key]: e.target.value } })}
+              className="font-mono text-xs"
+            />
+          </div>
+        ))}
+
+        <div className="flex justify-end pt-1">
+          <Button onClick={save} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+            Simpan Template
+          </Button>
+        </div>
       </Card>
 
       <Card className="rounded-2xl p-6 shadow-soft space-y-3">
