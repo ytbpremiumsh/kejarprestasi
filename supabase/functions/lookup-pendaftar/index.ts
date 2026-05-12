@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
     );
     const { data, error } = await supabase
       .from("registrations")
-      .select("id, full_name, whatsapp, nik, school_name, education_level")
+      .select("id, full_name, whatsapp, school_name, education_level")
       .ilike("email", email.trim())
       .eq("kind", kind)
       .order("created_at", { ascending: false })
@@ -45,14 +45,12 @@ Deno.serve(async (req) => {
         status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const nik = data.nik ? `${data.nik.slice(0, 4)}••••••••${data.nik.slice(-2)}` : null;
     return new Response(JSON.stringify({
       ok: true,
       data: {
         id: data.id,
         full_name: data.full_name,
         whatsapp: maskWa(data.whatsapp || ""),
-        nik,
         school_name: data.school_name,
         education_level: data.education_level,
       },

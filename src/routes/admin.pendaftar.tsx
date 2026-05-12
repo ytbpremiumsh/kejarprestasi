@@ -16,7 +16,6 @@ export const Route = createFileRoute("/admin/pendaftar")({
 type Registration = {
   id: string;
   full_name: string;
-  nik: string;
   email: string;
   whatsapp: string;
   gender: string;
@@ -78,7 +77,7 @@ function AdminPendaftar() {
         return (
           r.full_name.toLowerCase().includes(s) ||
           r.email.toLowerCase().includes(s) ||
-          r.nik.includes(s) ||
+
           r.school_name.toLowerCase().includes(s)
         );
       }
@@ -90,7 +89,6 @@ function AdminPendaftar() {
   const exportExcel = () => {
     const data = filtered.map((r) => ({
       "Nama Lengkap": r.full_name,
-      NIK: r.nik,
       Email: r.email,
       WhatsApp: r.whatsapp,
       "Jenis Kelamin": r.gender,
@@ -133,7 +131,7 @@ function AdminPendaftar() {
         <div className="flex flex-wrap gap-2">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, NIK, sekolah..." className="pl-9" />
+            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, sekolah..." className="pl-9" />
           </div>
           <select value={filterKind} onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
             <option value="all">Semua Kategori</option>
@@ -228,7 +226,6 @@ function DetailDialog({
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 text-sm">
-          <Field label="NIK" value={row.nik} />
           <Field label="Email" value={row.email} />
           <Field label="WhatsApp" value={row.whatsapp} />
           <Field label="Jenis Kelamin" value={row.gender} />
