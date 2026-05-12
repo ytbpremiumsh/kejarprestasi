@@ -52,7 +52,7 @@ function AdminPendaftar() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
-  const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  
   const [selected, setSelected] = useState<Registration | null>(null);
 
   const load = async () => {
