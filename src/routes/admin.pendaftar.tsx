@@ -140,12 +140,6 @@ function AdminPendaftar() {
             <option value="prestasi">Prestasi</option>
             <option value="ekonomi">Ekonomi</option>
           </select>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as "all" | "pending" | "approved" | "rejected")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
-            <option value="all">Semua Status</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
         </div>
       </Card>
 
