@@ -130,8 +130,6 @@ function AdminPendaftar() {
     XLSX.writeFile(wb, `pendaftar-beasiswa-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-  const docsForRow = (r: Registration) =>
-    docs.filter((d) => d.registration_id === r.id || d.email === r.email);
 
   return (
     <div className="space-y-4">
@@ -156,6 +154,11 @@ function AdminPendaftar() {
             <option value="all">Semua Kategori</option>
             <option value="prestasi">Prestasi</option>
             <option value="ekonomi">Ekonomi</option>
+          </select>
+          <select value={filterBerkas} onChange={(e) => setFilterBerkas(e.target.value as "all" | "submitted" | "pending")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
+            <option value="all">Semua Berkas ({rows.length})</option>
+            <option value="submitted">Sudah Kirim Berkas ({counts.submitted})</option>
+            <option value="pending">Belum Kirim Berkas ({counts.pending})</option>
           </select>
         </div>
       </Card>
