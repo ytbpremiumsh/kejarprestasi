@@ -84,7 +84,7 @@ function AdminPendaftar() {
       }
       return true;
     });
-  }, [rows, q, filterKind, filterStatus]);
+  }, [rows, q, filterKind]);
 
 
   const exportExcel = () => {
