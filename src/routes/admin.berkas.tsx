@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, User, Check, X, ChevronDown, ChevronRight } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, User, Check, X, Eye } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
@@ -42,6 +43,16 @@ type Registration = {
   candidate_status: CandidateStatus;
 };
 
+type Group = {
+  key: string;
+  reg?: Registration;
+  email: string;
+  kind: string;
+  items: Document[];
+  latest: string;
+  status: CandidateStatus;
+};
+
 function AdminBerkas() {
   const [docs, setDocs] = useState<Document[]>([]);
   const [regs, setRegs] = useState<Registration[]>([]);
@@ -49,7 +60,7 @@ function AdminBerkas() {
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
   const [filterStatus, setFilterStatus] = useState<"all" | CandidateStatus>("all");
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [detail, setDetail] = useState<Group | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -74,14 +85,14 @@ function AdminBerkas() {
     return regs.find((r) => r.email.toLowerCase() === doc.email.toLowerCase() && r.kind === doc.kind);
   };
 
-  const grouped = useMemo(() => {
+  const grouped = useMemo<Group[]>(() => {
     const map = new Map<string, Document[]>();
     for (const d of docs) {
       const key = `${d.email.toLowerCase()}__${d.kind}`;
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(d);
     }
-    let rows = Array.from(map.entries()).map(([key, items]) => {
+    let rows: Group[] = Array.from(map.entries()).map(([key, items]) => {
       const reg = findReg(items[0]);
       return {
         key,
@@ -152,6 +163,7 @@ function AdminBerkas() {
       status === "rejected" ? "Pendaftar ditolak" : "Status direset",
     );
     setRegs((prev) => prev.map((r) => (r.id === id ? { ...r, candidate_status: status } : r)));
+    setDetail((prev) => (prev ? { ...prev, status } : prev));
   };
 
   const removeDoc = async (id: string) => {
@@ -160,6 +172,7 @@ function AdminBerkas() {
     if (error) return toast.error(error.message);
     toast.success("Berkas dihapus");
     setDocs((prev) => prev.filter((d) => d.id !== id));
+    setDetail((prev) => (prev ? { ...prev, items: prev.items.filter((x) => x.id !== id) } : prev));
   };
 
   const statusBadge = (s: CandidateStatus) => {
@@ -210,97 +223,111 @@ function AdminBerkas() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
-                <TableHead className="w-8"></TableHead>
                 <TableHead>NAMA</TableHead>
                 <TableHead>KATEGORI</TableHead>
                 <TableHead>SEKOLAH</TableHead>
-                <TableHead>KONTAK</TableHead>
                 <TableHead>BERKAS</TableHead>
                 <TableHead>STATUS</TableHead>
                 <TableHead className="text-right">AKSI</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {grouped.map((g) => {
-                const isOpen = !!expanded[g.key];
-                return (
-                  <Fragment key={g.key}>
-                    <TableRow className="align-top">
-                      <TableCell>
-                        <button onClick={() => setExpanded((p) => ({ ...p, [g.key]: !p[g.key] }))} className="text-muted-foreground hover:text-foreground">
-                          {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                        </button>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2 font-medium">
-                          <User className="h-4 w-4 text-primary shrink-0" />
-                          {g.reg?.full_name ?? <span className="text-muted-foreground italic">Tidak terdaftar</span>}
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-0.5">{g.email}</div>
-                      </TableCell>
-                      <TableCell><Badge variant="secondary" className="capitalize">{g.kind}</Badge></TableCell>
-                      <TableCell className="text-sm">
-                        {g.reg ? (
-                          <>
-                            <div>{g.reg.school_name || "-"}</div>
-                            <div className="text-xs text-muted-foreground">{g.reg.education_level} {g.reg.grade && `· ${g.reg.grade}`}</div>
-                          </>
-                        ) : "-"}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {g.reg?.whatsapp ? <div>{g.reg.whatsapp}</div> : <div className="text-muted-foreground">-</div>}
-                        <div className="text-xs text-muted-foreground">{new Date(g.latest).toLocaleDateString("id-ID")}</div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{g.items.length} file</Badge>
-                      </TableCell>
-                      <TableCell>{statusBadge(g.status)}</TableCell>
-                      <TableCell>
-                        <div className="flex justify-end gap-1">
-                          <Button size="sm" variant="outline" disabled={!g.reg || g.status === "approved"} onClick={() => updateCandidate(g.reg?.id, "approved", { email: g.email, kind: g.kind })} className="h-8 border-emerald-500/40 text-emerald-700 hover:bg-emerald-500/10">
-                            <Check className="h-3.5 w-3.5 mr-1" />Setujui
-                          </Button>
-                          <Button size="sm" variant="outline" disabled={!g.reg || g.status === "rejected"} onClick={() => updateCandidate(g.reg?.id, "rejected", { email: g.email, kind: g.kind })} className="h-8 border-red-500/40 text-red-700 hover:bg-red-500/10">
-                            <X className="h-3.5 w-3.5 mr-1" />Tolak
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                    {isOpen && (
-                      <TableRow className="bg-muted/20 hover:bg-muted/20">
-                        <TableCell></TableCell>
-                        <TableCell colSpan={7} className="py-3">
-                          {g.reg && (
-                            <div className="mb-3 grid grid-cols-1 gap-x-4 gap-y-1 rounded-lg border border-border bg-background p-3 text-xs sm:grid-cols-2">
-                              <Info label="Jenis Kelamin" value={g.reg.gender} />
-                              <Info label="Tempat / Tgl Lahir" value={`${g.reg.birth_place}, ${g.reg.birth_date}`} />
-                              <Info label="Alamat" value={g.reg.address} className="sm:col-span-2" />
-                            </div>
-                          )}
-                          <div className="grid gap-2">
-                            {g.items.map((d) => (
-                              <div key={d.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2">
-                                <a href={d.file_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm flex-1 min-w-0">
-                                  <FileText className="h-4 w-4 text-primary shrink-0" />
-                                  <span className="font-medium truncate">{d.doc_type}</span>
-                                  <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                                </a>
-                                <Button size="icon" variant="ghost" title="Hapus" onClick={() => removeDoc(d.id)} className="h-8 w-8 text-destructive">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </Fragment>
-                );
-              })}
+              {grouped.map((g) => (
+                <TableRow key={g.key} className="align-top">
+                  <TableCell>
+                    <div className="flex items-center gap-2 font-medium">
+                      <User className="h-4 w-4 text-primary shrink-0" />
+                      {g.reg?.full_name ?? <span className="text-muted-foreground italic">Tidak terdaftar</span>}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-0.5">{g.email}</div>
+                  </TableCell>
+                  <TableCell><Badge variant="secondary" className="capitalize">{g.kind}</Badge></TableCell>
+                  <TableCell className="text-sm">
+                    {g.reg ? (
+                      <>
+                        <div>{g.reg.school_name || "-"}</div>
+                        <div className="text-xs text-muted-foreground">{g.reg.education_level} {g.reg.grade && `· ${g.reg.grade}`}</div>
+                      </>
+                    ) : "-"}
+                  </TableCell>
+                  <TableCell><Badge variant="outline">{g.items.length} file</Badge></TableCell>
+                  <TableCell>{statusBadge(g.status)}</TableCell>
+                  <TableCell className="text-right">
+                    <Button size="sm" variant="outline" onClick={() => setDetail(g)} className="h-8">
+                      <Eye className="h-3.5 w-3.5 mr-1" />Detail
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </Card>
       )}
+
+      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <User className="h-5 w-5 text-primary" />
+              {detail?.reg?.full_name ?? detail?.email}
+            </DialogTitle>
+          </DialogHeader>
+
+          {detail && (
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center gap-2">
+                {statusBadge(detail.status)}
+                <Badge variant="secondary" className="capitalize">{detail.kind}</Badge>
+                <Badge variant="outline">{detail.items.length} file</Badge>
+              </div>
+
+              {detail.reg ? (
+                <div className="grid grid-cols-1 gap-x-4 gap-y-2 rounded-lg border border-border bg-muted/20 p-3 text-sm sm:grid-cols-2">
+                  <Info label="Email" value={detail.reg.email} />
+                  <Info label="WhatsApp" value={detail.reg.whatsapp} />
+                  <Info label="Jenis Kelamin" value={detail.reg.gender} />
+                  <Info label="Tempat / Tgl Lahir" value={`${detail.reg.birth_place}, ${detail.reg.birth_date}`} />
+                  <Info label="Jenjang" value={detail.reg.education_level} />
+                  <Info label="Kelas" value={detail.reg.grade} />
+                  <Info label="Sekolah" value={detail.reg.school_name} className="sm:col-span-2" />
+                  <Info label="Alamat" value={detail.reg.address} className="sm:col-span-2" />
+                </div>
+              ) : (
+                <div className="rounded-lg border border-dashed border-border p-3 text-sm text-muted-foreground">
+                  Pengirim tidak ditemukan di data pendaftar. Email: {detail.email}
+                </div>
+              )}
+
+              <div>
+                <div className="mb-2 text-sm font-semibold">Berkas Terkirim</div>
+                <div className="grid gap-2">
+                  {detail.items.map((d) => (
+                    <div key={d.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2">
+                      <a href={d.file_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm flex-1 min-w-0">
+                        <FileText className="h-4 w-4 text-primary shrink-0" />
+                        <span className="font-medium truncate">{d.doc_type}</span>
+                        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      </a>
+                      <Button size="icon" variant="ghost" title="Hapus" onClick={() => removeDoc(d.id)} className="h-8 w-8 text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-3">
+                <Button variant="outline" disabled={!detail.reg || detail.status === "rejected"} onClick={() => updateCandidate(detail.reg?.id, "rejected", { email: detail.email, kind: detail.kind })} className="border-red-500/40 text-red-700 hover:bg-red-500/10">
+                  <X className="h-4 w-4 mr-1" />Tolak
+                </Button>
+                <Button disabled={!detail.reg || detail.status === "approved"} onClick={() => updateCandidate(detail.reg?.id, "approved", { email: detail.email, kind: detail.kind })} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                  <Check className="h-4 w-4 mr-1" />Setujui
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
