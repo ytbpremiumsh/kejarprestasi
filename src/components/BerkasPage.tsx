@@ -61,24 +61,37 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+    setLoading(true);
     setDocs(defaultDocs[kind]);
-    supabase
-      .from("site_settings")
-      .select("value")
-      .eq("key", `form_berkas_${kind}`)
-      .maybeSingle()
-      .then(({ data }) => {
+
+    const loadDocs = async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", `form_berkas_${kind}`)
+        .maybeSingle();
+
+      if (mounted) {
         if (data?.value && Array.isArray((data.value as BerkasSchema).fields)) {
           const configuredDocs = (data.value as BerkasSchema).fields;
           setDocs(configuredDocs.length > 0 ? configuredDocs : defaultDocs[kind]);
         }
-      })
+      }
+    };
+
+    loadDocs()
       .catch(() => {
-        setDocs(defaultDocs[kind]);
+        if (mounted) setDocs(defaultDocs[kind]);
       })
       .finally(() => {
+        if (!mounted) return;
         setLoading(false);
       });
+
+    return () => {
+      mounted = false;
+    };
   }, [kind]);
 
   const setSlot = (key: string, patch: Partial<SlotState>) =>
