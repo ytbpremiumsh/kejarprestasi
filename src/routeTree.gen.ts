@@ -24,6 +24,8 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
 import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
 import { Route as BerkasTerkirimRouteImport } from './routes/berkas.terkirim'
+import { Route as BerkasPrestasiRouteImport } from './routes/berkas.prestasi'
+import { Route as BerkasEkonomiRouteImport } from './routes/berkas.ekonomi'
 import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-poster.prestasi'
 import { Route as BagikanPosterEkonomiRouteImport } from './routes/bagikan-poster.ekonomi'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
@@ -115,6 +117,16 @@ const BerkasTerkirimRoute = BerkasTerkirimRouteImport.update({
   path: '/berkas/terkirim',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BerkasPrestasiRoute = BerkasPrestasiRouteImport.update({
+  id: '/berkas/prestasi',
+  path: '/berkas/prestasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BerkasEkonomiRoute = BerkasEkonomiRouteImport.update({
+  id: '/berkas/ekonomi',
+  path: '/berkas/ekonomi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BagikanPosterPrestasiRoute = BagikanPosterPrestasiRouteImport.update({
   id: '/bagikan-poster/prestasi',
   path: '/bagikan-poster/prestasi',
@@ -171,14 +183,14 @@ const AdminAdsenseRoute = AdminAdsenseRouteImport.update({
   getParentRoute: () => AdminRoute,
 } as any)
 const BerkasPrestasiIndexRoute = BerkasPrestasiIndexRouteImport.update({
-  id: '/berkas/prestasi/',
-  path: '/berkas/prestasi/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => BerkasPrestasiRoute,
 } as any)
 const BerkasEkonomiIndexRoute = BerkasEkonomiIndexRouteImport.update({
-  id: '/berkas/ekonomi/',
-  path: '/berkas/ekonomi/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => BerkasEkonomiRoute,
 } as any)
 const BerkasPrestasiUploadRoute = BerkasPrestasiUploadRouteImport.update({
   id: '/upload',
@@ -212,6 +224,8 @@ export interface FileRoutesByFullPath {
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
+  '/berkas/ekonomi': typeof BerkasEkonomiRouteWithChildren
+  '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
@@ -276,6 +290,8 @@ export interface FileRoutesById {
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
+  '/berkas/ekonomi': typeof BerkasEkonomiRouteWithChildren
+  '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
@@ -310,6 +326,8 @@ export interface FileRouteTypes {
     | '/artikel/$slug'
     | '/bagikan-poster/ekonomi'
     | '/bagikan-poster/prestasi'
+    | '/berkas/ekonomi'
+    | '/berkas/prestasi'
     | '/berkas/terkirim'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
@@ -373,6 +391,8 @@ export interface FileRouteTypes {
     | '/artikel/$slug'
     | '/bagikan-poster/ekonomi'
     | '/bagikan-poster/prestasi'
+    | '/berkas/ekonomi'
+    | '/berkas/prestasi'
     | '/berkas/terkirim'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
@@ -397,13 +417,13 @@ export interface RootRouteChildren {
   TentangRoute: typeof TentangRoute
   BagikanPosterEkonomiRoute: typeof BagikanPosterEkonomiRoute
   BagikanPosterPrestasiRoute: typeof BagikanPosterPrestasiRoute
+  BerkasEkonomiRoute: typeof BerkasEkonomiRouteWithChildren
+  BerkasPrestasiRoute: typeof BerkasPrestasiRouteWithChildren
   BerkasTerkirimRoute: typeof BerkasTerkirimRoute
   PendaftaranEkonomiRoute: typeof PendaftaranEkonomiRoute
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
   BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
   BerkasIndexRoute: typeof BerkasIndexRoute
-  BerkasEkonomiIndexRoute: typeof BerkasEkonomiIndexRoute
-  BerkasPrestasiIndexRoute: typeof BerkasPrestasiIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -513,6 +533,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BerkasTerkirimRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/berkas/prestasi': {
+      id: '/berkas/prestasi'
+      path: '/berkas/prestasi'
+      fullPath: '/berkas/prestasi'
+      preLoaderRoute: typeof BerkasPrestasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berkas/ekonomi': {
+      id: '/berkas/ekonomi'
+      path: '/berkas/ekonomi'
+      fullPath: '/berkas/ekonomi'
+      preLoaderRoute: typeof BerkasEkonomiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bagikan-poster/prestasi': {
       id: '/bagikan-poster/prestasi'
       path: '/bagikan-poster/prestasi'
@@ -592,17 +626,17 @@ declare module '@tanstack/react-router' {
     }
     '/berkas/prestasi/': {
       id: '/berkas/prestasi/'
-      path: '/berkas/prestasi'
+      path: '/'
       fullPath: '/berkas/prestasi/'
       preLoaderRoute: typeof BerkasPrestasiIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof BerkasPrestasiRoute
     }
     '/berkas/ekonomi/': {
       id: '/berkas/ekonomi/'
-      path: '/berkas/ekonomi'
+      path: '/'
       fullPath: '/berkas/ekonomi/'
       preLoaderRoute: typeof BerkasEkonomiIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof BerkasEkonomiRoute
     }
     '/berkas/prestasi/upload': {
       id: '/berkas/prestasi/upload'
@@ -658,6 +692,34 @@ const ArtikelRouteChildren: ArtikelRouteChildren = {
 const ArtikelRouteWithChildren =
   ArtikelRoute._addFileChildren(ArtikelRouteChildren)
 
+interface BerkasEkonomiRouteChildren {
+  BerkasEkonomiUploadRoute: typeof BerkasEkonomiUploadRoute
+  BerkasEkonomiIndexRoute: typeof BerkasEkonomiIndexRoute
+}
+
+const BerkasEkonomiRouteChildren: BerkasEkonomiRouteChildren = {
+  BerkasEkonomiUploadRoute: BerkasEkonomiUploadRoute,
+  BerkasEkonomiIndexRoute: BerkasEkonomiIndexRoute,
+}
+
+const BerkasEkonomiRouteWithChildren = BerkasEkonomiRoute._addFileChildren(
+  BerkasEkonomiRouteChildren,
+)
+
+interface BerkasPrestasiRouteChildren {
+  BerkasPrestasiUploadRoute: typeof BerkasPrestasiUploadRoute
+  BerkasPrestasiIndexRoute: typeof BerkasPrestasiIndexRoute
+}
+
+const BerkasPrestasiRouteChildren: BerkasPrestasiRouteChildren = {
+  BerkasPrestasiUploadRoute: BerkasPrestasiUploadRoute,
+  BerkasPrestasiIndexRoute: BerkasPrestasiIndexRoute,
+}
+
+const BerkasPrestasiRouteWithChildren = BerkasPrestasiRoute._addFileChildren(
+  BerkasPrestasiRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
@@ -670,24 +732,14 @@ const rootRouteChildren: RootRouteChildren = {
   TentangRoute: TentangRoute,
   BagikanPosterEkonomiRoute: BagikanPosterEkonomiRoute,
   BagikanPosterPrestasiRoute: BagikanPosterPrestasiRoute,
+  BerkasEkonomiRoute: BerkasEkonomiRouteWithChildren,
+  BerkasPrestasiRoute: BerkasPrestasiRouteWithChildren,
   BerkasTerkirimRoute: BerkasTerkirimRoute,
   PendaftaranEkonomiRoute: PendaftaranEkonomiRoute,
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
   BagikanPosterIndexRoute: BagikanPosterIndexRoute,
   BerkasIndexRoute: BerkasIndexRoute,
-  BerkasEkonomiIndexRoute: BerkasEkonomiIndexRoute,
-  BerkasPrestasiIndexRoute: BerkasPrestasiIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
