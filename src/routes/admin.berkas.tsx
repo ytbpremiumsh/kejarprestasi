@@ -14,7 +14,7 @@ export const Route = createFileRoute("/admin/berkas")({
   component: AdminBerkas,
 });
 
-type ReviewStatus = "pending" | "approved" | "rejected";
+type CandidateStatus = "pending" | "approved" | "rejected";
 
 type Document = {
   id: string;
@@ -24,8 +24,6 @@ type Document = {
   file_url: string;
   kind: string;
   created_at: string;
-  review_status: ReviewStatus;
-  reviewed_at: string | null;
 };
 
 type Registration = {
@@ -41,6 +39,7 @@ type Registration = {
   school_name: string;
   grade: string;
   kind: string;
+  candidate_status: CandidateStatus;
 };
 
 function AdminBerkas() {
@@ -49,14 +48,14 @@ function AdminBerkas() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
-  const [filterStatus, setFilterStatus] = useState<"all" | ReviewStatus>("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | CandidateStatus>("all");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const load = async () => {
     setLoading(true);
     const [d, r] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
-      supabase.from("registrations").select("id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind"),
+      supabase.from("registrations").select("id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, candidate_status"),
     ]);
     if (d.error) toast.error(d.error.message);
     if (r.error) toast.error(r.error.message);
@@ -84,11 +83,6 @@ function AdminBerkas() {
     }
     let rows = Array.from(map.entries()).map(([key, items]) => {
       const reg = findReg(items[0]);
-      const approvedCount = items.filter((i) => i.review_status === "approved").length;
-      const rejectedCount = items.filter((i) => i.review_status === "rejected").length;
-      const pendingCount = items.filter((i) => i.review_status === "pending").length;
-      const overall: ReviewStatus =
-        pendingCount > 0 ? "pending" : rejectedCount > 0 ? "rejected" : "approved";
       return {
         key,
         reg,
@@ -96,14 +90,11 @@ function AdminBerkas() {
         kind: items[0].kind,
         items,
         latest: items[0]?.created_at,
-        approvedCount,
-        rejectedCount,
-        pendingCount,
-        overall,
+        status: (reg?.candidate_status ?? "pending") as CandidateStatus,
       };
     });
     if (filterKind !== "all") rows = rows.filter((r) => r.kind === filterKind);
-    if (filterStatus !== "all") rows = rows.filter((r) => r.overall === filterStatus);
+    if (filterStatus !== "all") rows = rows.filter((r) => r.status === filterStatus);
     if (q) {
       const s = q.toLowerCase();
       rows = rows.filter((r) =>
@@ -133,7 +124,7 @@ function AdminBerkas() {
         Kelas: r?.grade ?? "",
         Kategori: d.kind,
         "Jenis Berkas": d.doc_type,
-        Status: d.review_status,
+        "Status Kandidat": r?.candidate_status ?? "pending",
         "Link File": d.file_url,
         "Tanggal Kirim": new Date(d.created_at).toLocaleString("id-ID"),
       };
@@ -144,26 +135,23 @@ function AdminBerkas() {
     XLSX.writeFile(wb, `pengiriman-berkas-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-  const updateStatus = async (id: string, status: ReviewStatus) => {
+  const updateCandidate = async (regId: string | undefined, status: CandidateStatus, fallback?: { email: string; kind: string }) => {
+    let id = regId;
+    if (!id && fallback) {
+      const r = regs.find((x) => x.email.toLowerCase() === fallback.email.toLowerCase() && x.kind === fallback.kind);
+      id = r?.id;
+    }
+    if (!id) return toast.error("Pendaftar tidak ditemukan di database");
     const { error } = await supabase
-      .from("documents")
-      .update({ review_status: status, reviewed_at: new Date().toISOString() })
+      .from("registrations")
+      .update({ candidate_status: status, candidate_reviewed_at: new Date().toISOString() })
       .eq("id", id);
     if (error) return toast.error(error.message);
-    toast.success(status === "approved" ? "Berkas disetujui" : status === "rejected" ? "Berkas ditolak" : "Status diperbarui");
-    setDocs((prev) => prev.map((d) => (d.id === id ? { ...d, review_status: status, reviewed_at: new Date().toISOString() } : d)));
-  };
-
-  const approveAll = async (items: Document[]) => {
-    const ids = items.filter((i) => i.review_status !== "approved").map((i) => i.id);
-    if (ids.length === 0) return;
-    const { error } = await supabase
-      .from("documents")
-      .update({ review_status: "approved", reviewed_at: new Date().toISOString() })
-      .in("id", ids);
-    if (error) return toast.error(error.message);
-    toast.success(`${ids.length} berkas disetujui & dilanjutkan ke tahap berikutnya`);
-    setDocs((prev) => prev.map((d) => (ids.includes(d.id) ? { ...d, review_status: "approved", reviewed_at: new Date().toISOString() } : d)));
+    toast.success(
+      status === "approved" ? "Disetujui & dipindah ke halaman Kandidat" :
+      status === "rejected" ? "Pendaftar ditolak" : "Status direset",
+    );
+    setRegs((prev) => prev.map((r) => (r.id === id ? { ...r, candidate_status: status } : r)));
   };
 
   const removeDoc = async (id: string) => {
@@ -174,8 +162,8 @@ function AdminBerkas() {
     setDocs((prev) => prev.filter((d) => d.id !== id));
   };
 
-  const statusBadge = (s: ReviewStatus) => {
-    if (s === "approved") return <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20">✓ Disetujui</Badge>;
+  const statusBadge = (s: CandidateStatus) => {
+    if (s === "approved") return <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20">✓ Kandidat</Badge>;
     if (s === "rejected") return <Badge className="bg-red-500/15 text-red-700 border-red-500/30 hover:bg-red-500/20">✕ Ditolak</Badge>;
     return <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 hover:bg-amber-500/20">⏳ Menunggu</Badge>;
   };
@@ -204,10 +192,10 @@ function AdminBerkas() {
             <option value="prestasi">Prestasi</option>
             <option value="ekonomi">Ekonomi</option>
           </select>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as "all" | ReviewStatus)} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as "all" | CandidateStatus)} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
             <option value="all">Semua Status</option>
             <option value="pending">Menunggu Review</option>
-            <option value="approved">Disetujui</option>
+            <option value="approved">Disetujui (Kandidat)</option>
             <option value="rejected">Ditolak</option>
           </select>
         </div>
@@ -235,10 +223,9 @@ function AdminBerkas() {
             <TableBody>
               {grouped.map((g) => {
                 const isOpen = !!expanded[g.key];
-                const allApproved = g.pendingCount === 0 && g.rejectedCount === 0;
                 return (
                   <Fragment key={g.key}>
-                    <TableRow key={g.key} className="align-top">
+                    <TableRow className="align-top">
                       <TableCell>
                         <button onClick={() => setExpanded((p) => ({ ...p, [g.key]: !p[g.key] }))} className="text-muted-foreground hover:text-foreground">
                           {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -265,24 +252,22 @@ function AdminBerkas() {
                         <div className="text-xs text-muted-foreground">{new Date(g.latest).toLocaleDateString("id-ID")}</div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex flex-wrap gap-1 text-xs">
-                          <Badge variant="outline">{g.items.length} file</Badge>
-                          {g.approvedCount > 0 && <span className="text-emerald-600">✓{g.approvedCount}</span>}
-                          {g.rejectedCount > 0 && <span className="text-red-600">✕{g.rejectedCount}</span>}
-                          {g.pendingCount > 0 && <span className="text-amber-600">⏳{g.pendingCount}</span>}
-                        </div>
+                        <Badge variant="outline">{g.items.length} file</Badge>
                       </TableCell>
-                      <TableCell>{statusBadge(g.overall)}</TableCell>
+                      <TableCell>{statusBadge(g.status)}</TableCell>
                       <TableCell>
                         <div className="flex justify-end gap-1">
-                          <Button size="sm" variant="outline" disabled={allApproved} onClick={() => approveAll(g.items)} className="h-8 border-emerald-500/40 text-emerald-700 hover:bg-emerald-500/10">
-                            <Check className="h-3.5 w-3.5 mr-1" />Approve Semua
+                          <Button size="sm" variant="outline" disabled={!g.reg || g.status === "approved"} onClick={() => updateCandidate(g.reg?.id, "approved", { email: g.email, kind: g.kind })} className="h-8 border-emerald-500/40 text-emerald-700 hover:bg-emerald-500/10">
+                            <Check className="h-3.5 w-3.5 mr-1" />Setujui
+                          </Button>
+                          <Button size="sm" variant="outline" disabled={!g.reg || g.status === "rejected"} onClick={() => updateCandidate(g.reg?.id, "rejected", { email: g.email, kind: g.kind })} className="h-8 border-red-500/40 text-red-700 hover:bg-red-500/10">
+                            <X className="h-3.5 w-3.5 mr-1" />Tolak
                           </Button>
                         </div>
                       </TableCell>
                     </TableRow>
                     {isOpen && (
-                      <TableRow key={`${g.key}-detail`} className="bg-muted/20 hover:bg-muted/20">
+                      <TableRow className="bg-muted/20 hover:bg-muted/20">
                         <TableCell></TableCell>
                         <TableCell colSpan={7} className="py-3">
                           {g.reg && (
@@ -300,18 +285,9 @@ function AdminBerkas() {
                                   <span className="font-medium truncate">{d.doc_type}</span>
                                   <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                                 </a>
-                                <div className="flex items-center gap-1.5">
-                                  {statusBadge(d.review_status)}
-                                  <Button size="icon" variant="ghost" title="Setujui" onClick={() => updateStatus(d.id, "approved")} className="h-8 w-8 text-emerald-600 hover:bg-emerald-500/10" disabled={d.review_status === "approved"}>
-                                    <Check className="h-4 w-4" />
-                                  </Button>
-                                  <Button size="icon" variant="ghost" title="Tolak" onClick={() => updateStatus(d.id, "rejected")} className="h-8 w-8 text-red-600 hover:bg-red-500/10" disabled={d.review_status === "rejected"}>
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                  <Button size="icon" variant="ghost" title="Hapus" onClick={() => removeDoc(d.id)} className="h-8 w-8 text-destructive">
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
+                                <Button size="icon" variant="ghost" title="Hapus" onClick={() => removeDoc(d.id)} className="h-8 w-8 text-destructive">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
                               </div>
                             ))}
                           </div>
