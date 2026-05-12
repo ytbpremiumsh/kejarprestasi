@@ -158,7 +158,7 @@ function AdminPendaftar() {
                   <th className="px-4 py-3">Sekolah</th>
                   <th className="px-4 py-3">Kontak</th>
                   <th className="px-4 py-3">Berkas</th>
-                  <th className="px-4 py-3">Status</th>
+                  
                   <th className="px-4 py-3">Aksi</th>
                 </tr>
               </thead>
