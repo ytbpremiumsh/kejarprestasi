@@ -27,19 +27,38 @@ function normalizeNumber(raw: string): string {
   return n;
 }
 
-function buildMessage(p: Payload): string {
+const DEFAULT_TEMPLATES = {
+  pendaftaran_user: `*Kejar Prestasi*\n\nHalo {nama}, pendaftaran {jenis} Anda telah kami terima.\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website.\n\nTerima kasih.`,
+  pendaftaran_admin: `*Pendaftar Baru — Kejar Prestasi*\n\nNama: {nama}\nJenis: {jenis}\nEmail: {email}\nWhatsApp: {whatsapp}`,
+  berkas_user: `*Kejar Prestasi*\n\nBerkas {jenis} dari email {email} ({jumlah_berkas} file) berhasil kami terima dan sedang dalam tahap verifikasi.\n\nKami akan menghubungi Anda kembali setelah proses selesai.`,
+  berkas_admin: `*Berkas Masuk — Kejar Prestasi*\n\nJenis: {jenis}\nEmail: {email}\nJumlah file: {jumlah_berkas}`,
+  status_user: `*Kejar Prestasi*\n\nHalo {nama}, status pendaftaran {jenis} Anda saat ini: *{status}*.`,
+};
+
+function fillTemplate(tpl: string, vars: Record<string, string>): string {
+  return tpl.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "-");
+}
+
+type Templates = Partial<typeof DEFAULT_TEMPLATES>;
+
+function buildMessage(p: Payload, tpls: Templates, audience: "user" | "admin"): string {
   if (p.message) return p.message;
-  const k = p.kind === "prestasi" ? "Beasiswa Prestasi" : p.kind === "ekonomi" ? "Beasiswa Ekonomi" : "Beasiswa";
-  if (p.type === "pendaftaran") {
-    return `*Kejar Prestasi*\n\nHalo ${p.full_name ?? "Pendaftar"}, pendaftaran ${k} Anda telah kami terima.\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website.\n\nTerima kasih.`;
-  }
-  if (p.type === "berkas") {
-    return `*Kejar Prestasi*\n\nBerkas ${k} dari email ${p.email ?? "-"} (${p.doc_count ?? 0} file) berhasil kami terima dan sedang dalam tahap verifikasi.\n\nKami akan menghubungi Anda kembali setelah proses selesai.`;
-  }
-  if (p.type === "status") {
-    return `*Kejar Prestasi*\n\nHalo ${p.full_name ?? "Pendaftar"}, status pendaftaran ${k} Anda saat ini: *${p.status ?? "-"}*.`;
-  }
-  return "Test pesan dari Kejar Prestasi.";
+  const jenis = p.kind === "prestasi" ? "Beasiswa Prestasi" : p.kind === "ekonomi" ? "Beasiswa Ekonomi" : "Beasiswa";
+  const vars = {
+    nama: p.full_name ?? "Pendaftar",
+    jenis,
+    email: p.email ?? "-",
+    whatsapp: p.whatsapp ?? "-",
+    jumlah_berkas: String(p.doc_count ?? 0),
+    status: p.status ?? "-",
+  };
+  let key: keyof typeof DEFAULT_TEMPLATES | null = null;
+  if (p.type === "pendaftaran") key = audience === "admin" ? "pendaftaran_admin" : "pendaftaran_user";
+  else if (p.type === "berkas") key = audience === "admin" ? "berkas_admin" : "berkas_user";
+  else if (p.type === "status") key = "status_user";
+  if (!key) return "Test pesan dari Kejar Prestasi.";
+  const tpl = tpls[key] || DEFAULT_TEMPLATES[key];
+  return fillTemplate(tpl, vars);
 }
 
 Deno.serve(async (req) => {
