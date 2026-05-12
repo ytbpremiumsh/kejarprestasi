@@ -86,13 +86,6 @@ function AdminPendaftar() {
     });
   }, [rows, q, filterKind, filterStatus]);
 
-  const updateStatus = async (id: string, status: Registration["status"]) => {
-    const { error } = await supabase.from("registrations").update({ status }).eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success(`Status diperbarui: ${status}`);
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
-    if (selected?.id === id) setSelected({ ...selected, status });
-  };
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
