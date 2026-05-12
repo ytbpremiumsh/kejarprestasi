@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GraduationCap, Backpack, Wallet, CheckCircle2, Sparkles, Info } from "lucide-react";
+import { GraduationCap, Backpack, Wallet, CheckCircle2, Sparkles } from "lucide-react";
 
 type Kategori = {
   key: string;
