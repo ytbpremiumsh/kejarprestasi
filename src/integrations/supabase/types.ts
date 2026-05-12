@@ -69,6 +69,8 @@ export type Database = {
           id: string
           kind: Database["public"]["Enums"]["scholarship_kind"]
           registration_id: string | null
+          review_status: Database["public"]["Enums"]["doc_review_status"]
+          reviewed_at: string | null
         }
         Insert: {
           created_at?: string
@@ -79,6 +81,8 @@ export type Database = {
           id?: string
           kind: Database["public"]["Enums"]["scholarship_kind"]
           registration_id?: string | null
+          review_status?: Database["public"]["Enums"]["doc_review_status"]
+          reviewed_at?: string | null
         }
         Update: {
           created_at?: string
@@ -89,6 +93,8 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["scholarship_kind"]
           registration_id?: string | null
+          review_status?: Database["public"]["Enums"]["doc_review_status"]
+          reviewed_at?: string | null
         }
         Relationships: [
           {
@@ -226,6 +232,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      doc_review_status: "pending" | "approved" | "rejected"
       registration_status: "pending" | "verified" | "approved" | "rejected"
       scholarship_kind: "prestasi" | "ekonomi"
     }
@@ -356,6 +363,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      doc_review_status: ["pending", "approved", "rejected"],
       registration_status: ["pending", "verified", "approved", "rejected"],
       scholarship_kind: ["prestasi", "ekonomi"],
     },
