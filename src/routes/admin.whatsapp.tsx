@@ -306,6 +306,45 @@ function AdminWhatsApp() {
         {!qr && qrMsg && !connected && <p className="text-sm text-center text-muted-foreground">{qrMsg}</p>}
       </Card>
 
+      <Card className="rounded-2xl p-6 shadow-soft space-y-4">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <h2 className="text-lg font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary" />Template Pesan WhatsApp</h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Variabel: <code className="px-1 rounded bg-muted">{"{nama}"}</code> <code className="px-1 rounded bg-muted">{"{jenis}"}</code> <code className="px-1 rounded bg-muted">{"{email}"}</code> <code className="px-1 rounded bg-muted">{"{whatsapp}"}</code> <code className="px-1 rounded bg-muted">{"{jumlah_berkas}"}</code> <code className="px-1 rounded bg-muted">{"{status}"}</code>
+            </p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setCfg({ ...cfg, templates: DEFAULT_TEMPLATES })}>
+            <RotateCcw className="h-4 w-4 mr-2" /> Reset Default
+          </Button>
+        </div>
+
+        {([
+          { key: "pendaftaran_user", label: "Pendaftaran — ke Pendaftar" },
+          { key: "pendaftaran_admin", label: "Pendaftaran — ke Admin" },
+          { key: "berkas_user", label: "Pengiriman Berkas — ke Pendaftar" },
+          { key: "berkas_admin", label: "Pengiriman Berkas — ke Admin" },
+          { key: "status_user", label: "Update Status — ke Pendaftar" },
+        ] as const).map((t) => (
+          <div key={t.key} className="space-y-1.5">
+            <Label className="text-sm font-medium">{t.label}</Label>
+            <Textarea
+              rows={5}
+              value={cfg.templates[t.key]}
+              onChange={(e) => setCfg({ ...cfg, templates: { ...cfg.templates, [t.key]: e.target.value } })}
+              className="font-mono text-xs"
+            />
+          </div>
+        ))}
+
+        <div className="flex justify-end pt-1">
+          <Button onClick={save} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+            Simpan Template
+          </Button>
+        </div>
+      </Card>
+
       <Card className="rounded-2xl p-6 shadow-soft space-y-3">
         <h2 className="text-lg font-semibold flex items-center gap-2"><Send className="h-5 w-5 text-primary" />Tes Kirim Pesan</h2>
         <div className="grid gap-3 md:grid-cols-2">
