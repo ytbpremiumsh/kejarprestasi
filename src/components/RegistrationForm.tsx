@@ -223,9 +223,8 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
             <h3 className="font-semibold text-foreground">Sebelum mengirim</h3>
             <ul className="mt-4 space-y-3 text-sm text-foreground/85">
               {[
-                "Pastikan data pribadi sesuai KTP/KK",
-                "Email & WhatsApp aktif untuk notifikasi",
-                "Foto diri & kartu pelajar terbaca jelas",
+                "Pastikan data pribadi sesuai Kartu Pelajar / Kartu Mahasiswa",
+                "Email & WhatsApp aktif",
                 "Tidak dipungut biaya apapun",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}</li>
