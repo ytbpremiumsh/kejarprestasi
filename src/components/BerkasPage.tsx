@@ -33,6 +33,15 @@ function isValidUrl(v: string) {
   }
 }
 
+type RegInfo = {
+  id?: string;
+  full_name: string;
+  whatsapp: string;
+  nik?: string | null;
+  school_name?: string | null;
+  education_level?: string | null;
+};
+
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -40,6 +49,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const [loading, setLoading] = useState(true);
   const [values, setValues] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [registrant, setRegistrant] = useState<RegInfo | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
