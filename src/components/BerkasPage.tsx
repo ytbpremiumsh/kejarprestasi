@@ -39,6 +39,11 @@ type RegInfo = {
   whatsapp: string;
   school_name?: string | null;
   education_level?: string | null;
+  gender?: string | null;
+  birth_place?: string | null;
+  birth_date?: string | null;
+  address?: string | null;
+  grade?: string | null;
 };
 
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
@@ -251,6 +256,20 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                     <div className="text-[11px] uppercase tracking-wide text-muted-foreground">WhatsApp</div>
                     <div className="font-semibold text-foreground">{registrant.whatsapp || "-"}</div>
                   </div>
+                  {registrant.gender && (
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Jenis Kelamin</div>
+                      <div className="font-semibold text-foreground">{registrant.gender}</div>
+                    </div>
+                  )}
+                  {(registrant.birth_place || registrant.birth_date) && (
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Tempat / Tanggal Lahir</div>
+                      <div className="font-semibold text-foreground">
+                        {[registrant.birth_place, registrant.birth_date].filter(Boolean).join(", ")}
+                      </div>
+                    </div>
+                  )}
                   {registrant.school_name && (
                     <div>
                       <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Sekolah / Kampus</div>
@@ -261,6 +280,18 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                     <div>
                       <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Jenjang</div>
                       <div className="font-semibold text-foreground">{registrant.education_level}</div>
+                    </div>
+                  )}
+                  {registrant.grade && (
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Kelas / Tingkat</div>
+                      <div className="font-semibold text-foreground">{registrant.grade}</div>
+                    </div>
+                  )}
+                  {registrant.address && (
+                    <div className="sm:col-span-2">
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Alamat</div>
+                      <div className="font-semibold text-foreground">{registrant.address}</div>
                     </div>
                   )}
                 </div>

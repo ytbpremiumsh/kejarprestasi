@@ -51,6 +51,7 @@ function AdminPendaftar() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
+  const [filterBerkas, setFilterBerkas] = useState<"all" | "submitted" | "pending">("all");
   
   const [selected, setSelected] = useState<Registration | null>(null);
 
@@ -68,10 +69,27 @@ function AdminPendaftar() {
 
   useEffect(() => { load(); }, []);
 
+  const docsForRow = (r: Registration) =>
+    docs.filter((d) => d.registration_id === r.id || d.email === r.email);
+
+  const counts = useMemo(() => {
+    let submitted = 0;
+    let pending = 0;
+    for (const r of rows) {
+      if (docsForRow(r).length > 0) submitted++;
+      else pending++;
+    }
+    return { submitted, pending };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, docs]);
+
   const filtered = useMemo(() => {
     return rows.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
-      
+      const hasDocs = docsForRow(r).length > 0;
+      if (filterBerkas === "submitted" && !hasDocs) return false;
+      if (filterBerkas === "pending" && hasDocs) return false;
+
       if (q) {
         const s = q.toLowerCase();
         return (
@@ -83,7 +101,8 @@ function AdminPendaftar() {
       }
       return true;
     });
-  }, [rows, q, filterKind]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, q, filterKind, filterBerkas, docs]);
 
 
   const exportExcel = () => {
@@ -111,8 +130,6 @@ function AdminPendaftar() {
     XLSX.writeFile(wb, `pendaftar-beasiswa-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-  const docsForRow = (r: Registration) =>
-    docs.filter((d) => d.registration_id === r.id || d.email === r.email);
 
   return (
     <div className="space-y-4">
@@ -137,6 +154,11 @@ function AdminPendaftar() {
             <option value="all">Semua Kategori</option>
             <option value="prestasi">Prestasi</option>
             <option value="ekonomi">Ekonomi</option>
+          </select>
+          <select value={filterBerkas} onChange={(e) => setFilterBerkas(e.target.value as "all" | "submitted" | "pending")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
+            <option value="all">Semua Berkas ({rows.length})</option>
+            <option value="submitted">Sudah Kirim Berkas ({counts.submitted})</option>
+            <option value="pending">Belum Kirim Berkas ({counts.pending})</option>
           </select>
         </div>
       </Card>
@@ -177,7 +199,13 @@ function AdminPendaftar() {
                       <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
                     </td>
                     <td className="px-4 py-3">
-                      <Badge variant="secondary">{docsForRow(r).length} file</Badge>
+                      {docsForRow(r).length > 0 ? (
+                        <Badge className="bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20 border border-emerald-500/30">
+                          ✓ {docsForRow(r).length} berkas
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-muted-foreground">Belum kirim</Badge>
+                      )}
                     </td>
                     
                     <td className="px-4 py-3">

@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
     );
     const { data, error } = await supabase
       .from("registrations")
-      .select("id, full_name, whatsapp, school_name, education_level")
+      .select("id, full_name, whatsapp, school_name, education_level, gender, birth_place, birth_date, address, grade")
       .ilike("email", email.trim())
       .eq("kind", kind)
       .order("created_at", { ascending: false })
@@ -53,6 +53,11 @@ Deno.serve(async (req) => {
         whatsapp: maskWa(data.whatsapp || ""),
         school_name: data.school_name,
         education_level: data.education_level,
+        gender: data.gender,
+        birth_place: data.birth_place,
+        birth_date: data.birth_date,
+        address: data.address,
+        grade: data.grade,
       },
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
