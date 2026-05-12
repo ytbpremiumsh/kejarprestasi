@@ -33,6 +33,7 @@ import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
 import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
 import { Route as AdminKodeKustomRouteImport } from './routes/admin.kode-kustom'
+import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
 import { Route as AdminArtikelRouteImport } from './routes/admin.artikel'
@@ -162,6 +163,11 @@ const AdminKodeKustomRoute = AdminKodeKustomRouteImport.update({
   path: '/kode-kustom',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminKandidatRoute = AdminKandidatRouteImport.update({
+  id: '/kandidat',
+  path: '/kandidat',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminFormulirRoute = AdminFormulirRouteImport.update({
   id: '/formulir',
   path: '/formulir',
@@ -217,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/admin/artikel': typeof AdminArtikelRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/formulir': typeof AdminFormulirRoute
+  '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -250,6 +257,7 @@ export interface FileRoutesByTo {
   '/admin/artikel': typeof AdminArtikelRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/formulir': typeof AdminFormulirRoute
+  '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -283,6 +291,7 @@ export interface FileRoutesById {
   '/admin/artikel': typeof AdminArtikelRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/formulir': typeof AdminFormulirRoute
+  '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -319,6 +328,7 @@ export interface FileRouteTypes {
     | '/admin/artikel'
     | '/admin/berkas'
     | '/admin/formulir'
+    | '/admin/kandidat'
     | '/admin/kode-kustom'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
@@ -352,6 +362,7 @@ export interface FileRouteTypes {
     | '/admin/artikel'
     | '/admin/berkas'
     | '/admin/formulir'
+    | '/admin/kandidat'
     | '/admin/kode-kustom'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/admin/artikel'
     | '/admin/berkas'
     | '/admin/formulir'
+    | '/admin/kandidat'
     | '/admin/kode-kustom'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
@@ -596,6 +608,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminKodeKustomRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/kandidat': {
+      id: '/admin/kandidat'
+      path: '/kandidat'
+      fullPath: '/admin/kandidat'
+      preLoaderRoute: typeof AdminKandidatRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/formulir': {
       id: '/admin/formulir'
       path: '/formulir'
@@ -660,6 +679,7 @@ interface AdminRouteChildren {
   AdminArtikelRoute: typeof AdminArtikelRoute
   AdminBerkasRoute: typeof AdminBerkasRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
+  AdminKandidatRoute: typeof AdminKandidatRoute
   AdminKodeKustomRoute: typeof AdminKodeKustomRoute
   AdminPendaftarRoute: typeof AdminPendaftarRoute
   AdminPengaturanRoute: typeof AdminPengaturanRoute
@@ -672,6 +692,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminArtikelRoute: AdminArtikelRoute,
   AdminBerkasRoute: AdminBerkasRoute,
   AdminFormulirRoute: AdminFormulirRoute,
+  AdminKandidatRoute: AdminKandidatRoute,
   AdminKodeKustomRoute: AdminKodeKustomRoute,
   AdminPendaftarRoute: AdminPendaftarRoute,
   AdminPengaturanRoute: AdminPengaturanRoute,

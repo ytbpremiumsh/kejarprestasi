@@ -11,6 +11,7 @@ import {
   MessageCircle,
   ShieldCheck,
   ChevronRight,
+  Trophy,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,6 +39,7 @@ const groups: { label: string; items: Item[] }[] = [
     items: [
       { title: "Pendaftar", url: "/admin/pendaftar", icon: Users },
       { title: "Pengiriman Berkas", url: "/admin/berkas", icon: FolderArchive },
+      { title: "Kandidat", url: "/admin/kandidat", icon: Trophy },
       { title: "Formulir", url: "/admin/formulir", icon: FileEdit },
     ],
   },
