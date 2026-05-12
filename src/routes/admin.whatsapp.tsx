@@ -14,6 +14,14 @@ export const Route = createFileRoute("/admin/whatsapp")({
   component: AdminWhatsApp,
 });
 
+type WaTemplates = {
+  pendaftaran_user: string;
+  pendaftaran_admin: string;
+  berkas_user: string;
+  berkas_admin: string;
+  status_user: string;
+};
+
 type WaConfig = {
   enabled: boolean;
   api_key: string;
@@ -23,6 +31,15 @@ type WaConfig = {
   qr_endpoint: string;
   notify_user: boolean;
   notify_admin: boolean;
+  templates: WaTemplates;
+};
+
+const DEFAULT_TEMPLATES: WaTemplates = {
+  pendaftaran_user: `*Kejar Prestasi*\n\nHalo {nama}, pendaftaran {jenis} Anda telah kami terima.\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website.\n\nTerima kasih.`,
+  pendaftaran_admin: `*Pendaftar Baru — Kejar Prestasi*\n\nNama: {nama}\nJenis: {jenis}\nEmail: {email}\nWhatsApp: {whatsapp}`,
+  berkas_user: `*Kejar Prestasi*\n\nBerkas {jenis} dari email {email} ({jumlah_berkas} file) berhasil kami terima dan sedang dalam tahap verifikasi.\n\nKami akan menghubungi Anda kembali setelah proses selesai.`,
+  berkas_admin: `*Berkas Masuk — Kejar Prestasi*\n\nJenis: {jenis}\nEmail: {email}\nJumlah file: {jumlah_berkas}`,
+  status_user: `*Kejar Prestasi*\n\nHalo {nama}, status pendaftaran {jenis} Anda saat ini: *{status}*.`,
 };
 
 const DEFAULT: WaConfig = {
@@ -34,6 +51,7 @@ const DEFAULT: WaConfig = {
   qr_endpoint: "https://app.ayopintar.com/generate-qr",
   notify_user: true,
   notify_admin: true,
+  templates: DEFAULT_TEMPLATES,
 };
 
 function AdminWhatsApp() {
