@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, MessageCircle, QrCode, Send, Save, CheckCircle2, PowerOff, RefreshCw, Wifi, WifiOff } from "lucide-react";
+import { Loader2, MessageCircle, QrCode, Send, Save, CheckCircle2, PowerOff, RefreshCw, Wifi, WifiOff, FileText, RotateCcw } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/whatsapp")({
