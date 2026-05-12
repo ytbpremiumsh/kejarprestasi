@@ -237,7 +237,7 @@ function AdminBerkas() {
                 const isOpen = !!expanded[g.key];
                 const allApproved = g.pendingCount === 0 && g.rejectedCount === 0;
                 return (
-                  <>
+                  <Fragment key={g.key}>
                     <TableRow key={g.key} className="align-top">
                       <TableCell>
                         <button onClick={() => setExpanded((p) => ({ ...p, [g.key]: !p[g.key] }))} className="text-muted-foreground hover:text-foreground">
@@ -318,7 +318,7 @@ function AdminBerkas() {
                         </TableCell>
                       </TableRow>
                     )}
-                  </>
+                  </Fragment>
                 );
               })}
             </TableBody>
