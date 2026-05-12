@@ -160,35 +160,42 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
             <h2 className="text-base font-bold text-foreground">Identitas</h2>
-            <label className="mt-4 block">
-              <span className="text-xs font-medium text-foreground/80">Email pendaftaran</span>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="email yang kamu pakai saat mendaftar"
-                className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
-                required
-              />
-            </label>
+            <div className="mt-5 grid sm:grid-cols-2 gap-5">
+              <label className="block sm:col-span-2">
+                <span className="text-xs font-medium text-foreground/80">
+                  Email pendaftaran<span className="text-destructive"> *</span>
+                </span>
+                <div className="mt-1.5">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="email yang kamu pakai saat mendaftar"
+                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    required
+                  />
+                </div>
+              </label>
+            </div>
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
             <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
-            <div className="mt-5 space-y-4">
+            <div className="mt-5 space-y-6">
               {docs.map((d) => {
                 const v = values[d.key] ?? "";
                 const showError = v.trim().length > 0 && !isValidUrl(v);
                 return (
-                  <div key={d.id}>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-medium text-foreground">{d.label}</span>
-                      {d.required ? (
-                        <span className="text-[10px] font-bold uppercase rounded-full bg-destructive/10 text-destructive px-2 py-0.5">Wajib</span>
-                      ) : (
+                  <label key={d.id} className="block">
+                    <span className="flex items-center gap-2 flex-wrap text-xs font-medium text-foreground/80">
+                      <span>
+                        {d.label}
+                        {d.required && <span className="text-destructive"> *</span>}
+                      </span>
+                      {!d.required && (
                         <span className="text-[10px] font-semibold uppercase rounded-full bg-secondary text-muted-foreground px-2 py-0.5">Opsional</span>
                       )}
-                    </div>
+                    </span>
                     <div className="mt-1.5 relative">
                       <LinkIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                       <input
@@ -196,12 +203,12 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                         value={v}
                         onChange={(e) => setVal(d.key, e.target.value)}
                         placeholder="https://drive.google.com/..."
-                        className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                        className={`w-full rounded-xl border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${showError ? "border-destructive" : "border-border focus:border-primary"}`}
                         required={d.required}
                       />
                     </div>
                     {showError && <div className="mt-1 text-[11px] text-destructive">URL tidak valid (gunakan http/https)</div>}
-                  </div>
+                  </label>
                 );
               })}
               {docs.length === 0 && (
@@ -209,7 +216,6 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
               )}
             </div>
           </div>
-        </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
           <div className="rounded-3xl border border-border bg-card p-6 shadow-card">
