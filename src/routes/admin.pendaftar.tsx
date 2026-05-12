@@ -199,7 +199,13 @@ function AdminPendaftar() {
                       <div className="text-xs text-muted-foreground">{r.whatsapp}</div>
                     </td>
                     <td className="px-4 py-3">
-                      <Badge variant="secondary">{docsForRow(r).length} file</Badge>
+                      {docsForRow(r).length > 0 ? (
+                        <Badge className="bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20 border border-emerald-500/30">
+                          ✓ {docsForRow(r).length} berkas
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-muted-foreground">Belum kirim</Badge>
+                      )}
                     </td>
                     
                     <td className="px-4 py-3">
