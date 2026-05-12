@@ -127,7 +127,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }).catch(() => { /* ignore */ });
 
       toast.success("Berkas berhasil dikirim!");
-      navigate({ to: "/" });
+      navigate({ to: "/berkas/terkirim", search: { kind, count: rows.length } });
     } catch (err) {
       console.error(err);
       toast.error("Gagal mengirim berkas. Silakan coba lagi.");
