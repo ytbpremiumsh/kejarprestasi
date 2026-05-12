@@ -13,6 +13,24 @@ type SlotState = {
   error: string | null;
 };
 
+const defaultDocs: Record<"prestasi" | "ekonomi", DocSlot[]> = {
+  prestasi: [
+    { id: "identity", key: "identity", label: "Kartu Identitas", required: true, accept: "image/*,application/pdf", maxSize: 20 },
+    { id: "transcript", key: "transcript", label: "Transkrip Nilai atau Kartu Hasil Studi (Mahasiswa)", required: true, accept: "image/*,application/pdf", maxSize: 20 },
+    { id: "achievement", key: "achievement", label: "Verifikasi Penghargaan yang Diterima", required: true, accept: "image/*,application/pdf", maxSize: 20 },
+    { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true, accept: ".pdf,.doc,.docx,application/pdf", maxSize: 20 },
+    { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false, accept: "image/*,application/pdf", maxSize: 20 },
+  ],
+  ekonomi: [
+    { id: "identity", key: "identity", label: "Kartu Identitas", required: true, accept: "image/*,application/pdf", maxSize: 20 },
+    { id: "sktm", key: "sktm", label: "Surat Keterangan Tidak Mampu (SKTM)", required: true, accept: "image/*,application/pdf", maxSize: 20 },
+    { id: "income", key: "income", label: "Keterangan Penghasilan Orang Tua", required: true, accept: "image/*,application/pdf", maxSize: 20 },
+    { id: "electricity", key: "electricity", label: "Bukti Pembayaran Listrik Rumah Terakhir", required: true, accept: "image/*,application/pdf", maxSize: 20 },
+    { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true, accept: ".pdf,.doc,.docx,application/pdf", maxSize: 20 },
+    { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false, accept: "image/*,application/pdf", maxSize: 20 },
+  ],
+};
+
 async function uploadFile(file: File, kind: string, key: string): Promise<string> {
   const ext = file.name.split(".").pop() ?? "bin";
   const path = `${kind}/docs/${key}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
@@ -37,12 +55,13 @@ function fileMatches(file: File, accept?: string) {
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [docs, setDocs] = useState<DocSlot[]>([]);
+  const [docs, setDocs] = useState<DocSlot[]>(defaultDocs[kind]);
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState<Record<string, SlotState>>({});
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    setDocs(defaultDocs[kind]);
     supabase
       .from("site_settings")
       .select("value")
@@ -50,8 +69,14 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       .maybeSingle()
       .then(({ data }) => {
         if (data?.value && Array.isArray((data.value as BerkasSchema).fields)) {
-          setDocs((data.value as BerkasSchema).fields);
+          const configuredDocs = (data.value as BerkasSchema).fields;
+          setDocs(configuredDocs.length > 0 ? configuredDocs : defaultDocs[kind]);
         }
+      })
+      .catch(() => {
+        setDocs(defaultDocs[kind]);
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, [kind]);
