@@ -8,3 +8,6 @@ verify_jwt = true
 
 [functions.wa-device]
 verify_jwt = true
+
+[functions.lookup-pendaftar]
+verify_jwt = false
