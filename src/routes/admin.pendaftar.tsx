@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Search, CheckCircle2, XCircle, Download, FileText, ExternalLink, RotateCcw } from "lucide-react";
+import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
