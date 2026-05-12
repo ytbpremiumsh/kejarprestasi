@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BerkasInfoPage } from "@/components/BerkasInfoPage";
 
-export const Route = createFileRoute("/berkas/prestasi")({
+export const Route = createFileRoute("/berkas/prestasi/")({
   head: () => ({
     meta: [
       { title: "Pengiriman Berkas Prestasi — Kejar Prestasi Section #3" },
