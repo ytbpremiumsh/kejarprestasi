@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, LinkIcon, Loader2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, LinkIcon, Loader2, Search, UserCheck, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
@@ -33,6 +33,15 @@ function isValidUrl(v: string) {
   }
 }
 
+type RegInfo = {
+  id?: string;
+  full_name: string;
+  whatsapp: string;
+  nik?: string | null;
+  school_name?: string | null;
+  education_level?: string | null;
+};
+
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -40,6 +49,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const [loading, setLoading] = useState(true);
   const [values, setValues] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [registrant, setRegistrant] = useState<RegInfo | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -73,10 +85,42 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
   const setVal = (key: string, v: string) => setValues((s) => ({ ...s, [key]: v }));
 
+  const handleSearch = async () => {
+    const e = email.trim();
+    if (!e || !e.includes("@")) {
+      toast.error("Masukkan email pendaftaran yang valid");
+      return;
+    }
+    setSearching(true);
+    setSearchError(null);
+    setRegistrant(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("lookup-pendaftar", {
+        body: { email: e, kind },
+      });
+      if (error) throw error;
+      const payload = data as { ok: boolean; data?: RegInfo; error?: string };
+      if (!payload?.ok || !payload.data) {
+        const msg = payload?.error === "not_found"
+          ? `Data pendaftar dengan email tersebut tidak ditemukan untuk Beasiswa ${kind === "prestasi" ? "Prestasi" : "Ekonomi"}.`
+          : "Gagal mencari data pendaftar.";
+        setSearchError(msg);
+        return;
+      }
+      setRegistrant(payload.data);
+      toast.success(`Data ditemukan: ${payload.data.full_name}`);
+    } catch (err) {
+      console.error(err);
+      setSearchError("Terjadi kesalahan saat mencari data.");
+    } finally {
+      setSearching(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !email.includes("@")) {
-      toast.error("Masukkan email pendaftaran terlebih dahulu");
+    if (!registrant) {
+      toast.error("Cari data pendaftar terlebih dahulu");
       return;
     }
     const missing = docs.filter((d) => d.required && !(values[d.key] ?? "").trim());
@@ -104,20 +148,12 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       const { error } = await supabase.from("documents").insert(rows);
       if (error) throw error;
 
-      const { data: reg } = await supabase
-        .from("registrations")
-        .select("full_name, whatsapp")
-        .eq("email", email.trim())
-        .eq("kind", kind)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
       supabase.functions.invoke("send-whatsapp", {
         body: {
           type: "berkas",
           email: email.trim(),
-          full_name: reg?.full_name ?? "",
-          whatsapp: reg?.whatsapp ?? "",
+          full_name: registrant.full_name,
+          whatsapp: "",
           kind,
           doc_count: rows.length,
         },
@@ -159,28 +195,91 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
-            <h2 className="text-base font-bold text-foreground">Identitas</h2>
-            <div className="mt-5 grid sm:grid-cols-2 gap-5">
-              <label className="block sm:col-span-2">
+            <h2 className="text-base font-bold text-foreground">Identitas Pendaftar</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Cari data Anda dengan email yang digunakan saat mendaftar.</p>
+            <div className="mt-5 grid sm:grid-cols-[1fr_auto] gap-3 items-end">
+              <label className="block">
                 <span className="text-xs font-medium text-foreground/80">
                   Email pendaftaran<span className="text-destructive"> *</span>
                 </span>
-                <div className="mt-1.5">
+                <div className="mt-1.5 relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => { setEmail(e.target.value); setRegistrant(null); setSearchError(null); }}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSearch(); } }}
                     placeholder="email yang kamu pakai saat mendaftar"
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     required
                   />
                 </div>
               </label>
+              <button
+                type="button"
+                onClick={handleSearch}
+                disabled={searching}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition disabled:opacity-60"
+              >
+                {searching ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
+                Cari
+              </button>
             </div>
+
+            {searchError && (
+              <div className="mt-4 flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
+                <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                <div>
+                  {searchError}{" "}
+                  <Link to={kind === "prestasi" ? "/pendaftaran/prestasi" : "/pendaftaran/ekonomi"} className="font-semibold underline">
+                    Daftar dulu
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {registrant && (
+              <div className="mt-5 rounded-2xl border border-primary/30 bg-primary-soft/40 p-4">
+                <div className="flex items-center gap-2 text-xs font-semibold text-primary">
+                  <UserCheck size={14} /> Data ditemukan
+                </div>
+                <div className="mt-3 grid sm:grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Nama Lengkap</div>
+                    <div className="font-semibold text-foreground">{registrant.full_name}</div>
+                  </div>
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">WhatsApp</div>
+                    <div className="font-semibold text-foreground">{registrant.whatsapp || "-"}</div>
+                  </div>
+                  {registrant.nik && (
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">NIK</div>
+                      <div className="font-semibold text-foreground">{registrant.nik}</div>
+                    </div>
+                  )}
+                  {registrant.school_name && (
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Sekolah / Kampus</div>
+                      <div className="font-semibold text-foreground">{registrant.school_name}</div>
+                    </div>
+                  )}
+                  {registrant.education_level && (
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Jenjang</div>
+                      <div className="font-semibold text-foreground">{registrant.education_level}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
-            <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
+          <div className={`rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card transition ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
+              {!registrant && <span className="text-[11px] font-semibold text-muted-foreground">Cari pendaftar dulu</span>}
+            </div>
             <div className="mt-5 space-y-6">
               {docs.map((d) => {
                 const v = values[d.key] ?? "";
@@ -203,6 +302,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                         value={v}
                         onChange={(e) => setVal(d.key, e.target.value)}
                         placeholder="https://drive.google.com/..."
+                        disabled={!registrant}
                         className={`w-full rounded-xl border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${showError ? "border-destructive" : "border-border focus:border-primary"}`}
                         required={d.required}
                       />
@@ -235,7 +335,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           </div>
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || !registrant}
             className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
           >
             {submitting ? <><Loader2 size={16} className="animate-spin" /> Mengirim…</> : <>Kirim Berkas <ArrowRight size={16} /></>}
