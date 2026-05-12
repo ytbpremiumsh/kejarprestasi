@@ -88,18 +88,19 @@ Deno.serve(async (req) => {
     }
 
     const endpoint = cfg.send_endpoint || "https://app.ayopintar.com/send-message";
-    const message = buildMessage(body);
-    const targets: string[] = [];
-    if (body.to) targets.push(body.to);
+    const tpls = ((cfg as { templates?: Templates }).templates) || {};
+    const targets: Array<{ to: string; audience: "user" | "admin" }> = [];
+    if (body.to) targets.push({ to: body.to, audience: "user" });
     else {
-      if (cfg.notify_user !== false && body.whatsapp) targets.push(body.whatsapp);
-      if (cfg.notify_admin !== false && cfg.admin_number) targets.push(cfg.admin_number);
+      if (cfg.notify_user !== false && body.whatsapp) targets.push({ to: body.whatsapp, audience: "user" });
+      if (cfg.notify_admin !== false && cfg.admin_number) targets.push({ to: cfg.admin_number, audience: "admin" });
     }
 
     const results: Array<{ to: string; ok: boolean; resp?: unknown }> = [];
-    for (const raw of targets) {
-      const number = normalizeNumber(raw);
+    for (const t of targets) {
+      const number = normalizeNumber(t.to);
       if (!number) continue;
+      const message = buildMessage(body, tpls, t.audience);
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
