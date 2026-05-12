@@ -1,55 +1,36 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, FileText, Image as ImageIcon, Loader2, UploadCloud, X } from "lucide-react";
+import { ArrowRight, CheckCircle2, LinkIcon, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
 import { AdSlot } from "@/components/ads/AdSlot";
 
-type SlotState = {
-  file: File | null;
-  preview: string | null;
-  progress: number;
-  error: string | null;
-};
-
 const defaultDocs: Record<"prestasi" | "ekonomi", DocSlot[]> = {
   prestasi: [
-    { id: "identity", key: "identity", label: "Kartu Identitas", required: true, accept: "image/*,application/pdf", maxSize: 20 },
-    { id: "transcript", key: "transcript", label: "Transkrip Nilai atau Kartu Hasil Studi (Mahasiswa)", required: true, accept: "image/*,application/pdf", maxSize: 20 },
-    { id: "achievement", key: "achievement", label: "Verifikasi Penghargaan yang Diterima", required: true, accept: "image/*,application/pdf", maxSize: 20 },
-    { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true, accept: ".pdf,.doc,.docx,application/pdf", maxSize: 20 },
-    { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false, accept: "image/*,application/pdf", maxSize: 20 },
+    { id: "identity", key: "identity", label: "Kartu Identitas", required: true },
+    { id: "transcript", key: "transcript", label: "Transkrip Nilai atau Kartu Hasil Studi (Mahasiswa)", required: true },
+    { id: "achievement", key: "achievement", label: "Verifikasi Penghargaan yang Diterima", required: true },
+    { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true },
+    { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
   ],
   ekonomi: [
-    { id: "identity", key: "identity", label: "Kartu Identitas", required: true, accept: "image/*,application/pdf", maxSize: 20 },
-    { id: "sktm", key: "sktm", label: "Surat Keterangan Tidak Mampu (SKTM)", required: true, accept: "image/*,application/pdf", maxSize: 20 },
-    { id: "income", key: "income", label: "Keterangan Penghasilan Orang Tua", required: true, accept: "image/*,application/pdf", maxSize: 20 },
-    { id: "electricity", key: "electricity", label: "Bukti Pembayaran Listrik Rumah Terakhir", required: true, accept: "image/*,application/pdf", maxSize: 20 },
-    { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true, accept: ".pdf,.doc,.docx,application/pdf", maxSize: 20 },
-    { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false, accept: "image/*,application/pdf", maxSize: 20 },
+    { id: "identity", key: "identity", label: "Kartu Identitas", required: true },
+    { id: "sktm", key: "sktm", label: "Surat Keterangan Tidak Mampu (SKTM)", required: true },
+    { id: "income", key: "income", label: "Keterangan Penghasilan Orang Tua", required: true },
+    { id: "electricity", key: "electricity", label: "Bukti Pembayaran Listrik Rumah Terakhir", required: true },
+    { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true },
+    { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
   ],
 };
 
-async function uploadFile(file: File, kind: string, key: string): Promise<string> {
-  const ext = file.name.split(".").pop() ?? "bin";
-  const path = `${kind}/docs/${key}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await supabase.storage.from("kp-uploads").upload(path, file, { upsert: false });
-  if (error) throw error;
-  return supabase.storage.from("kp-uploads").getPublicUrl(path).data.publicUrl;
-}
-
-function fileMatches(file: File, accept?: string) {
-  if (!accept) return true;
-  const tokens = accept.split(",").map((s) => s.trim().toLowerCase());
-  const name = file.name.toLowerCase();
-  const type = file.type.toLowerCase();
-  return tokens.some((t) => {
-    if (!t) return false;
-    if (t.startsWith(".")) return name.endsWith(t);
-    if (t.endsWith("/*")) return type.startsWith(t.slice(0, -1));
-    return type === t;
-  });
+function isValidUrl(v: string) {
+  try {
+    const u = new URL(v.trim());
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
@@ -57,65 +38,40 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const [email, setEmail] = useState("");
   const [docs, setDocs] = useState<DocSlot[]>(defaultDocs[kind]);
   const [loading, setLoading] = useState(true);
-  const [state, setState] = useState<Record<string, SlotState>>({});
+  const [values, setValues] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     setLoading(true);
     setDocs(defaultDocs[kind]);
+    setValues({});
 
-    const loadDocs = async () => {
-      const { data } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", `form_berkas_${kind}`)
-        .maybeSingle();
-
-      if (mounted) {
-        if (data?.value && Array.isArray((data.value as BerkasSchema).fields)) {
-          const configuredDocs = (data.value as BerkasSchema).fields;
-          setDocs(configuredDocs.length > 0 ? configuredDocs : defaultDocs[kind]);
-        }
-      }
-    };
-
-    loadDocs()
-      .catch(() => {
-        if (mounted) setDocs(defaultDocs[kind]);
-      })
-      .finally(() => {
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", `form_berkas_${kind}`)
+          .maybeSingle();
         if (!mounted) return;
-        setLoading(false);
-      });
+        if (data?.value && Array.isArray((data.value as BerkasSchema).fields)) {
+          const configured = (data.value as BerkasSchema).fields;
+          if (configured.length > 0) setDocs(configured);
+        }
+      } catch {
+        /* ignore */
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
 
     return () => {
       mounted = false;
     };
   }, [kind]);
 
-  const setSlot = (key: string, patch: Partial<SlotState>) =>
-    setState((s) => {
-      const base: SlotState = s[key] ?? { file: null, preview: null, progress: 0, error: null };
-      return { ...s, [key]: { ...base, ...patch } };
-    });
-
-  const onPick = (slot: DocSlot, file: File | null) => {
-    if (!file) {
-      setSlot(slot.key, { file: null, preview: null, error: null, progress: 0 });
-      return;
-    }
-    if (!fileMatches(file, slot.accept)) {
-      setSlot(slot.key, { file: null, preview: null, error: `Format tidak didukung (${slot.accept})`, progress: 0 });
-      return;
-    }
-    if (slot.maxSize && file.size > slot.maxSize * 1024 * 1024) {
-      setSlot(slot.key, { file: null, preview: null, error: `Ukuran maksimum ${slot.maxSize}MB`, progress: 0 });
-      return;
-    }
-    const preview = file.type.startsWith("image/") ? URL.createObjectURL(file) : null;
-    setSlot(slot.key, { file, preview, error: null, progress: 0 });
-  };
+  const setVal = (key: string, v: string) => setValues((s) => ({ ...s, [key]: v }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,28 +79,31 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       toast.error("Masukkan email pendaftaran terlebih dahulu");
       return;
     }
-    const missing = docs.filter((d) => d.required && !state[d.key]?.file);
+    const missing = docs.filter((d) => d.required && !(values[d.key] ?? "").trim());
     if (missing.length > 0) {
       toast.error(`Lengkapi: ${missing.map((d) => d.label).join(", ")}`);
+      return;
+    }
+    const invalid = docs.filter((d) => {
+      const v = (values[d.key] ?? "").trim();
+      if (!v) return false;
+      return !isValidUrl(v);
+    });
+    if (invalid.length > 0) {
+      toast.error(`URL tidak valid: ${invalid.map((d) => d.label).join(", ")}`);
       return;
     }
 
     setSubmitting(true);
     try {
-      const rows: { email: string; kind: "prestasi" | "ekonomi"; doc_type: string; file_url: string }[] = [];
-      for (const d of docs) {
-        const slot = state[d.key];
-        if (!slot?.file) continue;
-        // simulate progress (Supabase JS client doesn't expose upload progress)
-        setSlot(d.key, { progress: 30 });
-        const url = await uploadFile(slot.file, kind, d.key);
-        setSlot(d.key, { progress: 100 });
-        rows.push({ email: email.trim(), kind, doc_type: d.label, file_url: url });
-      }
+      const rows = docs
+        .map((d) => ({ d, v: (values[d.key] ?? "").trim() }))
+        .filter(({ v }) => v.length > 0)
+        .map(({ d, v }) => ({ email: email.trim(), kind, doc_type: d.label, file_url: v }));
+
       const { error } = await supabase.from("documents").insert(rows);
       if (error) throw error;
 
-      // Lookup pendaftar's WhatsApp by email for notification
       const { data: reg } = await supabase
         .from("registrations")
         .select("full_name, whatsapp")
@@ -191,7 +150,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         </span>
         <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Pengiriman Berkas Pendukung</h1>
         <p className="mt-2 text-muted-foreground">
-          Unggah berkas-berkas pendukung sesuai persyaratan. Pastikan dokumen jelas terbaca.
+          Masukkan tautan (URL) berkas-berkas pendukung sesuai persyaratan. Pastikan dokumen dapat diakses (Google Drive, Dropbox, dsb. — atur izin "Siapa saja dengan link").
         </p>
       </div>
 
@@ -215,64 +174,33 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
-            <h2 className="text-base font-bold text-foreground">Daftar Berkas</h2>
-            <div className="mt-5 space-y-3">
+            <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
+            <div className="mt-5 space-y-4">
               {docs.map((d) => {
-                const s = state[d.key];
+                const v = values[d.key] ?? "";
+                const showError = v.trim().length > 0 && !isValidUrl(v);
                 return (
-                  <div key={d.id} className="rounded-2xl border border-border bg-background p-4">
-                    <div className="flex items-start gap-3">
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary shrink-0">
-                        {s?.preview ? <ImageIcon size={18} /> : <FileText size={18} />}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-medium text-foreground">{d.label}</span>
-                          {d.required ? (
-                            <span className="text-[10px] font-bold uppercase rounded-full bg-destructive/10 text-destructive px-2 py-0.5">Wajib</span>
-                          ) : (
-                            <span className="text-[10px] font-semibold uppercase rounded-full bg-secondary text-muted-foreground px-2 py-0.5">Opsional</span>
-                          )}
-                        </div>
-                        <div className="mt-1 text-[11px] text-muted-foreground">
-                          {d.accept ?? "Semua format"} · maks {d.maxSize ?? 20}MB
-                        </div>
-                        {s?.file && (
-                          <div className="mt-2 text-[11px] text-foreground/80 truncate">
-                            {s.file.name} · {(s.file.size / 1024 / 1024).toFixed(2)}MB
-                          </div>
-                        )}
-                        {s?.error && <div className="mt-1 text-[11px] text-destructive">{s.error}</div>}
-                        {s && s.progress > 0 && s.progress < 100 && (
-                          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                            <div className="h-full bg-primary transition-all" style={{ width: `${s.progress}%` }} />
-                          </div>
-                        )}
-                        {s?.preview && (
-                          <img src={s.preview} alt="" className="mt-3 max-h-32 rounded-lg border border-border object-cover" />
-                        )}
-                      </div>
-                      <div className="flex flex-col items-end gap-1.5">
-                        <label className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground hover:border-primary hover:text-primary cursor-pointer transition">
-                          <UploadCloud size={14} /> {s?.file ? "Ganti" : "Pilih"}
-                          <input
-                            type="file"
-                            className="hidden"
-                            accept={d.accept}
-                            onChange={(e) => onPick(d, e.target.files?.[0] ?? null)}
-                          />
-                        </label>
-                        {s?.file && (
-                          <button
-                            type="button"
-                            onClick={() => onPick(d, null)}
-                            className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-destructive"
-                          >
-                            <X size={12} /> Hapus
-                          </button>
-                        )}
-                      </div>
+                  <div key={d.id}>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-medium text-foreground">{d.label}</span>
+                      {d.required ? (
+                        <span className="text-[10px] font-bold uppercase rounded-full bg-destructive/10 text-destructive px-2 py-0.5">Wajib</span>
+                      ) : (
+                        <span className="text-[10px] font-semibold uppercase rounded-full bg-secondary text-muted-foreground px-2 py-0.5">Opsional</span>
+                      )}
                     </div>
+                    <div className="mt-1.5 relative">
+                      <LinkIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="url"
+                        value={v}
+                        onChange={(e) => setVal(d.key, e.target.value)}
+                        placeholder="https://drive.google.com/..."
+                        className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                        required={d.required}
+                      />
+                    </div>
+                    {showError && <div className="mt-1 text-[11px] text-destructive">URL tidak valid (gunakan http/https)</div>}
                   </div>
                 );
               })}
@@ -288,9 +216,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
             <h3 className="font-semibold text-foreground">Catatan</h3>
             <ul className="mt-4 space-y-3 text-sm text-foreground/85">
               {[
-                "Format & ukuran sesuai pada tiap berkas",
-                "Ukuran maksimum default 20MB",
-                "Pastikan dokumen jelas terbaca",
+                "Gunakan tautan publik (Google Drive/Dropbox/OneDrive)",
+                "Atur izin akses ke 'Siapa saja dengan link'",
+                "Pastikan tautan benar dan dapat dibuka",
                 "Berkas akan diverifikasi oleh tim",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}</li>
