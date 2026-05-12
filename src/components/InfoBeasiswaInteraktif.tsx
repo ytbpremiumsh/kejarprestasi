@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GraduationCap, Backpack, Wallet, CheckCircle2, Sparkles, Info } from "lucide-react";
+import { GraduationCap, Backpack, Wallet, CheckCircle2, Sparkles } from "lucide-react";
 
 type Kategori = {
   key: string;
@@ -97,13 +97,6 @@ export function InfoBeasiswaInteraktif() {
             <span className="pb-1 text-sm text-muted-foreground">{current.periode}</span>
           </div>
           <p className="mt-3 text-muted-foreground">{current.highlight}</p>
-
-          <div className="mt-5 flex items-start gap-2 rounded-2xl bg-[oklch(0.92_0.14_85)]/30 border border-[oklch(0.85_0.16_85)]/50 p-3 text-sm text-foreground/85">
-            <Info size={16} className="mt-0.5 text-[oklch(0.55_0.16_75)] shrink-0" />
-            <p>
-              <span className="font-semibold">Penting:</span> Setiap penerima hanya berhak menerima bantuan <span className="font-semibold">satu kali</span> dalam satu program beasiswa.
-            </p>
-          </div>
         </div>
 
         <div className="rounded-2xl bg-primary-soft/50 p-6 border border-primary/10">

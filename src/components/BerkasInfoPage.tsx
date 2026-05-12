@@ -30,8 +30,7 @@ const tips = [
 
 export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const docs = docsByKind[kind];
-  const uploadTo: "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" =
-    kind === "prestasi" ? "/berkas/prestasi/upload" : "/berkas/ekonomi/upload";
+  const uploadHref = kind === "prestasi" ? "/berkas/prestasi/upload" : "/berkas/ekonomi/upload";
 
   return (
     <>
@@ -52,12 +51,12 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
               persyaratan. Setelah lengkap, lanjutkan ke halaman unggah berkas.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link
-                to={uploadTo}
+              <a
+                href={uploadHref}
                 className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
               >
                 <UploadCloud size={16} /> Lanjut ke Unggah Berkas <ArrowRight size={16} />
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -111,12 +110,12 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
               Lanjutkan ke halaman unggah berkas untuk menyelesaikan proses pengiriman.
             </p>
           </div>
-          <Link
-            to={uploadTo}
+          <a
+            href={uploadHref}
             className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
           >
             <UploadCloud size={16} /> Mulai Unggah Berkas <ArrowRight size={16} />
-          </Link>
+          </a>
         </div>
       </section>
 
