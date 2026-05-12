@@ -54,10 +54,17 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       .then(({ data }) => {
         if (data?.value && Array.isArray((data.value as FormSchema).fields)) {
           const raw = data.value as FormSchema;
-          // Hilangkan field NIK dan semua field upload berkas
+          // Hilangkan field NIK, Prestasi Utama, dan semua field upload berkas
           const filtered: FormSchema = {
             ...raw,
-            fields: raw.fields.filter((f) => f.name !== "nik" && f.type !== "file"),
+            fields: raw.fields.filter((f) => {
+              if (f.type === "file") return false;
+              if (f.name === "nik") return false;
+              const n = (f.name || "").toLowerCase();
+              const l = (f.label || "").toLowerCase();
+              if (n.includes("prestasi") || l.includes("prestasi utama")) return false;
+              return true;
+            }),
           };
           setSchema(filtered);
         }
