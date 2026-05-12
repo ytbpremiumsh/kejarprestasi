@@ -110,12 +110,12 @@ export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
               Lanjutkan ke halaman unggah berkas untuk menyelesaikan proses pengiriman.
             </p>
           </div>
-          <Link
+          <a
             href={uploadHref}
             className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
           >
             <UploadCloud size={16} /> Mulai Unggah Berkas <ArrowRight size={16} />
-          </Link>
+          </a>
         </div>
       </section>
 
