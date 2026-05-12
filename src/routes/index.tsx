@@ -77,16 +77,10 @@ function Index() {
               <HighlightCard icon={<HeartHandshake size={18} />} label="Beasiswa" value="Ekonomi" sub="Dukungan finansial" />
             </div>
 
-            <div className="flex flex-wrap gap-3 pt-2">
-              <a href="#timeline" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition">
-                Daftar Sekarang <ArrowRight size={16} />
+            <div className="flex pt-2">
+              <a href="#timeline" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition sm:w-auto sm:min-w-[280px]">
+                Daftar Sekarang <ArrowRight size={18} />
               </a>
-              <a href="#timeline" className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition">
-                <CalendarClock size={16} /> Lihat Timeline
-              </a>
-              <Link to="/bagikan-poster/prestasi" className="inline-flex items-center gap-2 rounded-full bg-[var(--gradient-gold)] px-6 py-3 text-sm font-semibold text-gold-foreground shadow-gold hover:opacity-95 transition" style={{ background: "var(--gradient-gold)" }}>
-                <Share2 size={16} /> Bagikan Poster
-              </Link>
             </div>
           </div>
         </div>
