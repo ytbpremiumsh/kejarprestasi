@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Search, CheckCircle2, XCircle, Download, FileText, ExternalLink, RotateCcw } from "lucide-react";
+import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
@@ -52,7 +52,7 @@ function AdminPendaftar() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
-  const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  
   const [selected, setSelected] = useState<Registration | null>(null);
 
   const load = async () => {
@@ -72,7 +72,7 @@ function AdminPendaftar() {
   const filtered = useMemo(() => {
     return rows.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
-      if (filterStatus !== "all" && r.status !== filterStatus) return false;
+      
       if (q) {
         const s = q.toLowerCase();
         return (
@@ -84,15 +84,8 @@ function AdminPendaftar() {
       }
       return true;
     });
-  }, [rows, q, filterKind, filterStatus]);
+  }, [rows, q, filterKind]);
 
-  const updateStatus = async (id: string, status: Registration["status"]) => {
-    const { error } = await supabase.from("registrations").update({ status }).eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success(`Status diperbarui: ${status}`);
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
-    if (selected?.id === id) setSelected({ ...selected, status });
-  };
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
@@ -147,12 +140,6 @@ function AdminPendaftar() {
             <option value="prestasi">Prestasi</option>
             <option value="ekonomi">Ekonomi</option>
           </select>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as "all" | "pending" | "approved" | "rejected")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
-            <option value="all">Semua Status</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
         </div>
       </Card>
 
@@ -171,7 +158,7 @@ function AdminPendaftar() {
                   <th className="px-4 py-3">Sekolah</th>
                   <th className="px-4 py-3">Kontak</th>
                   <th className="px-4 py-3">Berkas</th>
-                  <th className="px-4 py-3">Status</th>
+                  
                   <th className="px-4 py-3">Aksi</th>
                 </tr>
               </thead>
@@ -194,7 +181,7 @@ function AdminPendaftar() {
                     <td className="px-4 py-3">
                       <Badge variant="secondary">{docsForRow(r).length} file</Badge>
                     </td>
-                    <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
+                    
                     <td className="px-4 py-3">
                       <Button size="sm" variant="outline" onClick={() => setSelected(r)}>Detail</Button>
                     </td>
@@ -211,33 +198,19 @@ function AdminPendaftar() {
           row={selected}
           docs={docsForRow(selected)}
           onClose={() => setSelected(null)}
-          onApprove={() => updateStatus(selected.id, "approved")}
-          onReject={() => updateStatus(selected.id, "rejected")}
-          onPending={() => updateStatus(selected.id, "pending")}
         />
       )}
     </div>
   );
 }
 
-function StatusBadge({ status }: { status: Registration["status"] }) {
-  const map = {
-    pending: "bg-yellow-100 text-yellow-800",
-    approved: "bg-green-100 text-green-800",
-    rejected: "bg-red-100 text-red-800",
-  };
-  return <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium capitalize ${map[status]}`}>{status}</span>;
-}
 
 function DetailDialog({
-  row, docs, onClose, onApprove, onReject, onPending,
+  row, docs, onClose,
 }: {
   row: Registration;
   docs: Document[];
   onClose: () => void;
-  onApprove: () => void;
-  onReject: () => void;
-  onPending: () => void;
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
@@ -247,7 +220,7 @@ function DetailDialog({
             <h2 className="text-xl font-bold text-foreground">{row.full_name}</h2>
             <div className="mt-1 flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="capitalize">{row.kind}</Badge>
-              <StatusBadge status={row.status} />
+              
               <span className="text-xs text-muted-foreground">Daftar {new Date(row.created_at).toLocaleString("id-ID")}</span>
             </div>
           </div>
@@ -280,15 +253,6 @@ function DetailDialog({
           </div>
         </div>
 
-        <div className="mt-6 flex flex-wrap justify-end gap-2 border-t pt-4">
-          <Button variant="outline" onClick={onPending}>Set Pending</Button>
-          <Button variant="outline" onClick={onReject} className="border-red-300 text-red-700 hover:bg-red-50">
-            <XCircle className="h-4 w-4 mr-1" />Reject
-          </Button>
-          <Button onClick={onApprove} className="bg-green-600 hover:bg-green-700">
-            <CheckCircle2 className="h-4 w-4 mr-1" />Approve
-          </Button>
-        </div>
       </div>
     </div>
   );
