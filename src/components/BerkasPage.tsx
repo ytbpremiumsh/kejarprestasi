@@ -195,24 +195,84 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
-            <h2 className="text-base font-bold text-foreground">Identitas</h2>
-            <div className="mt-5 grid sm:grid-cols-2 gap-5">
-              <label className="block sm:col-span-2">
+            <h2 className="text-base font-bold text-foreground">Identitas Pendaftar</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Cari data Anda dengan email yang digunakan saat mendaftar.</p>
+            <div className="mt-5 grid sm:grid-cols-[1fr_auto] gap-3 items-end">
+              <label className="block">
                 <span className="text-xs font-medium text-foreground/80">
                   Email pendaftaran<span className="text-destructive"> *</span>
                 </span>
-                <div className="mt-1.5">
+                <div className="mt-1.5 relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => { setEmail(e.target.value); setRegistrant(null); setSearchError(null); }}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSearch(); } }}
                     placeholder="email yang kamu pakai saat mendaftar"
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     required
                   />
                 </div>
               </label>
+              <button
+                type="button"
+                onClick={handleSearch}
+                disabled={searching}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition disabled:opacity-60"
+              >
+                {searching ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
+                Cari
+              </button>
             </div>
+
+            {searchError && (
+              <div className="mt-4 flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
+                <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                <div>
+                  {searchError}{" "}
+                  <Link to={kind === "prestasi" ? "/pendaftaran/prestasi" : "/pendaftaran/ekonomi"} className="font-semibold underline">
+                    Daftar dulu
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {registrant && (
+              <div className="mt-5 rounded-2xl border border-primary/30 bg-primary-soft/40 p-4">
+                <div className="flex items-center gap-2 text-xs font-semibold text-primary">
+                  <UserCheck size={14} /> Data ditemukan
+                </div>
+                <div className="mt-3 grid sm:grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Nama Lengkap</div>
+                    <div className="font-semibold text-foreground">{registrant.full_name}</div>
+                  </div>
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">WhatsApp</div>
+                    <div className="font-semibold text-foreground">{registrant.whatsapp || "-"}</div>
+                  </div>
+                  {registrant.nik && (
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">NIK</div>
+                      <div className="font-semibold text-foreground">{registrant.nik}</div>
+                    </div>
+                  )}
+                  {registrant.school_name && (
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Sekolah / Kampus</div>
+                      <div className="font-semibold text-foreground">{registrant.school_name}</div>
+                    </div>
+                  )}
+                  {registrant.education_level && (
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Jenjang</div>
+                      <div className="font-semibold text-foreground">{registrant.education_level}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
