@@ -37,7 +37,6 @@ type RegInfo = {
   id?: string;
   full_name: string;
   whatsapp: string;
-  nik?: string | null;
   school_name?: string | null;
   education_level?: string | null;
 };
