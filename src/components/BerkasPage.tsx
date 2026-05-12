@@ -47,20 +47,24 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
     setDocs(defaultDocs[kind]);
     setValues({});
 
-    supabase
-      .from("site_settings")
-      .select("value")
-      .eq("key", `form_berkas_${kind}`)
-      .maybeSingle()
-      .then(({ data }) => {
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", `form_berkas_${kind}`)
+          .maybeSingle();
         if (!mounted) return;
         if (data?.value && Array.isArray((data.value as BerkasSchema).fields)) {
           const configured = (data.value as BerkasSchema).fields;
           if (configured.length > 0) setDocs(configured);
         }
-      })
-      .then(() => mounted && setLoading(false))
-      .catch(() => mounted && setLoading(false));
+      } catch {
+        /* ignore */
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
 
     return () => {
       mounted = false;
