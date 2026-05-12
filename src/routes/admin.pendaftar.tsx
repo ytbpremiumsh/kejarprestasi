@@ -72,7 +72,7 @@ function AdminPendaftar() {
   const filtered = useMemo(() => {
     return rows.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
-      if (filterStatus !== "all" && r.status !== filterStatus) return false;
+      
       if (q) {
         const s = q.toLowerCase();
         return (
