@@ -181,7 +181,7 @@ function AdminPendaftar() {
                     <td className="px-4 py-3">
                       <Badge variant="secondary">{docsForRow(r).length} file</Badge>
                     </td>
-                    <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
+                    
                     <td className="px-4 py-3">
                       <Button size="sm" variant="outline" onClick={() => setSelected(r)}>Detail</Button>
                     </td>
