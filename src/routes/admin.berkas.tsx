@@ -303,10 +303,10 @@ function AdminBerkas() {
                 <div className="grid gap-2">
                   {detail.items.map((d) => (
                     <div key={d.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2">
-                      <a href={d.file_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm flex-1 min-w-0">
-                        <FileText className="h-4 w-4 text-primary shrink-0" />
-                        <span className="font-medium truncate">{d.doc_type}</span>
-                        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <a href={d.file_url} target="_blank" rel="noreferrer" className="flex items-start gap-2 text-sm flex-1 min-w-0">
+                        <FileText className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <span className="font-medium break-words">{d.doc_type}</span>
+                        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
                       </a>
                       <Button size="icon" variant="ghost" title="Hapus" onClick={() => removeDoc(d.id)} className="h-8 w-8 text-destructive">
                         <Trash2 className="h-4 w-4" />
