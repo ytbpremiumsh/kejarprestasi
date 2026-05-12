@@ -51,6 +51,7 @@ function AdminPendaftar() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
+  const [filterBerkas, setFilterBerkas] = useState<"all" | "submitted" | "pending">("all");
   
   const [selected, setSelected] = useState<Registration | null>(null);
 
@@ -68,10 +69,27 @@ function AdminPendaftar() {
 
   useEffect(() => { load(); }, []);
 
+  const docsForRow = (r: Registration) =>
+    docs.filter((d) => d.registration_id === r.id || d.email === r.email);
+
+  const counts = useMemo(() => {
+    let submitted = 0;
+    let pending = 0;
+    for (const r of rows) {
+      if (docsForRow(r).length > 0) submitted++;
+      else pending++;
+    }
+    return { submitted, pending };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, docs]);
+
   const filtered = useMemo(() => {
     return rows.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
-      
+      const hasDocs = docsForRow(r).length > 0;
+      if (filterBerkas === "submitted" && !hasDocs) return false;
+      if (filterBerkas === "pending" && hasDocs) return false;
+
       if (q) {
         const s = q.toLowerCase();
         return (
@@ -83,7 +101,8 @@ function AdminPendaftar() {
       }
       return true;
     });
-  }, [rows, q, filterKind]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, q, filterKind, filterBerkas, docs]);
 
 
   const exportExcel = () => {
