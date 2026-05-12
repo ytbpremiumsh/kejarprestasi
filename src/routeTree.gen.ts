@@ -23,6 +23,7 @@ import { Route as BagikanPosterIndexRouteImport } from './routes/bagikan-poster.
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
 import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
+import { Route as BerkasTerkirimRouteImport } from './routes/berkas.terkirim'
 import { Route as BerkasPrestasiRouteImport } from './routes/berkas.prestasi'
 import { Route as BerkasEkonomiRouteImport } from './routes/berkas.ekonomi'
 import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-poster.prestasi'
@@ -107,6 +108,11 @@ const PendaftaranPrestasiRoute = PendaftaranPrestasiRouteImport.update({
 const PendaftaranEkonomiRoute = PendaftaranEkonomiRouteImport.update({
   id: '/pendaftaran/ekonomi',
   path: '/pendaftaran/ekonomi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BerkasTerkirimRoute = BerkasTerkirimRouteImport.update({
+  id: '/berkas/terkirim',
+  path: '/berkas/terkirim',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BerkasPrestasiRoute = BerkasPrestasiRouteImport.update({
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRouteWithChildren
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
+  '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/admin/': typeof AdminIndexRoute
@@ -238,6 +245,7 @@ export interface FileRoutesByTo {
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRouteWithChildren
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
+  '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/admin': typeof AdminIndexRoute
@@ -270,6 +278,7 @@ export interface FileRoutesById {
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/berkas/ekonomi': typeof BerkasEkonomiRouteWithChildren
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
+  '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/admin/': typeof AdminIndexRoute
@@ -303,6 +312,7 @@ export interface FileRouteTypes {
     | '/bagikan-poster/prestasi'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
+    | '/berkas/terkirim'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/admin/'
@@ -333,6 +343,7 @@ export interface FileRouteTypes {
     | '/bagikan-poster/prestasi'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
+    | '/berkas/terkirim'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/admin'
@@ -364,6 +375,7 @@ export interface FileRouteTypes {
     | '/bagikan-poster/prestasi'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
+    | '/berkas/terkirim'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/admin/'
@@ -387,6 +399,7 @@ export interface RootRouteChildren {
   BagikanPosterPrestasiRoute: typeof BagikanPosterPrestasiRoute
   BerkasEkonomiRoute: typeof BerkasEkonomiRouteWithChildren
   BerkasPrestasiRoute: typeof BerkasPrestasiRouteWithChildren
+  BerkasTerkirimRoute: typeof BerkasTerkirimRoute
   PendaftaranEkonomiRoute: typeof PendaftaranEkonomiRoute
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
   BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
@@ -491,6 +504,13 @@ declare module '@tanstack/react-router' {
       path: '/pendaftaran/ekonomi'
       fullPath: '/pendaftaran/ekonomi'
       preLoaderRoute: typeof PendaftaranEkonomiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berkas/terkirim': {
+      id: '/berkas/terkirim'
+      path: '/berkas/terkirim'
+      fullPath: '/berkas/terkirim'
+      preLoaderRoute: typeof BerkasTerkirimRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/berkas/prestasi': {
@@ -676,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   BagikanPosterPrestasiRoute: BagikanPosterPrestasiRoute,
   BerkasEkonomiRoute: BerkasEkonomiRouteWithChildren,
   BerkasPrestasiRoute: BerkasPrestasiRouteWithChildren,
+  BerkasTerkirimRoute: BerkasTerkirimRoute,
   PendaftaranEkonomiRoute: PendaftaranEkonomiRoute,
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
   BagikanPosterIndexRoute: BagikanPosterIndexRoute,
