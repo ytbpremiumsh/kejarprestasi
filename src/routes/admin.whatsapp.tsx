@@ -89,7 +89,10 @@ function AdminWhatsApp() {
   useEffect(() => {
     (async () => {
       const { data } = await supabase.from("site_settings").select("value").eq("key", "whatsapp").maybeSingle();
-      if (data?.value) setCfg({ ...DEFAULT, ...(data.value as Partial<WaConfig>) });
+      if (data?.value) {
+        const v = data.value as Partial<WaConfig>;
+        setCfg({ ...DEFAULT, ...v, templates: { ...DEFAULT_TEMPLATES, ...(v.templates ?? {}) } });
+      }
       setLoading(false);
     })();
   }, []);
