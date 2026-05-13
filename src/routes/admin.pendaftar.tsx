@@ -72,8 +72,18 @@ function AdminPendaftar() {
 
   useEffect(() => { load(); }, []);
 
-  const docsForRow = (r: Registration) =>
-    docs.filter((d) => d.registration_id === r.id || d.email === r.email);
+  const docsForRow = (r: Registration) => {
+    const matched = docs
+      .filter((d) => d.registration_id === r.id || (d.email.toLowerCase() === r.email.toLowerCase() && d.kind === r.kind))
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    const seen = new Set<string>();
+    return matched.filter((d) => {
+      const key = d.doc_type.trim().toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
 
   const counts = useMemo(() => {
     let submitted = 0;
@@ -178,15 +188,15 @@ function AdminPendaftar() {
   };
   const deleteIds = async (ids: string[]) => {
     if (ids.length === 0) return;
-    const emails = rows.filter((r) => ids.includes(r.id)).map((r) => r.email);
+    const deletedRows = rows.filter((r) => ids.includes(r.id));
     const { error } = await supabase.from("registrations").delete().in("id", ids);
     if (error) return toast.error(error.message);
-    if (emails.length > 0) {
-      await supabase.from("documents").delete().in("email", emails);
+    for (const row of deletedRows) {
+      await supabase.from("documents").delete().eq("email", row.email).eq("kind", row.kind);
     }
     toast.success(`${ids.length} pendaftar dihapus`);
     setRows((prev) => prev.filter((r) => !ids.includes(r.id)));
-    setDocs((prev) => prev.filter((d) => !ids.includes(d.registration_id ?? "") && !emails.includes(d.email)));
+    setDocs((prev) => prev.filter((d) => !ids.includes(d.registration_id ?? "") && !deletedRows.some((r) => r.email === d.email && r.kind === d.kind)));
     setSelected(new Set());
   };
   const bulkDelete = () => {
