@@ -147,6 +147,9 @@ function AdminAiBalasan() {
   const webhookUrl = behavior?.wa_webhook_token
     ? `https://prestasi-emas.lovable.app/api/public/wa-webhook?token=${behavior.wa_webhook_token}`
     : "";
+  const cloudWebhookUrl = behavior?.wa_webhook_token
+    ? `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/wa-webhook?token=${behavior.wa_webhook_token}`
+    : "";
 
   async function regenerateToken() {
     if (!behavior?.id) return;
@@ -546,6 +549,16 @@ function AdminAiBalasan() {
                 <p className="text-xs text-muted-foreground mt-1.5">
                   Method: <code className="px-1 rounded bg-muted">POST</code> · Body JSON dengan field <code className="px-1 rounded bg-muted">from</code> (nomor) &amp; <code className="px-1 rounded bg-muted">message</code> (teks). Token berfungsi sebagai pengaman; jangan dibagikan.
                 </p>
+              </div>
+
+              <div>
+                <Label>URL Webhook Cadangan (rekomendasi jika gateway belum masuk)</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input value={cloudWebhookUrl} readOnly className="font-mono text-xs" />
+                  <Button variant="outline" size="icon" onClick={() => copyText(cloudWebhookUrl, "URL webhook cadangan disalin")} disabled={!cloudWebhookUrl}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
               <div className="flex justify-end">
