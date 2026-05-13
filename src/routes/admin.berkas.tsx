@@ -11,6 +11,7 @@ import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, U
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { TokenBadge } from "@/components/admin/TokenBadge";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/admin/berkas")({
   component: AdminBerkas,
@@ -63,6 +64,7 @@ function AdminBerkas() {
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
   const [filterStatus, setFilterStatus] = useState<"all" | CandidateStatus>("all");
   const [detail, setDetail] = useState<Group | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const load = async () => {
     setLoading(true);
@@ -191,6 +193,28 @@ function AdminBerkas() {
     setDetail((prev) => (prev ? { ...prev, items: prev.items.filter((x) => x.id !== id) } : prev));
   };
 
+  const toggleOne = (key: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  };
+  const toggleAll = () => {
+    if (selected.size === grouped.length) setSelected(new Set());
+    else setSelected(new Set(grouped.map((g) => g.key)));
+  };
+  const bulkDelete = async () => {
+    if (selected.size === 0) return;
+    if (!confirm(`Hapus ${selected.size} pengirim beserta semua berkasnya?`)) return;
+    const ids = grouped.filter((g) => selected.has(g.key)).flatMap((g) => g.items.map((i) => i.id));
+    const { error } = await supabase.from("documents").delete().in("id", ids);
+    if (error) return toast.error(error.message);
+    toast.success(`${ids.length} berkas dihapus`);
+    setDocs((prev) => prev.filter((d) => !ids.includes(d.id)));
+    setSelected(new Set());
+  };
+
   const statusBadge = (s: CandidateStatus) => {
     if (s === "approved") return <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20">✓ Kandidat</Badge>;
     if (s === "rejected") return <Badge className="bg-red-500/15 text-red-700 border-red-500/30 hover:bg-red-500/20">✕ Ditolak</Badge>;
@@ -206,6 +230,11 @@ function AdminBerkas() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={load}><RotateCcw className="h-4 w-4 mr-1" />Refresh</Button>
+          {selected.size > 0 && (
+            <Button variant="destructive" onClick={bulkDelete}>
+              <Trash2 className="h-4 w-4 mr-1" />Hapus ({selected.size})
+            </Button>
+          )}
           <Button onClick={exportExcel}><Download className="h-4 w-4 mr-1" />Export Excel</Button>
         </div>
       </div>
@@ -239,6 +268,13 @@ function AdminBerkas() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
+                <TableHead className="w-10">
+                  <Checkbox
+                    checked={grouped.length > 0 && selected.size === grouped.length}
+                    onCheckedChange={toggleAll}
+                    aria-label="Pilih semua"
+                  />
+                </TableHead>
                 <TableHead>NAMA</TableHead>
                 <TableHead>KODE TOKEN</TableHead>
                 <TableHead>KATEGORI</TableHead>
@@ -250,7 +286,14 @@ function AdminBerkas() {
             </TableHeader>
             <TableBody>
               {grouped.map((g) => (
-                <TableRow key={g.key} className="align-top">
+                <TableRow key={g.key} className="align-top" data-state={selected.has(g.key) ? "selected" : undefined}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selected.has(g.key)}
+                      onCheckedChange={() => toggleOne(g.key)}
+                      aria-label="Pilih baris"
+                    />
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 font-medium">
                       <User className="h-4 w-4 text-primary shrink-0" />

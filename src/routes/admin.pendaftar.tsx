@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { TokenBadge } from "@/components/admin/TokenBadge";
@@ -54,8 +55,8 @@ function AdminPendaftar() {
   const [q, setQ] = useState("");
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
   const [filterBerkas, setFilterBerkas] = useState<"all" | "submitted" | "pending">("all");
-  
-  const [selected, setSelected] = useState<Registration | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selectedRow, setSelectedRow] = useState<Registration | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -164,6 +165,39 @@ function AdminPendaftar() {
     URL.revokeObjectURL(url);
   };
 
+  const toggleOne = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+  const toggleAll = () => {
+    if (selected.size === filtered.length) setSelected(new Set());
+    else setSelected(new Set(filtered.map((r) => r.id)));
+  };
+  const deleteIds = async (ids: string[]) => {
+    if (ids.length === 0) return;
+    const emails = rows.filter((r) => ids.includes(r.id)).map((r) => r.email);
+    const { error } = await supabase.from("registrations").delete().in("id", ids);
+    if (error) return toast.error(error.message);
+    if (emails.length > 0) {
+      await supabase.from("documents").delete().in("email", emails);
+    }
+    toast.success(`${ids.length} pendaftar dihapus`);
+    setRows((prev) => prev.filter((r) => !ids.includes(r.id)));
+    setDocs((prev) => prev.filter((d) => !ids.includes(d.registration_id ?? "") && !emails.includes(d.email)));
+    setSelected(new Set());
+  };
+  const bulkDelete = () => {
+    if (selected.size === 0) return;
+    if (!confirm(`Hapus ${selected.size} pendaftar beserta berkasnya?`)) return;
+    deleteIds(Array.from(selected));
+  };
+  const deleteOne = (r: Registration) => {
+    if (!confirm(`Hapus pendaftar "${r.full_name}"?`)) return;
+    deleteIds([r.id]);
+  };
 
   return (
     <div className="space-y-4">
@@ -174,6 +208,11 @@ function AdminPendaftar() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={load}><RotateCcw className="h-4 w-4 mr-1" />Refresh</Button>
+          {selected.size > 0 && (
+            <Button variant="destructive" onClick={bulkDelete}>
+              <Trash2 className="h-4 w-4 mr-1" />Hapus ({selected.size})
+            </Button>
+          )}
           <Button variant="outline" onClick={exportCSV}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
           <Button onClick={exportExcel}><Download className="h-4 w-4 mr-1" />Export Excel</Button>
         </div>
@@ -208,6 +247,13 @@ function AdminPendaftar() {
             <table className="w-full text-sm">
               <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
                 <tr>
+                  <th className="px-4 py-3 w-10">
+                    <Checkbox
+                      checked={filtered.length > 0 && selected.size === filtered.length}
+                      onCheckedChange={toggleAll}
+                      aria-label="Pilih semua"
+                    />
+                  </th>
                   <th className="px-4 py-3">Nama</th>
                   <th className="px-4 py-3">Kode Token</th>
                   <th className="px-4 py-3">Kategori</th>
@@ -219,7 +265,14 @@ function AdminPendaftar() {
               </thead>
               <tbody>
                 {filtered.map((r) => (
-                  <tr key={r.id} className="border-t hover:bg-muted/30">
+                  <tr key={r.id} className={`border-t hover:bg-muted/30 ${selected.has(r.id) ? "bg-muted/40" : ""}`}>
+                    <td className="px-4 py-3">
+                      <Checkbox
+                        checked={selected.has(r.id)}
+                        onCheckedChange={() => toggleOne(r.id)}
+                        aria-label="Pilih baris"
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <div className="font-medium text-foreground">{r.full_name}</div>
                       <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("id-ID")}</div>
@@ -243,9 +296,13 @@ function AdminPendaftar() {
                         <Badge variant="outline" className="text-muted-foreground">Belum kirim</Badge>
                       )}
                     </td>
-                    
                     <td className="px-4 py-3">
-                      <Button size="sm" variant="outline" onClick={() => setSelected(r)}>Detail</Button>
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="outline" onClick={() => setSelectedRow(r)}>Detail</Button>
+                        <Button size="sm" variant="ghost" className="text-destructive" onClick={() => deleteOne(r)} title="Hapus">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -255,11 +312,11 @@ function AdminPendaftar() {
         )}
       </Card>
 
-      {selected && (
+      {selectedRow && (
         <DetailDialog
-          row={selected}
-          docs={docsForRow(selected)}
-          onClose={() => setSelected(null)}
+          row={selectedRow}
+          docs={docsForRow(selectedRow)}
+          onClose={() => setSelectedRow(null)}
         />
       )}
     </div>
