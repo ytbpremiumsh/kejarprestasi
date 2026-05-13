@@ -64,11 +64,6 @@ const BerkasConfirmationEmail = ({
             </Text>
             <Hr style={infoDivider} />
             <Text style={infoRow}>
-              <span style={infoLabel}>Jumlah Berkas</span>
-              <span style={infoValue}>{count ?? 0} dokumen</span>
-            </Text>
-            <Hr style={infoDivider} />
-            <Text style={infoRow}>
               <span style={infoLabel}>Status</span>
               <span style={infoValueAccent}>Menunggu Verifikasi</span>
             </Text>
