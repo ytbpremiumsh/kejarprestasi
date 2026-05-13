@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, User, Check, X, Eye } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import { TokenBadge } from "@/components/admin/TokenBadge";
 
 export const Route = createFileRoute("/admin/berkas")({
   component: AdminBerkas,
@@ -40,6 +41,7 @@ type Registration = {
   school_name: string;
   grade: string;
   kind: string;
+  token: string | null;
   candidate_status: CandidateStatus;
 };
 
@@ -66,7 +68,7 @@ function AdminBerkas() {
     setLoading(true);
     const [d, r] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
-      supabase.from("registrations").select("id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, candidate_status"),
+      supabase.from("registrations").select("id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status"),
     ]);
     if (d.error) toast.error(d.error.message);
     if (r.error) toast.error(r.error.message);
@@ -112,6 +114,7 @@ function AdminBerkas() {
         r.email.toLowerCase().includes(s) ||
         (r.reg?.full_name.toLowerCase().includes(s) ?? false) ||
         (r.reg?.school_name.toLowerCase().includes(s) ?? false) ||
+        (r.reg?.token?.toLowerCase().includes(s) ?? false) ||
         r.items.some((i) => i.doc_type.toLowerCase().includes(s)),
       );
     }
@@ -123,6 +126,7 @@ function AdminBerkas() {
     const data = docs.map((d) => {
       const r = findReg(d);
       return {
+        Kode: r?.token ?? "",
         "Nama Lengkap": r?.full_name ?? "",
         Email: d.email,
         WhatsApp: r?.whatsapp ?? "",
@@ -198,7 +202,7 @@ function AdminBerkas() {
         <div className="flex flex-wrap gap-2">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, sekolah, atau jenis berkas..." className="pl-9" />
+            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, sekolah, kode token, atau jenis berkas..." className="pl-9" />
           </div>
           <select value={filterKind} onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
             <option value="all">Semua Kategori</option>
@@ -224,6 +228,7 @@ function AdminBerkas() {
             <TableHeader>
               <TableRow className="bg-muted/40">
                 <TableHead>NAMA</TableHead>
+                <TableHead>KODE TOKEN</TableHead>
                 <TableHead>KATEGORI</TableHead>
                 <TableHead>SEKOLAH</TableHead>
                 <TableHead>BERKAS</TableHead>
@@ -241,6 +246,7 @@ function AdminBerkas() {
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">{g.email}</div>
                   </TableCell>
+                  <TableCell><TokenBadge token={g.reg?.token} /></TableCell>
                   <TableCell><Badge variant="secondary" className="capitalize">{g.kind}</Badge></TableCell>
                   <TableCell className="text-sm">
                     {g.reg ? (
@@ -279,6 +285,7 @@ function AdminBerkas() {
                 {statusBadge(detail.status)}
                 <Badge variant="secondary" className="capitalize">{detail.kind}</Badge>
                 <Badge variant="outline">{detail.items.length} file</Badge>
+                <TokenBadge token={detail.reg?.token} size="md" />
               </div>
 
               {detail.reg ? (

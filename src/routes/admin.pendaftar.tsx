@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import { TokenBadge } from "@/components/admin/TokenBadge";
 
 export const Route = createFileRoute("/admin/pendaftar")({
   component: AdminPendaftar,
@@ -96,7 +97,7 @@ function AdminPendaftar() {
         return (
           r.full_name.toLowerCase().includes(s) ||
           r.email.toLowerCase().includes(s) ||
-
+          (r.token?.toLowerCase().includes(s) ?? false) ||
           r.school_name.toLowerCase().includes(s)
         );
       }
@@ -182,7 +183,7 @@ function AdminPendaftar() {
         <div className="flex flex-wrap gap-2">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, sekolah..." className="pl-9" />
+            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, sekolah, kode token..." className="pl-9" />
           </div>
           <select value={filterKind} onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
             <option value="all">Semua Kategori</option>
@@ -208,11 +209,11 @@ function AdminPendaftar() {
               <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
                 <tr>
                   <th className="px-4 py-3">Nama</th>
+                  <th className="px-4 py-3">Kode Token</th>
                   <th className="px-4 py-3">Kategori</th>
                   <th className="px-4 py-3">Sekolah</th>
                   <th className="px-4 py-3">Kontak</th>
                   <th className="px-4 py-3">Berkas</th>
-                  
                   <th className="px-4 py-3">Aksi</th>
                 </tr>
               </thead>
@@ -223,6 +224,7 @@ function AdminPendaftar() {
                       <div className="font-medium text-foreground">{r.full_name}</div>
                       <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("id-ID")}</div>
                     </td>
+                    <td className="px-4 py-3"><TokenBadge token={r.token} /></td>
                     <td className="px-4 py-3 capitalize">{r.kind}</td>
                     <td className="px-4 py-3">
                       <div>{r.school_name}</div>
@@ -280,7 +282,7 @@ function DetailDialog({
             <h2 className="text-xl font-bold text-foreground">{row.full_name}</h2>
             <div className="mt-1 flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="capitalize">{row.kind}</Badge>
-              
+              <TokenBadge token={row.token} size="md" />
               <span className="text-xs text-muted-foreground">Daftar {new Date(row.created_at).toLocaleString("id-ID")}</span>
             </div>
           </div>
