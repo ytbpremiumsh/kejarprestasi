@@ -28,7 +28,7 @@ import {
   Eye,
 } from "lucide-react";
 import { toast } from "sonner";
-import * as XLSX from "xlsx";
+import { exportRowsToXlsx } from "@/lib/excel-export";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { uniqueLatestDocuments } from "@/lib/document-utils";
