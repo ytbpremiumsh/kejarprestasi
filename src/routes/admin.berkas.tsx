@@ -114,6 +114,7 @@ function AdminBerkas() {
         r.email.toLowerCase().includes(s) ||
         (r.reg?.full_name.toLowerCase().includes(s) ?? false) ||
         (r.reg?.school_name.toLowerCase().includes(s) ?? false) ||
+        (r.reg?.token?.toLowerCase().includes(s) ?? false) ||
         r.items.some((i) => i.doc_type.toLowerCase().includes(s)),
       );
     }
