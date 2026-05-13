@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
-import { CheckCircle2, ArrowRight, MessageCircle, Heart, FileUp } from "lucide-react";
+import { CheckCircle2, ArrowRight, Heart, FileUp } from "lucide-react";
 import { DonationCard } from "@/components/DonationCard";
 
 type Search = {
