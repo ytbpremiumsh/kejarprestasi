@@ -227,6 +227,7 @@ function AdminBerkas() {
             <TableHeader>
               <TableRow className="bg-muted/40">
                 <TableHead>NAMA</TableHead>
+                <TableHead>KODE TOKEN</TableHead>
                 <TableHead>KATEGORI</TableHead>
                 <TableHead>SEKOLAH</TableHead>
                 <TableHead>BERKAS</TableHead>
