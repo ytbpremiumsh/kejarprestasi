@@ -136,6 +136,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/cek-status" className="hover:text-primary transition">
+                Cek Status Pendaftaran
+              </Link>
+            </li>
+            <li>
               <Link to="/bagikan-poster/prestasi" className="hover:text-primary transition">
                 Bagikan Poster
               </Link>
