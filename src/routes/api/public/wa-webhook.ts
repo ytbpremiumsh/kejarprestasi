@@ -38,7 +38,7 @@ export const Route = createFileRoute("/api/public/wa-webhook")({
   server: {
     handlers: {
       OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
-      GET: async () => json({ ok: true, endpoint: "wa-webhook" }),
+      GET: async ({ request }) => handleGet(request),
       POST: async ({ request }) => handleWebhook(request),
     },
   },
@@ -51,6 +51,13 @@ function json(body: unknown, status = 200) {
   });
 }
 
+async function handleGet(request: Request) {
+  const url = new URL(request.url);
+  const hasMessagePayload = ["from", "sender", "number", "phone", "wa_number", "remoteJid", "message", "text", "body", "msg", "pesan"].some((key) => url.searchParams.has(key));
+  if (hasMessagePayload) return handleWebhook(request);
+  return json({ ok: true, endpoint: "wa-webhook", method: "POST/GET" });
+}
+
 async function handleWebhook(request: Request) {
   const db = supabaseAdmin as unknown as Db;
 
@@ -58,13 +65,14 @@ async function handleWebhook(request: Request) {
     const behavior = await loadBehavior(db);
     if (!behavior) return json({ ok: false, error: "ai_behavior_not_configured" }, 400);
 
+    const payload = await parsePayload(request);
     const url = new URL(request.url);
-    const token = url.searchParams.get("token") || request.headers.get("x-webhook-token");
+    const bearer = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "").trim();
+    const token = url.searchParams.get("token") || request.headers.get("x-webhook-token") || bearer || firstString(payload, ["token", "webhook_token", "secret", "data.token", "payload.token"]);
     if (!behavior.wa_webhook_token || token !== behavior.wa_webhook_token) {
       return json({ ok: false, error: "invalid_token" }, 401);
     }
 
-    const payload = await parsePayload(request);
     const rawPhone = pickRawPhone(payload);
     const phone = normalizeNumber(rawPhone ?? "");
     const text = pickText(payload);
@@ -73,6 +81,14 @@ async function handleWebhook(request: Request) {
     if (isFromMe(payload)) return json({ ok: true, ignored: "from_me" });
     if (isGroupMessage(payload, rawPhone)) return json({ ok: true, ignored: "group_message" });
     if (!phone || !text) {
+      await db.from("wa_chat_messages").insert({
+        phone: phone || "unknown",
+        contact_name: contactName,
+        direction: "in",
+        message: text || "[Webhook diterima, tetapi nomor atau isi pesan belum terbaca]",
+        raw: payload,
+        status: "ignored_no_phone_or_text",
+      });
       return json({ ok: true, ignored: "no_phone_or_text", parsed: { phone, text }, payload });
     }
 
