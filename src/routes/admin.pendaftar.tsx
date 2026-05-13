@@ -10,6 +10,7 @@ import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2 } 
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { TokenBadge } from "@/components/admin/TokenBadge";
+import { uniqueLatestDocuments } from "@/lib/document-utils";
 
 export const Route = createFileRoute("/admin/pendaftar")({
   component: AdminPendaftar,
@@ -75,20 +76,12 @@ function AdminPendaftar() {
   }, []);
 
   const docsForRow = (r: Registration) => {
-    const matched = docs
-      .filter(
-        (d) =>
-          d.registration_id === r.id ||
-          (d.email.toLowerCase() === r.email.toLowerCase() && d.kind === r.kind),
-      )
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    const seen = new Set<string>();
-    return matched.filter((d) => {
-      const key = d.doc_type.trim().toLowerCase();
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
+    const matched = docs.filter(
+      (d) =>
+        d.registration_id === r.id ||
+        (d.email.toLowerCase() === r.email.toLowerCase() && d.kind === r.kind),
+    );
+    return uniqueLatestDocuments(matched);
   };
 
   const counts = useMemo(() => {
