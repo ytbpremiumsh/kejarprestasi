@@ -102,7 +102,9 @@ const DEFAULT_PROVIDER: AiProvider = {
 
 function AdminAiBalasan() {
   const [behavior, setBehavior] = useState<Behavior | null>(null);
+  const [provider, setProvider] = useState<AiProvider>(DEFAULT_PROVIDER);
   const [savingBhv, setSavingBhv] = useState(false);
+  const [savingProvider, setSavingProvider] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [kb, setKb] = useState<KbItem[]>([]);
@@ -129,11 +131,13 @@ function AdminAiBalasan() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const [{ data: bhv }, { data: kbRows }] = await Promise.all([
+      const [{ data: bhv }, { data: kbRows }, { data: aiProvider }] = await Promise.all([
         supabase.from("ai_behavior").select("*").limit(1).maybeSingle(),
         supabase.from("ai_knowledge_base").select("*").order("sort_order").order("created_at", { ascending: false }),
+        (supabase.from as never as (table: string) => { select: (columns: string) => { limit: (count: number) => { maybeSingle: () => Promise<{ data: AiProvider | null }> } } })("ai_provider_settings").select("*").limit(1).maybeSingle(),
       ]);
       if (bhv) setBehavior(bhv as Behavior);
+      if (aiProvider) setProvider({ ...DEFAULT_PROVIDER, ...aiProvider });
       if (kbRows) setKb(kbRows as KbItem[]);
       setLoading(false);
       loadWaMsgs();
@@ -141,7 +145,7 @@ function AdminAiBalasan() {
   }, []);
 
   const webhookUrl = behavior?.wa_webhook_token
-    ? `https://zmlwicrlcuqgxfaskxic.functions.supabase.co/wa-webhook?token=${behavior.wa_webhook_token}`
+    ? `https://prestasi-emas.lovable.app/api/public/wa-webhook?token=${behavior.wa_webhook_token}`
     : "";
 
   async function regenerateToken() {
@@ -181,6 +185,25 @@ function AdminAiBalasan() {
     setSavingBhv(false);
     if (error) toast.error("Gagal menyimpan: " + error.message);
     else toast.success("Perilaku AI tersimpan");
+  }
+
+  async function saveProvider() {
+    setSavingProvider(true);
+    const payload = {
+      vendor: provider.vendor,
+      api_key: provider.vendor === "openrouter" ? provider.api_key : null,
+      base_url: provider.vendor === "openrouter" ? provider.base_url || DEFAULT_PROVIDER.base_url : null,
+      model: provider.model,
+      enabled: provider.enabled,
+    };
+    const query = (supabase.from as never as (table: string) => {
+      upsert: (value: typeof payload & { id?: string }) => { select: () => { single: () => Promise<{ data: AiProvider | null; error: { message: string } | null }> } };
+    })("ai_provider_settings");
+    const { data, error } = await query.upsert({ ...payload, id: provider.id }).select().single();
+    setSavingProvider(false);
+    if (error) return toast.error("Gagal menyimpan provider: " + error.message);
+    if (data) setProvider({ ...DEFAULT_PROVIDER, ...data });
+    toast.success("Provider AI tersimpan");
   }
 
   async function saveKb(item: Partial<KbItem>) {
