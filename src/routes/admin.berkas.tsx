@@ -68,7 +68,7 @@ function AdminBerkas() {
     setLoading(true);
     const [d, r] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
-      supabase.from("registrations").select("id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, candidate_status"),
+      supabase.from("registrations").select("id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status"),
     ]);
     if (d.error) toast.error(d.error.message);
     if (r.error) toast.error(r.error.message);
