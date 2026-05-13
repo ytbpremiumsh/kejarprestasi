@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import * as XLSX from "xlsx";
+import { exportRowsToXlsx, exportRowsToCsv } from "@/lib/excel-export";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { uniqueLatestDocuments } from "@/lib/document-utils";
 
