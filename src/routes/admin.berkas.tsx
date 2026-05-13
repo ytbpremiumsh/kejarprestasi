@@ -284,6 +284,7 @@ function AdminBerkas() {
                 {statusBadge(detail.status)}
                 <Badge variant="secondary" className="capitalize">{detail.kind}</Badge>
                 <Badge variant="outline">{detail.items.length} file</Badge>
+                <TokenBadge token={detail.reg?.token} size="md" />
               </div>
 
               {detail.reg ? (
