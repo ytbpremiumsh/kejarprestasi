@@ -28,7 +28,7 @@ import {
   Eye,
 } from "lucide-react";
 import { toast } from "sonner";
-import * as XLSX from "xlsx";
+import { exportRowsToXlsx } from "@/lib/excel-export";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { uniqueLatestDocuments } from "@/lib/document-utils";
@@ -156,7 +156,7 @@ function AdminBerkas() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [docs, regs, filterKind, filterStatus, q]);
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
     const data = docs.map((d) => {
       const r = findReg(d);
       return {
@@ -178,10 +178,7 @@ function AdminBerkas() {
         "Tanggal Kirim": new Date(d.created_at).toLocaleString("id-ID"),
       };
     });
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Berkas");
-    XLSX.writeFile(wb, `pengiriman-berkas-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    await exportRowsToXlsx(data, "Berkas", `pengiriman-berkas-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
   const updateCandidate = async (

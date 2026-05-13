@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Search, Download, RotateCcw, Trophy, RotateCw, X, FileText, ExternalLink, Eye } from "lucide-react";
 import { toast } from "sonner";
-import * as XLSX from "xlsx";
+import { exportRowsToXlsx } from "@/lib/excel-export";
 
 export const Route = createFileRoute("/admin/kandidat")({
   component: AdminKandidat,
@@ -101,7 +101,7 @@ function AdminKandidat() {
     setDetail(null);
   };
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
     const data = filtered.map((r) => ({
       "Nama Lengkap": r.full_name,
       Email: r.email,
@@ -117,10 +117,7 @@ function AdminKandidat() {
       "Disetujui Pada": r.candidate_reviewed_at ? new Date(r.candidate_reviewed_at).toLocaleString("id-ID") : "",
       "Jumlah Berkas": docsFor(r).length,
     }));
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Kandidat");
-    XLSX.writeFile(wb, `kandidat-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    await exportRowsToXlsx(data, "Kandidat", `kandidat-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
   const detailDocs = detail ? docsFor(detail) : [];
