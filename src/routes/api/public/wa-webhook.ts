@@ -75,7 +75,7 @@ async function handleWebhook(request: Request) {
 
     const rawPhone = pickRawPhone(payload);
     const phone = normalizeNumber(rawPhone ?? "");
-    const text = pickText(payload);
+    const text = pickText(payload) ?? mediaFallbackText(payload);
     const contactName = pickName(payload);
 
     if (isFromMe(payload)) return json({ ok: true, ignored: "from_me" });
@@ -204,6 +204,31 @@ function pickText(payload: AnyRecord): string | null {
     "entry.0.changes.0.value.messages.0.text.body",
     "messages.0.text", "messages.0.body", "messages.0.message.conversation", "messages.0.message.extendedTextMessage.text",
   ]);
+}
+
+function mediaFallbackText(payload: AnyRecord): string | null {
+  if (!hasMediaPayload(payload)) return null;
+  return "Peserta mengirim gambar/screenshot bukti share poster Beasiswa Kejar Prestasi melalui WhatsApp/Instagram/Grup WA. Balas dengan ucapan terima kasih karena bukti share poster sudah dikirim, lalu arahkan peserta untuk lanjut ke tahapan Pengiriman Berkas di www.kejarprestasi.id dengan Kode Token dan format PDF atau JPG.";
+}
+
+function hasMediaPayload(payload: AnyRecord): boolean {
+  const mediaPaths = [
+    "bufferImage", "image", "imageUrl", "media", "mediaUrl", "file", "attachment", "attachments.0", "mimetype", "mimeType",
+    "data.bufferImage", "data.image", "data.imageUrl", "data.media", "data.mediaUrl", "data.file", "data.attachment", "data.attachments.0", "data.mimetype", "data.mimeType",
+    "data.message.imageMessage", "data.message.videoMessage", "data.message.documentMessage",
+    "message.imageMessage", "message.videoMessage", "message.documentMessage",
+    "payload.image", "payload.imageUrl", "payload.media", "payload.mediaUrl", "payload.file", "payload.attachment", "payload.mimetype", "payload.mimeType",
+    "messages.0.image", "messages.0.media", "messages.0.file", "messages.0.attachment", "messages.0.message.imageMessage", "messages.0.message.videoMessage", "messages.0.message.documentMessage",
+    "entry.0.changes.0.value.messages.0.image", "entry.0.changes.0.value.messages.0.document", "entry.0.changes.0.value.messages.0.video",
+  ];
+
+  return mediaPaths.some((path) => {
+    const value = getPath(payload, path);
+    if (value == null) return false;
+    if (typeof value === "string") return value.trim().length > 0;
+    if (typeof value === "object") return true;
+    return Boolean(value);
+  }) || Object.keys(payload).some((key) => /image|media|file|attachment|buffer/i.test(key) && payload[key] != null && payload[key] !== "");
 }
 
 function pickName(payload: AnyRecord): string | null {
