@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowRight,
   CheckCircle2,
@@ -12,6 +13,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
+import { submitBerkasDocuments } from "@/lib/berkas.functions";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 
@@ -76,6 +78,7 @@ const tokenPrefix = (k: "prestasi" | "ekonomi") => (k === "prestasi" ? "KP-PRE-"
 
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
+  const submitBerkas = useServerFn(submitBerkasDocuments);
   const search = useSearch({ strict: false }) as { token?: string };
   const [token, setToken] = useState((search.token ?? "").toUpperCase());
   const [docs, setDocs] = useState<DocSlot[]>(defaultDocs[kind]);
