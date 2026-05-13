@@ -1,33 +1,39 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, GraduationCap, HeartHandshake, Clock, FileText, Bell, BellOff } from "lucide-react";
 import { toast } from "sonner";
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  LineChart, Line, PieChart, Pie, Cell, Legend,
-} from "recharts";
+
+// Lazy-load charts to keep recharts out of the initial admin bundle
+const LineDaily = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.LineDaily })));
+const PieKind = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.PieKind })));
+const BarJenjang = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.BarJenjang })));
 
 export const Route = createFileRoute("/admin/")({
   component: AdminOverview,
 });
 
-type Row = {
+type RecentRow = {
   id: string;
   full_name: string;
   email: string;
   kind: "prestasi" | "ekonomi";
-  status: "pending" | "approved" | "rejected";
+  status: string;
   school_name: string;
   education_level: string;
   created_at: string;
 };
 
+type LiteRow = {
+  kind: "prestasi" | "ekonomi";
+  education_level: string;
+  created_at: string;
+};
+
 const JENJANG = ["SD", "SMP", "SMA", "SMK", "MA", "Mahasiswa"] as const;
-const COLORS = ["hsl(var(--primary))", "oklch(0.7 0.18 80)", "oklch(0.65 0.15 200)", "oklch(0.6 0.2 340)", "oklch(0.7 0.15 140)", "oklch(0.65 0.15 30)"];
 
 function normalizeJenjang(v: string): string {
   const u = (v || "").toUpperCase();
@@ -40,9 +46,18 @@ function normalizeJenjang(v: string): string {
   return v || "Lainnya";
 }
 
+function ChartFallback() {
+  return (
+    <div className="flex h-full items-center justify-center">
+      <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+    </div>
+  );
+}
+
 function AdminOverview() {
-  const [rows, setRows] = useState<Row[]>([]);
-  const [docsCount, setDocsCount] = useState(0);
+  const [recent, setRecent] = useState<RecentRow[]>([]);
+  const [lite, setLite] = useState<LiteRow[]>([]);
+  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, pending: 0, today: 0, docs: 0 });
   const [loading, setLoading] = useState(true);
   const [notif, setNotif] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
@@ -50,22 +65,59 @@ function AdminOverview() {
   });
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const load = async () => {
-    const [allRes, docsRes] = await Promise.all([
-      supabase
-        .from("registrations")
-        .select("id,full_name,email,kind,status,school_name,education_level,created_at")
-        .order("created_at", { ascending: false }),
-      supabase.from("documents").select("id", { count: "exact", head: true }),
-    ]);
-    setRows((allRes.data ?? []) as Row[]);
-    setDocsCount(docsRes.count ?? 0);
-    setLoading(false);
-  };
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      // Fast: today (start) ISO + 14 days back ISO
+      const now = new Date();
+      const startToday = new Date(now); startToday.setHours(0, 0, 0, 0);
+      const start14 = new Date(startToday); start14.setDate(start14.getDate() - 13);
 
-  useEffect(() => { load(); }, []);
+      // Fire all queries in parallel; use head:true counts for totals (no row data)
+      const [
+        recentRes,
+        liteRes,
+        totalRes,
+        prestasiRes,
+        ekonomiRes,
+        pendingRes,
+        todayRes,
+        docsRes,
+      ] = await Promise.all([
+        supabase.from("registrations")
+          .select("id,full_name,email,kind,status,school_name,education_level,created_at")
+          .order("created_at", { ascending: false })
+          .limit(8),
+        supabase.from("registrations")
+          .select("kind,education_level,created_at")
+          .gte("created_at", start14.toISOString())
+          .limit(5000),
+        supabase.from("registrations").select("id", { count: "exact", head: true }),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "prestasi"),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "ekonomi"),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).gte("created_at", startToday.toISOString()),
+        supabase.from("documents").select("id", { count: "exact", head: true }),
+      ]);
 
-  // Realtime subscribe
+      if (!active) return;
+      setRecent((recentRes.data ?? []) as RecentRow[]);
+      setLite((liteRes.data ?? []) as LiteRow[]);
+      setCounts({
+        total: totalRes.count ?? 0,
+        prestasi: prestasiRes.count ?? 0,
+        ekonomi: ekonomiRes.count ?? 0,
+        pending: pendingRes.count ?? 0,
+        today: todayRes.count ?? 0,
+        docs: docsRes.count ?? 0,
+      });
+      setLoading(false);
+    };
+    load();
+    return () => { active = false; };
+  }, []);
+
+  // Realtime subscribe (only after initial paint)
   useEffect(() => {
     const channel = supabase
       .channel("admin-registrations")
@@ -73,8 +125,16 @@ function AdminOverview() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "registrations" },
         (payload) => {
-          const newRow = payload.new as Row;
-          setRows((prev) => [newRow, ...prev]);
+          const newRow = payload.new as RecentRow;
+          setRecent((prev) => [newRow, ...prev].slice(0, 8));
+          setLite((prev) => [{ kind: newRow.kind, education_level: newRow.education_level, created_at: newRow.created_at }, ...prev]);
+          setCounts((c) => ({
+            ...c,
+            total: c.total + 1,
+            today: c.today + 1,
+            prestasi: c.prestasi + (newRow.kind === "prestasi" ? 1 : 0),
+            ekonomi: c.ekonomi + (newRow.kind === "ekonomi" ? 1 : 0),
+          }));
           if (notif) {
             toast.success(`Pendaftar baru: ${newRow.full_name}`, {
               description: `${newRow.kind === "prestasi" ? "Beasiswa Prestasi" : "Beasiswa Ekonomi"} · ${newRow.school_name}`,
@@ -101,39 +161,29 @@ function AdminOverview() {
     toast.message(next ? "Notifikasi diaktifkan" : "Notifikasi dimatikan");
   };
 
-  const stats = useMemo(() => ({
-    total: rows.length,
-    prestasi: rows.filter((r) => r.kind === "prestasi").length,
-    ekonomi: rows.filter((r) => r.kind === "ekonomi").length,
-    pending: rows.filter((r) => r.status === "pending").length,
-    today: rows.filter((r) => new Date(r.created_at).toDateString() === new Date().toDateString()).length,
-  }), [rows]);
-
   const byJenjang = useMemo(() => {
     const map = new Map<string, { name: string; prestasi: number; ekonomi: number; total: number }>();
     for (const j of JENJANG) map.set(j, { name: j, prestasi: 0, ekonomi: 0, total: 0 });
-    for (const r of rows) {
+    for (const r of lite) {
       const j = normalizeJenjang(r.education_level);
       const cur = map.get(j) ?? { name: j, prestasi: 0, ekonomi: 0, total: 0 };
       if (r.kind === "prestasi") cur.prestasi++; else cur.ekonomi++;
       cur.total++;
       map.set(j, cur);
     }
-    return Array.from(map.values()).filter((x) => x.total > 0 || JENJANG.includes(x.name as typeof JENJANG[number]));
-  }, [rows]);
+    return Array.from(map.values());
+  }, [lite]);
 
   const byKind = useMemo(() => [
-    { name: "Prestasi", value: stats.prestasi },
-    { name: "Ekonomi", value: stats.ekonomi },
-  ], [stats]);
+    { name: "Prestasi", value: counts.prestasi },
+    { name: "Ekonomi", value: counts.ekonomi },
+  ], [counts]);
 
   const last14 = useMemo(() => {
     const days: { date: string; label: string; count: number }[] = [];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = new Date(); today.setHours(0, 0, 0, 0);
     for (let i = 13; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
+      const d = new Date(today); d.setDate(d.getDate() - i);
       days.push({
         date: d.toISOString().slice(0, 10),
         label: d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" }),
@@ -141,38 +191,27 @@ function AdminOverview() {
       });
     }
     const idx = new Map(days.map((d, i) => [d.date, i]));
-    for (const r of rows) {
+    for (const r of lite) {
       const k = new Date(r.created_at).toISOString().slice(0, 10);
       const i = idx.get(k);
       if (i !== undefined) days[i].count++;
     }
     return days;
-  }, [rows]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  const recent = rows.slice(0, 8);
+  }, [lite]);
 
   const items = [
-    { label: "Total Pendaftar", value: stats.total, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
-    { label: "Hari Ini", value: stats.today, icon: Clock, color: "text-emerald-700", bg: "bg-emerald-100" },
-    { label: "Beasiswa Prestasi", value: stats.prestasi, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
-    { label: "Beasiswa Ekonomi", value: stats.ekonomi, icon: HeartHandshake, color: "text-accent-foreground", bg: "bg-accent/30" },
-    { label: "Berkas Diunggah", value: docsCount, icon: FileText, color: "text-blue-700", bg: "bg-blue-100" },
+    { label: "Total Pendaftar", value: counts.total, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
+    { label: "Hari Ini", value: counts.today, icon: Clock, color: "text-emerald-700", bg: "bg-emerald-100" },
+    { label: "Beasiswa Prestasi", value: counts.prestasi, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
+    { label: "Beasiswa Ekonomi", value: counts.ekonomi, icon: HeartHandshake, color: "text-accent-foreground", bg: "bg-accent/30" },
+    { label: "Berkas Diunggah", value: counts.docs, icon: FileText, color: "text-blue-700", bg: "bg-blue-100" },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Notif sound (silent inline ping) */}
       <audio
         ref={audioRef}
-        preload="auto"
+        preload="none"
         src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="
       />
 
@@ -180,7 +219,7 @@ function AdminOverview() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Statistik Pendaftaran</h1>
           <p className="text-sm text-muted-foreground">
-            Update real-time · {stats.today} pendaftar hari ini
+            Update real-time {loading ? "· memuat…" : `· ${counts.today} pendaftar hari ini`}
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={toggleNotif}>
@@ -195,7 +234,9 @@ function AdminOverview() {
             <div className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg ${it.bg} ${it.color}`}>
               <it.icon className="h-5 w-5" />
             </div>
-            <p className="text-3xl font-bold text-foreground">{it.value}</p>
+            <p className="text-3xl font-bold text-foreground">
+              {loading ? <span className="inline-block h-7 w-12 animate-pulse rounded bg-muted" /> : it.value}
+            </p>
             <p className="mt-1 text-xs text-muted-foreground">{it.label}</p>
           </Card>
         ))}
@@ -205,48 +246,28 @@ function AdminOverview() {
         <Card className="rounded-2xl p-5 shadow-soft lg:col-span-2">
           <h2 className="text-base font-semibold text-foreground">Pendaftar per Hari (14 hari terakhir)</h2>
           <div className="mt-4 h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={last14}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Line type="monotone" dataKey="count" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={{ r: 3 }} name="Pendaftar" />
-              </LineChart>
-            </ResponsiveContainer>
+            <Suspense fallback={<ChartFallback />}>
+              {!loading && <LineDaily data={last14} />}
+            </Suspense>
           </div>
         </Card>
 
         <Card className="rounded-2xl p-5 shadow-soft">
           <h2 className="text-base font-semibold text-foreground">Distribusi Kategori</h2>
           <div className="mt-4 h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={byKind} dataKey="value" nameKey="name" outerRadius={80} label>
-                  {byKind.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+            <Suspense fallback={<ChartFallback />}>
+              {!loading && <PieKind data={byKind} />}
+            </Suspense>
           </div>
         </Card>
       </div>
 
       <Card className="rounded-2xl p-5 shadow-soft">
-        <h2 className="text-base font-semibold text-foreground">Pendaftar per Jenjang</h2>
+        <h2 className="text-base font-semibold text-foreground">Pendaftar per Jenjang (14 hari terakhir)</h2>
         <div className="mt-4 h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={byJenjang}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-              <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="prestasi" stackId="a" fill="hsl(var(--primary))" name="Prestasi" radius={[0, 0, 0, 0]} />
-              <Bar dataKey="ekonomi" stackId="a" fill="oklch(0.75 0.15 80)" name="Ekonomi" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <Suspense fallback={<ChartFallback />}>
+            {!loading && <BarJenjang data={byJenjang} />}
+          </Suspense>
         </div>
       </Card>
 
@@ -261,7 +282,9 @@ function AdminOverview() {
           </Link>
         </div>
         <div className="mt-4 overflow-x-auto">
-          {recent.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+          ) : recent.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">Belum ada pendaftar.</p>
           ) : (
             <table className="w-full text-sm">
