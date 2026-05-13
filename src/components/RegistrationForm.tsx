@@ -131,10 +131,15 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }
       payload.extra = extra;
 
-      const { error } = await supabase.from("registrations").insert(payload as never);
+      const { data: inserted, error } = await supabase
+        .from("registrations")
+        .insert(payload as never)
+        .select("token")
+        .single();
       if (error) throw error;
+      const token = (inserted as { token?: string } | null)?.token ?? "";
 
-      // Fire-and-forget WA notification
+      // Fire-and-forget WA notification (include token)
       supabase.functions.invoke("send-whatsapp", {
         body: {
           type: "pendaftaran",
@@ -142,6 +147,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
           email: String(payload.email ?? ""),
           whatsapp: String(payload.whatsapp ?? ""),
           kind,
+          token,
         },
       }).catch(() => { /* ignore */ });
 
@@ -155,6 +161,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
           email: String(payload.email ?? ""),
           whatsapp: String(payload.whatsapp ?? ""),
           kind,
+          token,
         },
       });
     } catch (err) {
