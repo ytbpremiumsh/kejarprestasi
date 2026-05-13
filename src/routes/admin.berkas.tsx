@@ -5,9 +5,28 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, User, Check, X, Eye } from "lucide-react";
+import {
+  Loader2,
+  Search,
+  Download,
+  FileText,
+  ExternalLink,
+  RotateCcw,
+  Trash2,
+  User,
+  Check,
+  X,
+  Eye,
+} from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { TokenBadge } from "@/components/admin/TokenBadge";
@@ -71,7 +90,11 @@ function AdminBerkas() {
     setLoading(true);
     const [d, r] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
-      supabase.from("registrations").select("id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status"),
+      supabase
+        .from("registrations")
+        .select(
+          "id, full_name, email, whatsapp, gender, birth_place, birth_date, address, education_level, school_name, grade, kind, token, candidate_status",
+        ),
     ]);
     if (d.error) toast.error(d.error.message);
     if (r.error) toast.error(r.error.message);
@@ -80,14 +103,20 @@ function AdminBerkas() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
-  const findReg = (doc: Pick<Document, "registration_id" | "email" | "kind">): Registration | undefined => {
+  const findReg = (
+    doc: Pick<Document, "registration_id" | "email" | "kind">,
+  ): Registration | undefined => {
     if (doc.registration_id) {
       const byId = regs.find((r) => r.id === doc.registration_id);
       if (byId) return byId;
     }
-    return regs.find((r) => r.email.toLowerCase() === doc.email.toLowerCase() && r.kind === doc.kind);
+    return regs.find(
+      (r) => r.email.toLowerCase() === doc.email.toLowerCase() && r.kind === doc.kind,
+    );
   };
 
   const grouped = useMemo<Group[]>(() => {
@@ -114,12 +143,13 @@ function AdminBerkas() {
     if (filterStatus !== "all") rows = rows.filter((r) => r.status === filterStatus);
     if (q) {
       const s = q.toLowerCase();
-      rows = rows.filter((r) =>
-        r.email.toLowerCase().includes(s) ||
-        (r.reg?.full_name.toLowerCase().includes(s) ?? false) ||
-        (r.reg?.school_name.toLowerCase().includes(s) ?? false) ||
-        (r.reg?.token?.toLowerCase().includes(s) ?? false) ||
-        r.items.some((i) => i.doc_type.toLowerCase().includes(s)),
+      rows = rows.filter(
+        (r) =>
+          r.email.toLowerCase().includes(s) ||
+          (r.reg?.full_name.toLowerCase().includes(s) ?? false) ||
+          (r.reg?.school_name.toLowerCase().includes(s) ?? false) ||
+          (r.reg?.token?.toLowerCase().includes(s) ?? false) ||
+          r.items.some((i) => i.doc_type.toLowerCase().includes(s)),
       );
     }
     return rows;
@@ -154,10 +184,16 @@ function AdminBerkas() {
     XLSX.writeFile(wb, `pengiriman-berkas-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-  const updateCandidate = async (regId: string | undefined, status: CandidateStatus, fallback?: { email: string; kind: string }) => {
+  const updateCandidate = async (
+    regId: string | undefined,
+    status: CandidateStatus,
+    fallback?: { email: string; kind: string },
+  ) => {
     let id = regId;
     if (!id && fallback) {
-      const r = regs.find((x) => x.email.toLowerCase() === fallback.email.toLowerCase() && x.kind === fallback.kind);
+      const r = regs.find(
+        (x) => x.email.toLowerCase() === fallback.email.toLowerCase() && x.kind === fallback.kind,
+      );
       id = r?.id;
     }
     if (!id) return toast.error("Pendaftar tidak ditemukan di database");
@@ -167,8 +203,11 @@ function AdminBerkas() {
       .eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(
-      status === "approved" ? "Disetujui & dipindah ke halaman Kandidat" :
-      status === "rejected" ? "Pendaftar ditolak" : "Status direset",
+      status === "approved"
+        ? "Disetujui & dipindah ke halaman Kandidat"
+        : status === "rejected"
+          ? "Pendaftar ditolak"
+          : "Status direset",
     );
     setRegs((prev) => prev.map((r) => (r.id === id ? { ...r, candidate_status: status } : r)));
     setDetail((prev) => (prev ? { ...prev, status } : prev));
@@ -186,7 +225,8 @@ function AdminBerkas() {
   const toggleOne = (key: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(key)) next.delete(key); else next.add(key);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
   };
@@ -206,9 +246,23 @@ function AdminBerkas() {
   };
 
   const statusBadge = (s: CandidateStatus) => {
-    if (s === "approved") return <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20">✓ Kandidat</Badge>;
-    if (s === "rejected") return <Badge className="bg-red-500/15 text-red-700 border-red-500/30 hover:bg-red-500/20">✕ Ditolak</Badge>;
-    return <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 hover:bg-amber-500/20">⏳ Menunggu</Badge>;
+    if (s === "approved")
+      return (
+        <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20">
+          ✓ Kandidat
+        </Badge>
+      );
+    if (s === "rejected")
+      return (
+        <Badge className="bg-red-500/15 text-red-700 border-red-500/30 hover:bg-red-500/20">
+          ✕ Ditolak
+        </Badge>
+      );
+    return (
+      <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 hover:bg-amber-500/20">
+        ⏳ Menunggu
+      </Badge>
+    );
   };
 
   return (
@@ -216,16 +270,25 @@ function AdminBerkas() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Pengiriman Berkas</h1>
-          <p className="text-sm text-muted-foreground">{grouped.length} pengirim · {docs.length} berkas total</p>
+          <p className="text-sm text-muted-foreground">
+            {grouped.length} pengirim · {docs.length} berkas total
+          </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={load}><RotateCcw className="h-4 w-4 mr-1" />Refresh</Button>
+          <Button variant="outline" onClick={load}>
+            <RotateCcw className="h-4 w-4 mr-1" />
+            Refresh
+          </Button>
           {selected.size > 0 && (
             <Button variant="destructive" onClick={bulkDelete}>
-              <Trash2 className="h-4 w-4 mr-1" />Hapus ({selected.size})
+              <Trash2 className="h-4 w-4 mr-1" />
+              Hapus ({selected.size})
             </Button>
           )}
-          <Button onClick={exportExcel}><Download className="h-4 w-4 mr-1" />Export Excel</Button>
+          <Button onClick={exportExcel}>
+            <Download className="h-4 w-4 mr-1" />
+            Export Excel
+          </Button>
         </div>
       </div>
 
@@ -233,14 +296,27 @@ function AdminBerkas() {
         <div className="flex flex-wrap gap-2">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, sekolah, kode token, atau jenis berkas..." className="pl-9" />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Cari nama, email, sekolah, kode token, atau jenis berkas..."
+              className="pl-9"
+            />
           </div>
-          <select value={filterKind} onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
+          <select
+            value={filterKind}
+            onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi")}
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
             <option value="all">Semua Kategori</option>
             <option value="prestasi">Prestasi</option>
             <option value="ekonomi">Ekonomi</option>
           </select>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as "all" | CandidateStatus)} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value as "all" | CandidateStatus)}
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
             <option value="all">Semua Status</option>
             <option value="pending">Menunggu Review</option>
             <option value="approved">Disetujui (Kandidat)</option>
@@ -250,9 +326,13 @@ function AdminBerkas() {
       </Card>
 
       {loading ? (
-        <Card className="rounded-2xl p-16 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></Card>
+        <Card className="rounded-2xl p-16 flex justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </Card>
       ) : grouped.length === 0 ? (
-        <Card className="rounded-2xl p-16 text-center text-sm text-muted-foreground">Belum ada berkas terkirim.</Card>
+        <Card className="rounded-2xl p-16 text-center text-sm text-muted-foreground">
+          Belum ada berkas terkirim.
+        </Card>
       ) : (
         <Card className="rounded-2xl overflow-hidden shadow-soft">
           <Table>
@@ -276,7 +356,11 @@ function AdminBerkas() {
             </TableHeader>
             <TableBody>
               {grouped.map((g) => (
-                <TableRow key={g.key} className="align-top" data-state={selected.has(g.key) ? "selected" : undefined}>
+                <TableRow
+                  key={g.key}
+                  className="align-top"
+                  data-state={selected.has(g.key) ? "selected" : undefined}
+                >
                   <TableCell>
                     <Checkbox
                       checked={selected.has(g.key)}
@@ -287,25 +371,45 @@ function AdminBerkas() {
                   <TableCell>
                     <div className="flex items-center gap-2 font-medium">
                       <User className="h-4 w-4 text-primary shrink-0" />
-                      {g.reg?.full_name ?? <span className="text-muted-foreground italic">Tidak terdaftar</span>}
+                      {g.reg?.full_name ?? (
+                        <span className="text-muted-foreground italic">Tidak terdaftar</span>
+                      )}
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">{g.email}</div>
                   </TableCell>
-                  <TableCell><TokenBadge token={g.reg?.token} /></TableCell>
-                  <TableCell><Badge variant="secondary" className="capitalize">{g.kind}</Badge></TableCell>
+                  <TableCell>
+                    <TokenBadge token={g.reg?.token} />
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className="capitalize">
+                      {g.kind}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="text-sm">
                     {g.reg ? (
                       <>
                         <div>{g.reg.school_name || "-"}</div>
-                        <div className="text-xs text-muted-foreground">{g.reg.education_level} {g.reg.grade && `· ${g.reg.grade}`}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {g.reg.education_level} {g.reg.grade && `· ${g.reg.grade}`}
+                        </div>
                       </>
-                    ) : "-"}
+                    ) : (
+                      "-"
+                    )}
                   </TableCell>
-                  <TableCell><Badge variant="outline">{g.items.length} file</Badge></TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{g.items.length} file</Badge>
+                  </TableCell>
                   <TableCell>{statusBadge(g.status)}</TableCell>
                   <TableCell className="text-right">
-                    <Button size="sm" variant="outline" onClick={() => setDetail(g)} className="h-8">
-                      <Eye className="h-3.5 w-3.5 mr-1" />Detail
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setDetail(g)}
+                      className="h-8"
+                    >
+                      <Eye className="h-3.5 w-3.5 mr-1" />
+                      Detail
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -328,7 +432,9 @@ function AdminBerkas() {
             <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-2">
                 {statusBadge(detail.status)}
-                <Badge variant="secondary" className="capitalize">{detail.kind}</Badge>
+                <Badge variant="secondary" className="capitalize">
+                  {detail.kind}
+                </Badge>
                 <Badge variant="outline">{detail.items.length} file</Badge>
                 <TokenBadge token={detail.reg?.token} size="md" />
               </div>
@@ -338,7 +444,10 @@ function AdminBerkas() {
                   <Info label="Email" value={detail.reg.email} />
                   <Info label="WhatsApp" value={detail.reg.whatsapp} />
                   <Info label="Jenis Kelamin" value={detail.reg.gender} />
-                  <Info label="Tempat / Tgl Lahir" value={`${detail.reg.birth_place}, ${detail.reg.birth_date}`} />
+                  <Info
+                    label="Tempat / Tgl Lahir"
+                    value={`${detail.reg.birth_place}, ${detail.reg.birth_date}`}
+                  />
                   <Info label="Jenjang" value={detail.reg.education_level} />
                   <Info label="Kelas" value={detail.reg.grade} />
                   <Info label="Sekolah" value={detail.reg.school_name} className="sm:col-span-2" />
@@ -354,13 +463,27 @@ function AdminBerkas() {
                 <div className="mb-2 text-sm font-semibold">Berkas Terkirim</div>
                 <div className="grid gap-2">
                   {detail.items.map((d) => (
-                    <div key={d.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2">
-                      <a href={d.file_url} target="_blank" rel="noreferrer" className="flex items-start gap-2 text-sm flex-1 min-w-0">
+                    <div
+                      key={d.id}
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2"
+                    >
+                      <a
+                        href={d.file_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-start gap-2 text-sm flex-1 min-w-0"
+                      >
                         <FileText className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                         <span className="font-medium break-words">{d.doc_type}</span>
                         <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
                       </a>
-                      <Button size="icon" variant="ghost" title="Hapus" onClick={() => removeDoc(d.id)} className="h-8 w-8 text-destructive">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        title="Hapus"
+                        onClick={() => removeDoc(d.id)}
+                        className="h-8 w-8 text-destructive"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -369,11 +492,32 @@ function AdminBerkas() {
               </div>
 
               <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-3">
-                <Button variant="outline" disabled={!detail.reg || detail.status === "rejected"} onClick={() => updateCandidate(detail.reg?.id, "rejected", { email: detail.email, kind: detail.kind })} className="border-red-500/40 text-red-700 hover:bg-red-500/10">
-                  <X className="h-4 w-4 mr-1" />Tolak
+                <Button
+                  variant="outline"
+                  disabled={!detail.reg || detail.status === "rejected"}
+                  onClick={() =>
+                    updateCandidate(detail.reg?.id, "rejected", {
+                      email: detail.email,
+                      kind: detail.kind,
+                    })
+                  }
+                  className="border-red-500/40 text-red-700 hover:bg-red-500/10"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Tolak
                 </Button>
-                <Button disabled={!detail.reg || detail.status === "approved"} onClick={() => updateCandidate(detail.reg?.id, "approved", { email: detail.email, kind: detail.kind })} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                  <Check className="h-4 w-4 mr-1" />Setujui
+                <Button
+                  disabled={!detail.reg || detail.status === "approved"}
+                  onClick={() =>
+                    updateCandidate(detail.reg?.id, "approved", {
+                      email: detail.email,
+                      kind: detail.kind,
+                    })
+                  }
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  <Check className="h-4 w-4 mr-1" />
+                  Setujui
                 </Button>
               </div>
             </div>
