@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import { TokenBadge } from "@/components/admin/TokenBadge";
 
 export const Route = createFileRoute("/admin/pendaftar")({
   component: AdminPendaftar,
