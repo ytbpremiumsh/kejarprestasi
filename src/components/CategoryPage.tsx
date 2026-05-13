@@ -45,9 +45,6 @@ export function CategoryPage({
             <h1 className="mt-4 text-4xl md:text-5xl font-extrabold leading-tight text-foreground">{title}</h1>
             <p className="mt-4 text-muted-foreground text-lg">{desc}</p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link to={registerTo} className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition">
-                Daftar Sekarang <ArrowRight size={16} />
-              </Link>
               <Link to={shareTo} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition">
                 <Share2 size={16} /> Bagikan Poster
               </Link>
