@@ -143,51 +143,71 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       const token = (inserted as { token?: string } | null)?.token ?? "";
 
       // Fire-and-forget WA notification (include token)
-      supabase.functions.invoke("send-whatsapp", {
-        body: {
-          type: "pendaftaran",
-          full_name: String(payload.full_name ?? ""),
-          email: String(payload.email ?? ""),
-          whatsapp: String(payload.whatsapp ?? ""),
-          kind,
-          token,
-        },
-      }).catch(() => { /* ignore */ });
-
-      // Fire-and-forget email confirmation with token
-      const emailAddr = String(payload.email ?? "").trim();
-      if (emailAddr && emailAddr.includes("@") && token) {
-        sendEmail({
-          data: {
-            templateName: "registration-confirmation",
-            recipientEmail: emailAddr,
-            idempotencyKey: `reg-${token}`,
-            templateData: {
-              fullName: String(payload.full_name ?? ""),
-              token,
-              kind,
-              whatsapp: String(payload.whatsapp ?? ""),
-            },
+      try {
+        supabase.functions.invoke("send-whatsapp", {
+          body: {
+            type: "pendaftaran",
+            full_name: String(payload.full_name ?? ""),
+            email: String(payload.email ?? ""),
+            whatsapp: String(payload.whatsapp ?? ""),
+            kind,
+            token,
           },
         }).catch(() => { /* ignore */ });
-      }
+      } catch { /* ignore */ }
+
+      // Fire-and-forget email confirmation with token
+      try {
+        const emailAddr = String(payload.email ?? "").trim();
+        if (emailAddr && emailAddr.includes("@") && token) {
+          sendEmail({
+            data: {
+              templateName: "registration-confirmation",
+              recipientEmail: emailAddr,
+              idempotencyKey: `reg-${token}`,
+              templateData: {
+                fullName: String(payload.full_name ?? ""),
+                token,
+                kind,
+                whatsapp: String(payload.whatsapp ?? ""),
+              },
+            },
+          }).catch(() => { /* ignore */ });
+        }
+      } catch { /* ignore */ }
 
       toast.success("Pendaftaran berhasil dikirim!");
       setValues({});
       setFiles({});
-      navigate({
-        to: "/pendaftaran/sukses",
-        search: {
-          name: String(payload.full_name ?? ""),
-          email: String(payload.email ?? ""),
-          whatsapp: String(payload.whatsapp ?? ""),
-          kind,
-          token,
-        },
-      });
+      try {
+        navigate({
+          to: "/pendaftaran/sukses",
+          search: {
+            name: String(payload.full_name ?? ""),
+            email: String(payload.email ?? ""),
+            whatsapp: String(payload.whatsapp ?? ""),
+            kind,
+            token,
+          },
+        });
+      } catch (navErr) {
+        console.error("navigate error", navErr);
+        // Fallback hard navigation if router rejects
+        if (typeof window !== "undefined") {
+          const params = new URLSearchParams({
+            name: String(payload.full_name ?? ""),
+            email: String(payload.email ?? ""),
+            whatsapp: String(payload.whatsapp ?? ""),
+            kind,
+            token,
+          });
+          window.location.href = `/pendaftaran/sukses?${params.toString()}`;
+        }
+      }
     } catch (err) {
-      console.error(err);
-      toast.error("Gagal mengirim pendaftaran. Silakan coba lagi.");
+      console.error("registration submit error", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`Gagal mengirim pendaftaran: ${msg}`);
     } finally {
       setSubmitting(false);
     }

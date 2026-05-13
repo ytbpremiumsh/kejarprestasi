@@ -6,6 +6,8 @@ import { AdSlot } from "@/components/ads/AdSlot";
 const persyaratan = [
   "Warga Negara Indonesia (WNI)",
   "Tinggal di Indonesia",
+  "Pelajar aktif SD/MI sederajat",
+  "Pelajar aktif SMP/MTs sederajat",
   "Pelajar aktif SMA/SMK/MA sederajat",
   "Mahasiswa aktif atau calon mahasiswa D3–S2",
   "Tanpa minimal nilai rapor atau IPK",
