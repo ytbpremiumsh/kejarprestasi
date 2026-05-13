@@ -49,6 +49,7 @@ import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.presta
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
 import { Route as AdminInstalasiVpsRouteImport } from './routes/admin.instalasi.vps'
 import { Route as AdminInstalasiHostingRouteImport } from './routes/admin.instalasi.hosting'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
@@ -250,6 +251,12 @@ const AdminInstalasiHostingRoute = AdminInstalasiHostingRouteImport.update({
   path: '/instalasi/hosting',
   getParentRoute: () => AdminRoute,
 } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -292,6 +299,7 @@ export interface FileRoutesByFullPath {
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi/': typeof BerkasPrestasiIndexRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -331,6 +339,7 @@ export interface FileRoutesByTo {
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/berkas/ekonomi': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi': typeof BerkasPrestasiIndexRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -374,6 +383,7 @@ export interface FileRoutesById {
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi/': typeof BerkasPrestasiIndexRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -418,6 +428,7 @@ export interface FileRouteTypes {
     | '/berkas/prestasi/upload'
     | '/berkas/ekonomi/'
     | '/berkas/prestasi/'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -457,6 +468,7 @@ export interface FileRouteTypes {
     | '/berkas/prestasi/upload'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -499,6 +511,7 @@ export interface FileRouteTypes {
     | '/berkas/prestasi/upload'
     | '/berkas/ekonomi/'
     | '/berkas/prestasi/'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -524,6 +537,7 @@ export interface RootRouteChildren {
   ArtikelIndexRoute: typeof ArtikelIndexRoute
   BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
   BerkasIndexRoute: typeof BerkasIndexRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -808,6 +822,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminInstalasiHostingRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -898,17 +919,8 @@ const rootRouteChildren: RootRouteChildren = {
   ArtikelIndexRoute: ArtikelIndexRoute,
   BagikanPosterIndexRoute: BagikanPosterIndexRoute,
   BerkasIndexRoute: BerkasIndexRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
