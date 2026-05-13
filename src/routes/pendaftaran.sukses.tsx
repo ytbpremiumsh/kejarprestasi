@@ -31,7 +31,7 @@ export const Route = createFileRoute("/pendaftaran/sukses")({
 
 function SuksesPage() {
   const { name, email, whatsapp, kind, token } = useSearch({ from: "/pendaftaran/sukses" });
-  const berkasTo = kind === "ekonomi" ? "/berkas/ekonomi" : "/berkas/prestasi";
+  const berkasTo = kind === "ekonomi" ? "/berkas/ekonomi/upload" : "/berkas/prestasi/upload";
   const jenis = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "prestasi" ? "Beasiswa Prestasi" : "Beasiswa";
   const [copied, setCopied] = useState(false);
 
