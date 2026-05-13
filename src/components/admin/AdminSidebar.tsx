@@ -13,6 +13,8 @@ import {
   ChevronRight,
   Trophy,
   Heart,
+  Server,
+  Globe,
 } from "lucide-react";
 import {
   Sidebar,
@@ -56,6 +58,13 @@ const groups: { label: string; items: Item[] }[] = [
       { title: "Donasi", url: "/admin/donasi", icon: Heart },
       { title: "AdSense", url: "/admin/adsense", icon: Megaphone },
       { title: "Kode & Performa", url: "/admin/kode-kustom", icon: Code2 },
+    ],
+  },
+  {
+    label: "Dokumentasi",
+    items: [
+      { title: "Instalasi VPS", url: "/admin/instalasi/vps", icon: Server },
+      { title: "Instalasi Hosting", url: "/admin/instalasi/hosting", icon: Globe },
     ],
   },
 ];
