@@ -80,6 +80,7 @@ const tokenPrefix = (k: "prestasi" | "ekonomi") => (k === "prestasi" ? "KP-PRE-"
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
   const submitBerkas = useServerFn(submitBerkasDocuments);
+  const sendEmail = useServerFn(sendAppEmail);
   const search = useSearch({ strict: false }) as { token?: string };
   const [token, setToken] = useState((search.token ?? "").toUpperCase());
   const [docs, setDocs] = useState<DocSlot[]>(defaultDocs[kind]);
