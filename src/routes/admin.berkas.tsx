@@ -268,6 +268,13 @@ function AdminBerkas() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
+                <TableHead className="w-10">
+                  <Checkbox
+                    checked={grouped.length > 0 && selected.size === grouped.length}
+                    onCheckedChange={toggleAll}
+                    aria-label="Pilih semua"
+                  />
+                </TableHead>
                 <TableHead>NAMA</TableHead>
                 <TableHead>KODE TOKEN</TableHead>
                 <TableHead>KATEGORI</TableHead>
