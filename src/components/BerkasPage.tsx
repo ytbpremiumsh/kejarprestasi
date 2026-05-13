@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
 import { submitBerkasDocuments } from "@/lib/berkas.functions";
+import { sendAppEmail } from "@/lib/email.functions";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 
@@ -79,6 +80,7 @@ const tokenPrefix = (k: "prestasi" | "ekonomi") => (k === "prestasi" ? "KP-PRE-"
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
   const submitBerkas = useServerFn(submitBerkasDocuments);
+  const sendEmail = useServerFn(sendAppEmail);
   const search = useSearch({ strict: false }) as { token?: string };
   const [token, setToken] = useState((search.token ?? "").toUpperCase());
   const [docs, setDocs] = useState<DocSlot[]>(defaultDocs[kind]);
@@ -229,6 +231,21 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         .catch(() => {
           /* ignore */
         });
+
+      // Fire-and-forget email confirmation
+      sendEmail({
+        data: {
+          templateName: "berkas-confirmation",
+          recipientEmail: regEmail,
+          idempotencyKey: `berkas-${registrant.token ?? token}-${result.count}`,
+          templateData: {
+            fullName: registrant.full_name,
+            token: registrant.token ?? token,
+            kind,
+            count: result.count,
+          },
+        },
+      }).catch(() => { /* ignore */ });
 
       toast.success("Berkas berhasil dikirim!");
       navigate({ to: "/berkas/terkirim", search: { kind, count: result.count } });

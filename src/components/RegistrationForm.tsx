@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { FormField, FormSchema } from "@/lib/form-schema";
 import { STANDARD_REG_COLUMNS } from "@/lib/form-schema";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { sendAppEmail } from "@/lib/email.functions";
 
 const FALLBACK: Record<"prestasi" | "ekonomi", FormSchema> = {
   prestasi: { fields: [] },
@@ -39,6 +41,7 @@ function validate(field: FormField, value: unknown): string | null {
 
 export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
+  const sendEmail = useServerFn(sendAppEmail);
   const [schema, setSchema] = useState<FormSchema>(FALLBACK[kind]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -150,6 +153,24 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
           token,
         },
       }).catch(() => { /* ignore */ });
+
+      // Fire-and-forget email confirmation with token
+      const emailAddr = String(payload.email ?? "").trim();
+      if (emailAddr && emailAddr.includes("@") && token) {
+        sendEmail({
+          data: {
+            templateName: "registration-confirmation",
+            recipientEmail: emailAddr,
+            idempotencyKey: `reg-${token}`,
+            templateData: {
+              fullName: String(payload.full_name ?? ""),
+              token,
+              kind,
+              whatsapp: String(payload.whatsapp ?? ""),
+            },
+          },
+        }).catch(() => { /* ignore */ });
+      }
 
       toast.success("Pendaftaran berhasil dikirim!");
       setValues({});
