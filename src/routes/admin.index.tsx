@@ -7,12 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, GraduationCap, HeartHandshake, Clock, FileText, Bell, BellOff } from "lucide-react";
 import { toast } from "sonner";
 
-const Charts = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({
-  default: () => null,
-  // re-export individual components via a wrapper below
-}) as any));
-
-// Lazy-load each chart individually to keep recharts out of the initial bundle
+// Lazy-load charts to keep recharts out of the initial admin bundle
 const LineDaily = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.LineDaily })));
 const PieKind = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.PieKind })));
 const BarJenjang = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.BarJenjang })));
