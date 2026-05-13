@@ -181,9 +181,6 @@ Deno.serve(async (req) => {
     if (!behavior) {
       return new Response(JSON.stringify({ ok: false, error: "ai_behavior_not_configured" }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
     }
-    if (!behavior.wa_webhook_token || token !== behavior.wa_webhook_token) {
-      return new Response(JSON.stringify({ ok: false, error: "invalid_token" }), { status: 401, headers: { ...cors, "Content-Type": "application/json" } });
-    }
 
     // Parse payload (support JSON, form-encoded, and GET query payloads)
     let payload: Record<string, unknown> = { ...queryPayload };
