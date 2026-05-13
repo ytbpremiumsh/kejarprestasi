@@ -66,16 +66,24 @@ Deno.serve(async (req) => {
 
     // Create Mayar invoice
     const expiredAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    const description = don.title || "Donasi Sukarela — Kejar Prestasi";
     const mayarBody = {
       name,
       email,
       amount,
       mobile: normalizeNumber(whatsapp) || "62800000000",
       redirectUrl,
-      description: don.title || "Donasi Sukarela — Kejar Prestasi",
+      description,
       expiredAt,
-      // referenceId ties Mayar invoice back to our row
       referenceId: inserted.id,
+      items: [
+        {
+          name: description,
+          quantity: 1,
+          rate: amount,
+          description,
+        },
+      ],
     };
 
     const mayarRes = await fetch("https://api.mayar.id/hl/v1/invoice/create", {
