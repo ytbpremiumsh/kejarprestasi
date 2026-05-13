@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_behavior: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          fallback_message: string
+          id: string
+          language: string
+          max_tokens: number
+          model: string
+          persona_name: string
+          system_prompt: string
+          temperature: number
+          tone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          fallback_message?: string
+          id?: string
+          language?: string
+          max_tokens?: number
+          model?: string
+          persona_name?: string
+          system_prompt?: string
+          temperature?: number
+          tone?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          fallback_message?: string
+          id?: string
+          language?: string
+          max_tokens?: number
+          model?: string
+          persona_name?: string
+          system_prompt?: string
+          temperature?: number
+          tone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_knowledge_base: {
+        Row: {
+          answer: string
+          category: string | null
+          created_at: string
+          enabled: boolean
+          id: string
+          question: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          category?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          question: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          category?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          question?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author: string | null
