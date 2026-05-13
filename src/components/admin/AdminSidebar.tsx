@@ -73,11 +73,10 @@ const groups: { label: string; items: Item[] }[] = [
     ],
   },
   {
-    label: "Bantuan",
+    label: "Dokumentasi",
     items: [
       { title: "Instalasi VPS", url: "/admin/instalasi/vps", icon: Server },
       { title: "Instalasi Hosting", url: "/admin/instalasi/hosting", icon: Globe },
-      { title: "Dokumentasi", url: "/admin", icon: BookOpen },
     ],
   },
 ];
