@@ -282,7 +282,7 @@ function DetailDialog({
             <h2 className="text-xl font-bold text-foreground">{row.full_name}</h2>
             <div className="mt-1 flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="capitalize">{row.kind}</Badge>
-              
+              <TokenBadge token={row.token} size="md" />
               <span className="text-xs text-muted-foreground">Daftar {new Date(row.created_at).toLocaleString("id-ID")}</span>
             </div>
           </div>
