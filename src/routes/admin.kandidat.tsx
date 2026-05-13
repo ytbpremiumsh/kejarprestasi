@@ -101,7 +101,7 @@ function AdminKandidat() {
     setDetail(null);
   };
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
     const data = filtered.map((r) => ({
       "Nama Lengkap": r.full_name,
       Email: r.email,
