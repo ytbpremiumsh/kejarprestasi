@@ -48,6 +48,7 @@ export function DonationCard({
   const [whatsapp, setWhatsapp] = useState(defaultWhatsapp);
   const [submitting, setSubmitting] = useState(false);
   const [payUrl, setPayUrl] = useState<string | null>(null);
+  const [donationId, setDonationId] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const navigate = useNavigate();
 
