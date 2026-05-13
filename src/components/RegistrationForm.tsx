@@ -8,6 +8,7 @@ import type { FormField, FormSchema } from "@/lib/form-schema";
 import { STANDARD_REG_COLUMNS } from "@/lib/form-schema";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { sendAppEmail } from "@/lib/email.functions";
+import { submitRegistration } from "@/lib/registration.functions";
 
 const FALLBACK: Record<"prestasi" | "ekonomi", FormSchema> = {
   prestasi: { fields: [] },
@@ -56,6 +57,7 @@ function validate(field: FormField, value: unknown): string | null {
 export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
   const sendEmail = useServerFn(sendAppEmail);
+  const submitRegistrationFn = useServerFn(submitRegistration);
   const [schema, setSchema] = useState<FormSchema>(FALLBACK[kind]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -148,13 +150,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }
       payload.extra = extra;
 
-      const { data: inserted, error } = await supabase
-        .from("registrations")
-        .insert(payload as never)
-        .select("token")
-        .single();
-      if (error) throw error;
-      const token = (inserted as { token?: string } | null)?.token ?? "";
+      const { token } = await submitRegistrationFn({ data: payload });
 
       // Fire-and-forget WA notification (include token)
       try {
