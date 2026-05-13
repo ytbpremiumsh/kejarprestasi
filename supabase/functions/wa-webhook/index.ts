@@ -33,6 +33,14 @@ type Behavior = {
   fallback_message: string;
 };
 
+type Provider = {
+  vendor?: "lovable_ai" | "openrouter";
+  api_key?: string | null;
+  base_url?: string | null;
+  model?: string | null;
+  enabled?: boolean;
+};
+
 type Kb = { id: string; question: string; answer: string; category: string | null };
 
 function getPath(source: unknown, path: string): unknown {
@@ -94,24 +102,27 @@ function pickName(p: Record<string, unknown>): string | null {
   ]);
 }
 
-async function callAI(behavior: Behavior, kb: Kb[], userMessage: string, contactName: string | null): Promise<string> {
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
-
+async function callAI(behavior: Behavior, provider: Provider | null, kb: Kb[], userMessage: string, contactName: string | null): Promise<string> {
   const kbText = kb
     .map((k, i) => `${i + 1}. [${k.category ?? "Umum"}] Q: ${k.question}\n   A: ${k.answer}`)
     .join("\n\n");
 
-  const sys = `${behavior.system_prompt}\n\nNAMA PENGGUNA SAAT INI: ${contactName ?? "(tidak diketahui, sapa dengan 'Kak')"}\n\nBASIS PENGETAHUAN (gunakan HANYA info di sini, jangan mengarang):\n${kbText}\n\nJika tidak ada jawaban yang cocok, balas dengan: "${behavior.fallback_message}"`;
+  const sys = `${behavior.system_prompt}\n\nNAMA PENGGUNA SAAT INI: ${contactName ?? "(tidak diketahui, sapa dengan 'Kak')"}\n\nBASIS PENGETAHUAN (gunakan HANYA info di sini, jangan mengarang):\n${kbText}\n\nAturan balasan: gunakan panggilan Kak/Kakak, boleh menyebut nama peserta jika tersedia, jawab ringkas dan jelas. Jika tidak ada jawaban yang cocok, balas dengan: "${behavior.fallback_message}"`;
+  const vendor = provider?.enabled === false ? "lovable_ai" : provider?.vendor ?? "lovable_ai";
+  const endpoint = vendor === "openrouter" ? (provider?.base_url?.trim() || "https://openrouter.ai/api/v1/chat/completions") : "https://ai.gateway.lovable.dev/v1/chat/completions";
+  const apiKey = vendor === "openrouter" ? (provider?.api_key?.trim() || Deno.env.get("OPENROUTER_API_KEY")) : Deno.env.get("LOVABLE_API_KEY");
+  const model = provider?.model?.trim() || behavior.model || "google/gemini-3-flash-preview";
+  if (!apiKey) return behavior.fallback_message;
 
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const res = await fetch(endpoint, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+      "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json",
+      ...(vendor === "openrouter" ? { "HTTP-Referer": "https://prestasi-emas.lovable.app", "X-Title": "Kejar Prestasi AI" } : {}),
     },
     body: JSON.stringify({
-      model: behavior.model || "google/gemini-2.5-flash",
+      model,
       temperature: behavior.temperature ?? 0.5,
       max_tokens: behavior.max_tokens ?? 600,
       messages: [
@@ -124,7 +135,7 @@ async function callAI(behavior: Behavior, kb: Kb[], userMessage: string, contact
   if (res.status === 429) return behavior.fallback_message + "\n\n_(AI sedang sibuk, coba beberapa saat lagi ya Kak 🙏)_";
   if (res.status === 402) return behavior.fallback_message;
   if (!res.ok) {
-    console.error("AI gateway error", res.status, await res.text());
+    console.error("AI provider error", res.status, await res.text());
     return behavior.fallback_message;
   }
   const data = await res.json();
