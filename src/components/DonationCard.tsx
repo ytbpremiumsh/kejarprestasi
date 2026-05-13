@@ -88,8 +88,9 @@ export function DonationCard({
         body: { name, email, whatsapp, amount, registration_id: registrationId },
       });
       if (error) throw error;
-      const r = data as { ok?: boolean; link?: string; error?: string };
+      const r = data as { ok?: boolean; link?: string; id?: string; error?: string };
       if (!r.ok || !r.link) throw new Error(r.error || "Gagal membuat invoice");
+      setDonationId(r.id ?? null);
       setPayUrl(r.link);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Gagal memproses donasi");
@@ -98,23 +99,49 @@ export function DonationCard({
     }
   };
 
+  const goThankYou = () => {
+    setPayUrl(null);
+    setDonationId(null);
+    navigate({ to: "/donasi/terima-kasih" });
+  };
+
   const handleIframeLoad = () => {
-    // Same-origin redirect detection: when Mayar redirects back to our domain,
-    // we can read the iframe location and close the modal.
+    // Same-origin redirect detection: when Mayar redirects back to our domain.
     try {
       const href = iframeRef.current?.contentWindow?.location.href;
-      if (href && href.includes("/donasi/terima-kasih")) {
-        setPayUrl(null);
-        navigate({ to: "/donasi/terima-kasih" });
-      }
+      if (href && href.includes("/donasi/terima-kasih")) goThankYou();
     } catch {
       // Cross-origin (Mayar page) — expected, ignore.
     }
   };
 
+  // Poll donation status while modal is open; redirect when paid.
+  useEffect(() => {
+    if (!payUrl || !donationId) return;
+    let stopped = false;
+    const tick = async () => {
+      try {
+        const { data } = await supabase.functions.invoke("donation-status", {
+          body: { id: donationId },
+        });
+        const r = data as { ok?: boolean; status?: string } | null;
+        if (!stopped && r?.ok && (r.status === "paid" || r.status === "success")) {
+          goThankYou();
+        }
+      } catch { /* ignore */ }
+    };
+    const iv = setInterval(tick, 4000);
+    return () => { stopped = true; clearInterval(iv); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payUrl, donationId]);
+
   const closeModal = () => {
-    if (confirm("Batalkan proses donasi?")) setPayUrl(null);
+    if (confirm("Batalkan proses donasi?")) {
+      setPayUrl(null);
+      setDonationId(null);
+    }
   };
+
 
 
   return (
