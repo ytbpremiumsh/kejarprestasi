@@ -245,6 +245,7 @@ function AdminBerkas() {
                     </div>
                     <div className="text-xs text-muted-foreground mt-0.5">{g.email}</div>
                   </TableCell>
+                  <TableCell><TokenBadge token={g.reg?.token} /></TableCell>
                   <TableCell><Badge variant="secondary" className="capitalize">{g.kind}</Badge></TableCell>
                   <TableCell className="text-sm">
                     {g.reg ? (
