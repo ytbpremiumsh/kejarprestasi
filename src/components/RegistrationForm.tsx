@@ -206,7 +206,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }
     } catch (err) {
       console.error("registration submit error", err);
-      const msg = err instanceof Error ? err.message : String(err);
+      const msg = serializeError(err);
       toast.error(`Gagal mengirim pendaftaran: ${msg}`);
     } finally {
       setSubmitting(false);
