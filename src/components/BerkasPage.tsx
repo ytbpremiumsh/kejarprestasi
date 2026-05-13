@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 
 const defaultDocs: Record<"prestasi" | "ekonomi", DocSlot[]> = {
   prestasi: [
