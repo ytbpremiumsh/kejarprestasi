@@ -16,7 +16,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Bot, Save, Plus, Pencil, Trash2, Search, Sparkles, Loader2, BookOpen } from "lucide-react";
+import { Bot, Save, Plus, Pencil, Trash2, Search, Sparkles, Loader2, BookOpen, MessageCircle, Copy, RefreshCw, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/ai-balasan")({
@@ -34,6 +34,19 @@ type Behavior = {
   max_tokens: number;
   enabled: boolean;
   fallback_message: string;
+  wa_auto_reply: boolean;
+  wa_webhook_token: string | null;
+};
+
+type WaMsg = {
+  id: string;
+  phone: string;
+  contact_name: string | null;
+  direction: "in" | "out";
+  message: string;
+  ai_used: boolean;
+  status: string;
+  created_at: string;
 };
 
 type KbItem = {
@@ -71,6 +84,21 @@ function AdminAiBalasan() {
   const [showForm, setShowForm] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  const [waMsgs, setWaMsgs] = useState<WaMsg[]>([]);
+  const [loadingWa, setLoadingWa] = useState(false);
+  const [regenToken, setRegenToken] = useState(false);
+
+  const loadWaMsgs = async () => {
+    setLoadingWa(true);
+    const { data } = await supabase
+      .from("wa_chat_messages")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    setWaMsgs((data ?? []) as WaMsg[]);
+    setLoadingWa(false);
+  };
+
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -81,8 +109,29 @@ function AdminAiBalasan() {
       if (bhv) setBehavior(bhv as Behavior);
       if (kbRows) setKb(kbRows as KbItem[]);
       setLoading(false);
+      loadWaMsgs();
     })();
   }, []);
+
+  const webhookUrl = behavior?.wa_webhook_token
+    ? `https://zmlwicrlcuqgxfaskxic.functions.supabase.co/wa-webhook?token=${behavior.wa_webhook_token}`
+    : "";
+
+  async function regenerateToken() {
+    if (!behavior?.id) return;
+    if (!confirm("Buat ulang token webhook? URL lama akan langsung non-aktif.")) return;
+    setRegenToken(true);
+    const newToken = crypto.randomUUID().replace(/-/g, "");
+    const { error } = await supabase.from("ai_behavior").update({ wa_webhook_token: newToken }).eq("id", behavior.id);
+    setRegenToken(false);
+    if (error) return toast.error(error.message);
+    setBehavior({ ...behavior, wa_webhook_token: newToken });
+    toast.success("Token webhook diperbarui");
+  }
+
+  function copyText(t: string, label = "Disalin") {
+    navigator.clipboard.writeText(t).then(() => toast.success(label));
+  }
 
   const filtered = useMemo(() => {
     const t = q.trim().toLowerCase();
@@ -177,6 +226,10 @@ function AdminAiBalasan() {
           <TabsTrigger value="knowledge" className="gap-2">
             <BookOpen className="h-4 w-4" /> AI Knowledge
             <Badge variant="secondary" className="ml-1">{kb.length}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="whatsapp" className="gap-2">
+            <MessageCircle className="h-4 w-4" /> WhatsApp & Riwayat
+            <Badge variant="secondary" className="ml-1">{waMsgs.length}</Badge>
           </TabsTrigger>
         </TabsList>
 
@@ -341,6 +394,105 @@ function AdminAiBalasan() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </Card>
+        </TabsContent>
+
+        {/* WHATSAPP & HISTORY */}
+        <TabsContent value="whatsapp" className="space-y-4">
+          {behavior && (
+            <Card className="p-6 space-y-5">
+              <div>
+                <h3 className="font-semibold flex items-center gap-2"><MessageCircle className="h-4 w-4 text-primary" /> Balasan AI ke WhatsApp</h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Hubungkan inbox WA gateway (MPWA / app.ayopintar.com) ke webhook di bawah, lalu aktifkan auto-reply agar AI menjawab chat masuk otomatis.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg border bg-muted/40 p-4">
+                <div>
+                  <p className="font-semibold text-sm">Aktifkan Auto-Reply WhatsApp</p>
+                  <p className="text-xs text-muted-foreground">AI hanya membalas saat opsi ini & "Aktifkan Balasan AI" keduanya menyala.</p>
+                </div>
+                <Switch
+                  checked={behavior.wa_auto_reply}
+                  onCheckedChange={(v) => setBehavior({ ...behavior, wa_auto_reply: v })}
+                />
+              </div>
+
+              <div>
+                <Label>URL Webhook (gunakan di pengaturan gateway WhatsApp Anda)</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input value={webhookUrl} readOnly className="font-mono text-xs" />
+                  <Button variant="outline" size="icon" onClick={() => copyText(webhookUrl, "URL webhook disalin")} disabled={!webhookUrl}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" onClick={regenerateToken} disabled={regenToken} title="Buat ulang token">
+                    {regenToken ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  Method: <code className="px-1 rounded bg-muted">POST</code> · Body JSON dengan field <code className="px-1 rounded bg-muted">from</code> (nomor) &amp; <code className="px-1 rounded bg-muted">message</code> (teks). Token berfungsi sebagai pengaman; jangan dibagikan.
+                </p>
+              </div>
+
+              <div className="flex justify-end">
+                <Button onClick={saveBehavior} disabled={savingBhv} className="gap-2">
+                  {savingBhv ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  Simpan Pengaturan WhatsApp
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold">Riwayat Pesan WhatsApp</h3>
+                <p className="text-xs text-muted-foreground">200 pesan terbaru (masuk &amp; balasan AI keluar).</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={loadWaMsgs} disabled={loadingWa} className="gap-2">
+                {loadingWa ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                Refresh
+              </Button>
+            </div>
+
+            {waMsgs.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <MessageCircle className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                <p className="text-sm">Belum ada pesan. Hubungkan webhook di gateway WhatsApp Anda untuk mulai menerima pesan.</p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
+                {waMsgs.map((m) => {
+                  const isIn = m.direction === "in";
+                  return (
+                    <div key={m.id} className={`rounded-lg border p-3 ${isIn ? "bg-card" : "bg-primary/5 border-primary/20"}`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={`flex h-6 w-6 items-center justify-center rounded-full ${isIn ? "bg-blue-500/15 text-blue-600" : "bg-emerald-500/15 text-emerald-600"}`}>
+                            {isIn ? <ArrowDownLeft className="h-3.5 w-3.5" /> : <ArrowUpRight className="h-3.5 w-3.5" />}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold truncate">
+                              {m.contact_name || m.phone}
+                              <span className="ml-1.5 font-mono font-normal text-muted-foreground">{m.phone}</span>
+                            </p>
+                            <p className="text-[10px] text-muted-foreground">
+                              {new Date(m.created_at).toLocaleString("id-ID")}
+                              {m.ai_used && <Badge variant="outline" className="ml-1.5 text-[9px] px-1 py-0">AI</Badge>}
+                              {m.status !== "received" && m.status !== "sent" && (
+                                <Badge variant="destructive" className="ml-1 text-[9px] px-1 py-0">{m.status}</Badge>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-sm mt-2 whitespace-pre-wrap text-foreground/90">{m.message}</p>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </Card>

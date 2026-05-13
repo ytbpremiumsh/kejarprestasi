@@ -28,6 +28,8 @@ export type Database = {
           temperature: number
           tone: string
           updated_at: string
+          wa_auto_reply: boolean
+          wa_webhook_token: string | null
         }
         Insert: {
           created_at?: string
@@ -42,6 +44,8 @@ export type Database = {
           temperature?: number
           tone?: string
           updated_at?: string
+          wa_auto_reply?: boolean
+          wa_webhook_token?: string | null
         }
         Update: {
           created_at?: string
@@ -56,6 +60,8 @@ export type Database = {
           temperature?: number
           tone?: string
           updated_at?: string
+          wa_auto_reply?: boolean
+          wa_webhook_token?: string | null
         }
         Relationships: []
       }
@@ -463,6 +469,45 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      wa_chat_messages: {
+        Row: {
+          ai_used: boolean
+          contact_name: string | null
+          created_at: string
+          direction: string
+          id: string
+          matched_kb_id: string | null
+          message: string
+          phone: string
+          raw: Json | null
+          status: string
+        }
+        Insert: {
+          ai_used?: boolean
+          contact_name?: string | null
+          created_at?: string
+          direction: string
+          id?: string
+          matched_kb_id?: string | null
+          message: string
+          phone: string
+          raw?: Json | null
+          status?: string
+        }
+        Update: {
+          ai_used?: boolean
+          contact_name?: string | null
+          created_at?: string
+          direction?: string
+          id?: string
+          matched_kb_id?: string | null
+          message?: string
+          phone?: string
+          raw?: Json | null
+          status?: string
         }
         Relationships: []
       }
