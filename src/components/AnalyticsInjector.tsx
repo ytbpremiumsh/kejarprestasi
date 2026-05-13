@@ -88,14 +88,12 @@ export function AnalyticsInjector() {
   useEffect(() => {
     const id = idRef.current;
     if (!id || typeof window === "undefined" || !window.gtag) return;
-    const path = pathname + (search ? `?${search}` : "");
     window.gtag("event", "page_view", {
-      page_path: path,
       page_location: window.location.href,
       page_title: document.title,
       send_to: id,
     });
-  }, [pathname, search]);
+  }, [href]);
 
   return null;
 }
