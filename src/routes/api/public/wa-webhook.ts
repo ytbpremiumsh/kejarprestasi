@@ -145,21 +145,25 @@ async function loadProvider(db: Db): Promise<Provider | null> {
 }
 
 async function parsePayload(request: Request): Promise<AnyRecord> {
+  const url = new URL(request.url);
+  const queryPayload = Object.fromEntries(url.searchParams.entries()) as AnyRecord;
   const ct = request.headers.get("content-type") || "";
-  if (ct.includes("application/json")) return ((await request.json().catch(() => ({}))) ?? {}) as AnyRecord;
+  if (request.method === "GET" || request.method === "HEAD") return queryPayload;
+  if (ct.includes("application/json")) return { ...queryPayload, ...(((await request.json().catch(() => ({}))) ?? {}) as AnyRecord) };
   if (ct.includes("application/x-www-form-urlencoded") || ct.includes("multipart/form-data")) {
     const form = await request.formData();
-    const payload: AnyRecord = {};
+    const payload: AnyRecord = { ...queryPayload };
     form.forEach((value, key) => {
       payload[key] = typeof value === "string" ? value : "(file)";
     });
     return payload;
   }
   const text = await request.text();
+  if (!text.trim()) return queryPayload;
   try {
-    return JSON.parse(text) as AnyRecord;
+    return { ...queryPayload, ...(JSON.parse(text) as AnyRecord) };
   } catch {
-    return { raw: text };
+    return { ...queryPayload, raw: text };
   }
 }
 
@@ -182,20 +186,22 @@ function firstString(payload: AnyRecord, paths: string[]): string | null {
 
 function pickRawPhone(payload: AnyRecord): string | null {
   return firstString(payload, [
-    "from", "sender", "number", "phone", "wa_number", "remoteJid", "jid", "chatId",
-    "data.from", "data.sender", "data.number", "data.phone", "data.remoteJid", "data.key.remoteJid",
-    "message.from", "message.sender", "message.key.remoteJid", "payload.from", "payload.sender",
+    "from", "sender", "number", "phone", "wa_number", "remoteJid", "jid", "chatId", "participant", "author",
+    "data.from", "data.sender", "data.number", "data.phone", "data.remoteJid", "data.chatId", "data.jid", "data.participant", "data.author", "data.key.remoteJid", "data.key.participant",
+    "message.from", "message.sender", "message.key.remoteJid", "message.key.participant", "payload.from", "payload.sender", "payload.phone", "payload.number",
+    "entry.0.changes.0.value.messages.0.from",
     "messages.0.from", "messages.0.sender", "messages.0.key.remoteJid", "messages.0.remoteJid",
   ]);
 }
 
 function pickText(payload: AnyRecord): string | null {
   return firstString(payload, [
-    "text", "body", "msg", "pesan", "caption", "message", "conversation",
-    "data.text", "data.body", "data.message", "data.msg", "data.caption", "data.message.conversation",
+    "text", "body", "msg", "pesan", "caption", "message", "conversation", "content",
+    "data.text", "data.body", "data.message", "data.msg", "data.caption", "data.content", "data.message.conversation",
     "data.message.extendedTextMessage.text", "data.message.imageMessage.caption", "data.message.videoMessage.caption",
-    "message.text", "message.body", "message.conversation", "message.extendedTextMessage.text",
-    "payload.text", "payload.body", "payload.message",
+    "message.text", "message.body", "message.conversation", "message.extendedTextMessage.text", "message.imageMessage.caption", "message.videoMessage.caption",
+    "payload.text", "payload.body", "payload.message", "payload.caption",
+    "entry.0.changes.0.value.messages.0.text.body",
     "messages.0.text", "messages.0.body", "messages.0.message.conversation", "messages.0.message.extendedTextMessage.text",
   ]);
 }
