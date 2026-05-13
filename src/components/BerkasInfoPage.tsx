@@ -22,9 +22,9 @@ const docsByKind = {
 } as const;
 
 const tips = [
-  "Format file: PDF, JPG, PNG, MP4",
+  "Format file: PDF, JPG",
   "Pastikan dokumen jelas terbaca dan tidak terpotong",
-  "Gunakan email yang sama saat pendaftaran",
+  "Gunakan Kode Token yang sama saat pendaftaran",
 ];
 
 export function BerkasInfoPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
