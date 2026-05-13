@@ -92,11 +92,11 @@ Deno.serve(async (req) => {
     const endpoint = cfg.send_endpoint || "https://app.ayopintar.com/send-message";
     const tpls = ((cfg as { templates?: Templates }).templates) || {};
 
-    // Lookup nomor WA + nama dari registrations jika tidak diberikan / kosong
-    if (!body.to && (!body.whatsapp || !body.full_name) && body.email && body.kind) {
+    // Lookup nomor WA + nama + token dari registrations jika tidak diberikan / kosong
+    if (!body.to && (!body.whatsapp || !body.full_name || !body.token) && body.email && body.kind) {
       const { data: reg } = await supabase
         .from("registrations")
-        .select("full_name, whatsapp")
+        .select("full_name, whatsapp, token")
         .ilike("email", body.email)
         .eq("kind", body.kind)
         .order("created_at", { ascending: false })
@@ -105,6 +105,7 @@ Deno.serve(async (req) => {
       if (reg) {
         if (!body.whatsapp) body.whatsapp = reg.whatsapp ?? "";
         if (!body.full_name) body.full_name = reg.full_name ?? "";
+        if (!body.token) body.token = (reg as { token?: string }).token ?? "";
       }
     }
 
