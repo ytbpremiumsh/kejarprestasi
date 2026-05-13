@@ -338,7 +338,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           <div className={`rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card transition ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}>
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
-              {!registrant && <span className="text-[11px] font-semibold text-muted-foreground">Cari pendaftar dulu</span>}
+              {!registrant && <span className="text-[11px] font-semibold text-muted-foreground">Verifikasi kode dulu</span>}
             </div>
             <div className="mt-5 space-y-6">
               {docs.map((d) => {
