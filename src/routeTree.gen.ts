@@ -152,9 +152,9 @@ const BagikanPosterEkonomiRoute = BagikanPosterEkonomiRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ArtikelRoute,
+  id: '/artikel/$slug',
+  path: '/artikel/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
   id: '/whatsapp',
@@ -462,6 +462,7 @@ export interface RootRouteChildren {
   DaftarRoute: typeof DaftarRoute
   LoginRoute: typeof LoginRoute
   TentangRoute: typeof TentangRoute
+  ArtikelSlugRoute: typeof ArtikelSlugRoute
   BagikanPosterEkonomiRoute: typeof BagikanPosterEkonomiRoute
   BagikanPosterPrestasiRoute: typeof BagikanPosterPrestasiRoute
   BerkasEkonomiRoute: typeof BerkasEkonomiRouteWithChildren
@@ -627,10 +628,10 @@ declare module '@tanstack/react-router' {
     }
     '/artikel/$slug': {
       id: '/artikel/$slug'
-      path: '/$slug'
+      path: '/artikel/$slug'
       fullPath: '/artikel/$slug'
       preLoaderRoute: typeof ArtikelSlugRouteImport
-      parentRoute: typeof ArtikelRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/whatsapp': {
       id: '/admin/whatsapp'
@@ -800,6 +801,7 @@ const rootRouteChildren: RootRouteChildren = {
   DaftarRoute: DaftarRoute,
   LoginRoute: LoginRoute,
   TentangRoute: TentangRoute,
+  ArtikelSlugRoute: ArtikelSlugRoute,
   BagikanPosterEkonomiRoute: BagikanPosterEkonomiRoute,
   BagikanPosterPrestasiRoute: BagikanPosterPrestasiRoute,
   BerkasEkonomiRoute: BerkasEkonomiRouteWithChildren,
