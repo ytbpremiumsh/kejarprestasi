@@ -64,6 +64,7 @@ function AdminBerkas() {
   const [filterKind, setFilterKind] = useState<"all" | "prestasi" | "ekonomi">("all");
   const [filterStatus, setFilterStatus] = useState<"all" | CandidateStatus>("all");
   const [detail, setDetail] = useState<Group | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const load = async () => {
     setLoading(true);
