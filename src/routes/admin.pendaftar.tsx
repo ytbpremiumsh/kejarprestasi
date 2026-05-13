@@ -165,8 +165,40 @@ function AdminPendaftar() {
     URL.revokeObjectURL(url);
   };
 
+  const toggleOne = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+  const toggleAll = () => {
+    if (selected.size === filtered.length) setSelected(new Set());
+    else setSelected(new Set(filtered.map((r) => r.id)));
+  };
+  const deleteIds = async (ids: string[]) => {
+    if (ids.length === 0) return;
+    const emails = rows.filter((r) => ids.includes(r.id)).map((r) => r.email);
+    const { error } = await supabase.from("registrations").delete().in("id", ids);
+    if (error) return toast.error(error.message);
+    if (emails.length > 0) {
+      await supabase.from("documents").delete().in("email", emails);
+    }
+    toast.success(`${ids.length} pendaftar dihapus`);
+    setRows((prev) => prev.filter((r) => !ids.includes(r.id)));
+    setDocs((prev) => prev.filter((d) => !ids.includes(d.registration_id ?? "") && !emails.includes(d.email)));
+    setSelected(new Set());
+  };
+  const bulkDelete = () => {
+    if (selected.size === 0) return;
+    if (!confirm(`Hapus ${selected.size} pendaftar beserta berkasnya?`)) return;
+    deleteIds(Array.from(selected));
+  };
+  const deleteOne = (r: Registration) => {
+    if (!confirm(`Hapus pendaftar "${r.full_name}"?`)) return;
+    deleteIds([r.id]);
+  };
 
-  return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
