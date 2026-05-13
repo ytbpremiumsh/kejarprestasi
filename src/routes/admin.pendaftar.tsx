@@ -209,11 +209,11 @@ function AdminPendaftar() {
               <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
                 <tr>
                   <th className="px-4 py-3">Nama</th>
+                  <th className="px-4 py-3">Kode Token</th>
                   <th className="px-4 py-3">Kategori</th>
                   <th className="px-4 py-3">Sekolah</th>
                   <th className="px-4 py-3">Kontak</th>
                   <th className="px-4 py-3">Berkas</th>
-                  
                   <th className="px-4 py-3">Aksi</th>
                 </tr>
               </thead>
