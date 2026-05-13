@@ -130,6 +130,36 @@ function AdminPendaftar() {
     XLSX.writeFile(wb, `pendaftar-beasiswa-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
+  const exportCSV = () => {
+    const data = filtered.map((r) => ({
+      "Nama Lengkap": r.full_name,
+      Email: r.email,
+      WhatsApp: r.whatsapp,
+      "Jenis Kelamin": r.gender,
+      "Tempat Lahir": r.birth_place,
+      "Tanggal Lahir": r.birth_date,
+      Alamat: r.address?.replace(/\n/g, " "),
+      Jenjang: r.education_level,
+      Sekolah: r.school_name,
+      Kelas: r.grade,
+      Kategori: r.kind,
+      Status: r.status,
+      "Penghasilan Ortu": r.parent_income ?? "",
+      Tanggungan: r.dependents ?? "",
+      Prestasi: r.main_achievement?.replace(/\n/g, " ") ?? "",
+      "Tanggal Daftar": new Date(r.created_at).toLocaleString("id-ID"),
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const csv = XLSX.utils.sheet_to_csv(ws);
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `pendaftar-beasiswa-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
 
   return (
     <div className="space-y-4">
@@ -140,6 +170,7 @@ function AdminPendaftar() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={load}><RotateCcw className="h-4 w-4 mr-1" />Refresh</Button>
+          <Button variant="outline" onClick={exportCSV}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
           <Button onClick={exportExcel}><Download className="h-4 w-4 mr-1" />Export Excel</Button>
         </div>
       </div>
