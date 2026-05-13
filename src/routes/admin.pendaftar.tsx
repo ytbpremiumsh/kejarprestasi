@@ -108,6 +108,7 @@ function AdminPendaftar() {
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
+      Kode: r.token ?? "",
       "Nama Lengkap": r.full_name,
       Email: r.email,
       WhatsApp: r.whatsapp,
