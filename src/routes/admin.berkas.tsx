@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { uniqueLatestDocuments } from "@/lib/document-utils";
 
 export const Route = createFileRoute("/admin/berkas")({
   component: AdminBerkas,
@@ -98,25 +99,14 @@ function AdminBerkas() {
     }
     let rows: Group[] = Array.from(map.entries()).map(([key, items]) => {
       const reg = findReg(items[0]);
-      // Dedupe by doc_type — keep only the latest submission per jenis berkas
-      const sorted = [...items].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-      );
-      const seen = new Set<string>();
-      const uniqueItems: Document[] = [];
-      for (const it of sorted) {
-        const k = it.doc_type.trim().toLowerCase();
-        if (seen.has(k)) continue;
-        seen.add(k);
-        uniqueItems.push(it);
-      }
+      const uniqueItems = uniqueLatestDocuments(items);
       return {
         key,
         reg,
         email: items[0].email,
         kind: items[0].kind,
         items: uniqueItems,
-        latest: sorted[0]?.created_at,
+        latest: uniqueItems[0]?.created_at,
         status: (reg?.candidate_status ?? "pending") as CandidateStatus,
       };
     });
