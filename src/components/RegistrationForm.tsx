@@ -154,6 +154,24 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
         },
       }).catch(() => { /* ignore */ });
 
+      // Fire-and-forget email confirmation with token
+      const emailAddr = String(payload.email ?? "").trim();
+      if (emailAddr && emailAddr.includes("@") && token) {
+        sendEmail({
+          data: {
+            templateName: "registration-confirmation",
+            recipientEmail: emailAddr,
+            idempotencyKey: `reg-${token}`,
+            templateData: {
+              fullName: String(payload.full_name ?? ""),
+              token,
+              kind,
+              whatsapp: String(payload.whatsapp ?? ""),
+            },
+          },
+        }).catch(() => { /* ignore */ });
+      }
+
       toast.success("Pendaftaran berhasil dikirim!");
       setValues({});
       setFiles({});
