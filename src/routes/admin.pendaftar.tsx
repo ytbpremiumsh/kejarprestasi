@@ -265,7 +265,14 @@ function AdminPendaftar() {
               </thead>
               <tbody>
                 {filtered.map((r) => (
-                  <tr key={r.id} className="border-t hover:bg-muted/30">
+                  <tr key={r.id} className={`border-t hover:bg-muted/30 ${selected.has(r.id) ? "bg-muted/40" : ""}`}>
+                    <td className="px-4 py-3">
+                      <Checkbox
+                        checked={selected.has(r.id)}
+                        onCheckedChange={() => toggleOne(r.id)}
+                        aria-label="Pilih baris"
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <div className="font-medium text-foreground">{r.full_name}</div>
                       <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("id-ID")}</div>
@@ -289,9 +296,13 @@ function AdminPendaftar() {
                         <Badge variant="outline" className="text-muted-foreground">Belum kirim</Badge>
                       )}
                     </td>
-                    
                     <td className="px-4 py-3">
-                      <Button size="sm" variant="outline" onClick={() => setSelectedRow(r)}>Detail</Button>
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="outline" onClick={() => setSelectedRow(r)}>Detail</Button>
+                        <Button size="sm" variant="ghost" className="text-destructive" onClick={() => deleteOne(r)} title="Hapus">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
