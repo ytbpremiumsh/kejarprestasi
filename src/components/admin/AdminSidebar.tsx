@@ -9,6 +9,7 @@ import {
   Megaphone,
   Code2,
   MessageCircle,
+  Bot,
   ShieldCheck,
   ChevronRight,
   Trophy,
