@@ -38,6 +38,15 @@ type Behavior = {
   wa_webhook_token: string | null;
 };
 
+type AiProvider = {
+  id?: string;
+  vendor: "lovable_ai" | "openrouter";
+  api_key: string | null;
+  base_url: string | null;
+  model: string;
+  enabled: boolean;
+};
+
 type WaMsg = {
   id: string;
   phone: string;
@@ -67,15 +76,35 @@ const TONES = [
 ];
 
 const MODELS = [
-  { v: "google/gemini-2.5-flash", l: "Gemini 2.5 Flash (cepat & murah)" },
-  { v: "google/gemini-2.5-pro", l: "Gemini 2.5 Pro (paling akurat)" },
-  { v: "google/gemini-2.5-flash-lite", l: "Gemini 2.5 Flash Lite (paling hemat)" },
-  { v: "openai/gpt-5-mini", l: "GPT-5 Mini (seimbang)" },
+  { v: "google/gemini-3-flash-preview", l: "Gemini 3 Flash Preview" },
+  { v: "google/gemini-2.5-flash", l: "Gemini 2.5 Flash" },
+  { v: "openai/gpt-5-mini", l: "GPT-5 Mini" },
+  { v: "openai/gpt-5.2", l: "GPT-5.2" },
 ];
+
+const OPENROUTER_MODELS = [
+  "google/gemini-2.5-flash-lite-preview-09-2025",
+  "google/gemini-2.5-flash",
+  "google/gemini-2.5-pro",
+  "openai/gpt-4o-mini",
+  "openai/gpt-4o",
+  "meta-llama/llama-3.3-70b-instruct",
+  "anthropic/claude-3.5-sonnet",
+];
+
+const DEFAULT_PROVIDER: AiProvider = {
+  vendor: "lovable_ai",
+  api_key: "",
+  base_url: "https://openrouter.ai/api/v1/chat/completions",
+  model: "google/gemini-3-flash-preview",
+  enabled: true,
+};
 
 function AdminAiBalasan() {
   const [behavior, setBehavior] = useState<Behavior | null>(null);
+  const [provider, setProvider] = useState<AiProvider>(DEFAULT_PROVIDER);
   const [savingBhv, setSavingBhv] = useState(false);
+  const [savingProvider, setSavingProvider] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [kb, setKb] = useState<KbItem[]>([]);
@@ -102,11 +131,13 @@ function AdminAiBalasan() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const [{ data: bhv }, { data: kbRows }] = await Promise.all([
+      const [{ data: bhv }, { data: kbRows }, { data: aiProvider }] = await Promise.all([
         supabase.from("ai_behavior").select("*").limit(1).maybeSingle(),
         supabase.from("ai_knowledge_base").select("*").order("sort_order").order("created_at", { ascending: false }),
+        (supabase.from as never as (table: string) => { select: (columns: string) => { limit: (count: number) => { maybeSingle: () => Promise<{ data: AiProvider | null }> } } })("ai_provider_settings").select("*").limit(1).maybeSingle(),
       ]);
       if (bhv) setBehavior(bhv as Behavior);
+      if (aiProvider) setProvider({ ...DEFAULT_PROVIDER, ...aiProvider });
       if (kbRows) setKb(kbRows as KbItem[]);
       setLoading(false);
       loadWaMsgs();
@@ -114,7 +145,7 @@ function AdminAiBalasan() {
   }, []);
 
   const webhookUrl = behavior?.wa_webhook_token
-    ? `https://zmlwicrlcuqgxfaskxic.functions.supabase.co/wa-webhook?token=${behavior.wa_webhook_token}`
+    ? `https://prestasi-emas.lovable.app/api/public/wa-webhook?token=${behavior.wa_webhook_token}`
     : "";
 
   async function regenerateToken() {
@@ -154,6 +185,25 @@ function AdminAiBalasan() {
     setSavingBhv(false);
     if (error) toast.error("Gagal menyimpan: " + error.message);
     else toast.success("Perilaku AI tersimpan");
+  }
+
+  async function saveProvider() {
+    setSavingProvider(true);
+    const payload = {
+      vendor: provider.vendor,
+      api_key: provider.vendor === "openrouter" ? provider.api_key : null,
+      base_url: provider.vendor === "openrouter" ? provider.base_url || DEFAULT_PROVIDER.base_url : null,
+      model: provider.model,
+      enabled: provider.enabled,
+    };
+    const query = (supabase.from as never as (table: string) => {
+      upsert: (value: typeof payload & { id?: string }) => { select: () => { single: () => Promise<{ data: AiProvider | null; error: { message: string } | null }> } };
+    })("ai_provider_settings");
+    const { data, error } = await query.upsert({ ...payload, id: provider.id }).select().single();
+    setSavingProvider(false);
+    if (error) return toast.error("Gagal menyimpan provider: " + error.message);
+    if (data) setProvider({ ...DEFAULT_PROVIDER, ...data });
+    toast.success("Provider AI tersimpan");
   }
 
   async function saveKb(item: Partial<KbItem>) {
@@ -222,6 +272,9 @@ function AdminAiBalasan() {
         <TabsList>
           <TabsTrigger value="behavior" className="gap-2">
             <Sparkles className="h-4 w-4" /> AI Behavior
+          </TabsTrigger>
+          <TabsTrigger value="provider" className="gap-2">
+            <Bot className="h-4 w-4" /> AI Provider
           </TabsTrigger>
           <TabsTrigger value="knowledge" className="gap-2">
             <BookOpen className="h-4 w-4" /> AI Knowledge
@@ -349,6 +402,64 @@ function AdminAiBalasan() {
               </div>
             </Card>
           )}
+        </TabsContent>
+
+        <TabsContent value="provider">
+          <Card className="p-6 space-y-5">
+            <div>
+              <h3 className="font-semibold flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Provider Balasan AI</h3>
+              <p className="text-xs text-muted-foreground mt-1">Pilih Lovable AI bawaan atau OpenRouter dengan API key sendiri untuk bebas memilih model.</p>
+            </div>
+            <div className="flex items-center justify-between rounded-lg border bg-muted/40 p-4">
+              <div>
+                <p className="font-semibold text-sm">Aktifkan Provider Ini</p>
+                <p className="text-xs text-muted-foreground">Dipakai oleh auto-reply WhatsApp saat AI membalas pesan masuk.</p>
+              </div>
+              <Switch checked={provider.enabled} onCheckedChange={(v) => setProvider({ ...provider, enabled: v })} />
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label>AI Vendor</Label>
+                <Select value={provider.vendor} onValueChange={(v: "lovable_ai" | "openrouter") => setProvider({ ...provider, vendor: v, model: v === "openrouter" ? OPENROUTER_MODELS[0] : DEFAULT_PROVIDER.model })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lovable_ai">Lovable AI</SelectItem>
+                    <SelectItem value="openrouter">OpenRouter</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Model</Label>
+                {provider.vendor === "openrouter" ? (
+                  <Input value={provider.model} onChange={(e) => setProvider({ ...provider, model: e.target.value })} list="openrouter-models" placeholder="contoh: google/gemini-2.5-flash" />
+                ) : (
+                  <Select value={provider.model} onValueChange={(v) => setProvider({ ...provider, model: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>{MODELS.map((m) => <SelectItem key={m.v} value={m.v}>{m.l}</SelectItem>)}</SelectContent>
+                  </Select>
+                )}
+                <datalist id="openrouter-models">{OPENROUTER_MODELS.map((m) => <option key={m} value={m} />)}</datalist>
+              </div>
+              {provider.vendor === "openrouter" && (
+                <>
+                  <div>
+                    <Label>AI API Key</Label>
+                    <Input type="password" value={provider.api_key ?? ""} onChange={(e) => setProvider({ ...provider, api_key: e.target.value })} placeholder="Masukkan API key OpenRouter" />
+                  </div>
+                  <div>
+                    <Label>Base URL</Label>
+                    <Input value={provider.base_url ?? DEFAULT_PROVIDER.base_url ?? ""} onChange={(e) => setProvider({ ...provider, base_url: e.target.value })} />
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={saveProvider} disabled={savingProvider} className="gap-2">
+                {savingProvider ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                Simpan Provider AI
+              </Button>
+            </div>
+          </Card>
         </TabsContent>
 
         {/* KNOWLEDGE */}

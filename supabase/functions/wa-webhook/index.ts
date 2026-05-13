@@ -33,69 +33,96 @@ type Behavior = {
   fallback_message: string;
 };
 
+type Provider = {
+  vendor?: "lovable_ai" | "openrouter";
+  api_key?: string | null;
+  base_url?: string | null;
+  model?: string | null;
+  enabled?: boolean;
+};
+
 type Kb = { id: string; question: string; answer: string; category: string | null };
 
-function pickPhone(p: Record<string, unknown>): string | null {
-  // Try common payload shapes (MPWA / WAHA / Wablas / generic)
-  const candidates: unknown[] = [
-    p.from, p.sender, p.number, p.phone, p.wa_number,
-    (p.data as Record<string, unknown> | undefined)?.from,
-    (p.data as Record<string, unknown> | undefined)?.sender,
-    (p.message as Record<string, unknown> | undefined)?.from,
-    (p.payload as Record<string, unknown> | undefined)?.from,
-  ];
-  for (const c of candidates) {
-    if (typeof c === "string" && c.length >= 6) {
-      return c.replace(/\D/g, "");
-    }
+function getPath(source: unknown, path: string): unknown {
+  return path.split(".").reduce<unknown>((current, key) => {
+    if (current == null) return undefined;
+    if (Array.isArray(current)) return current[Number(key)];
+    if (typeof current === "object") return (current as Record<string, unknown>)[key];
+    return undefined;
+  }, source);
+}
+
+function firstString(p: Record<string, unknown>, paths: string[]): string | null {
+  for (const path of paths) {
+    const value = getPath(p, path);
+    if (typeof value === "string" && value.trim()) return value.trim();
   }
   return null;
+}
+
+function normalizePhone(raw: string): string {
+  const withoutJid = raw.split("@")[0];
+  const match = withoutJid.match(/(?:62|0|8)\d{7,15}/);
+  let phone = (match?.[0] ?? withoutJid).replace(/\D/g, "");
+  if (phone.startsWith("0")) phone = `62${phone.slice(1)}`;
+  if (phone.startsWith("8")) phone = `62${phone}`;
+  return phone;
+}
+
+function pickRawPhone(p: Record<string, unknown>): string | null {
+  return firstString(p, [
+    "from", "sender", "number", "phone", "wa_number", "remoteJid", "jid", "chatId",
+    "data.from", "data.sender", "data.number", "data.phone", "data.remoteJid", "data.key.remoteJid",
+    "message.from", "message.sender", "message.key.remoteJid", "payload.from", "payload.sender",
+    "messages.0.from", "messages.0.sender", "messages.0.key.remoteJid", "messages.0.remoteJid",
+  ]);
+}
+
+function pickPhone(p: Record<string, unknown>): string | null {
+  const raw = pickRawPhone(p);
+  return raw ? normalizePhone(raw) : null;
 }
 
 function pickText(p: Record<string, unknown>): string | null {
-  const candidates: unknown[] = [
-    p.message, p.text, p.body, p.msg, p.pesan,
-    (p.data as Record<string, unknown> | undefined)?.message,
-    (p.data as Record<string, unknown> | undefined)?.body,
-    (p.message as Record<string, unknown> | undefined)?.text,
-    (p.message as Record<string, unknown> | undefined)?.body,
-    ((p.message as Record<string, unknown> | undefined)?.conversation),
-    (p.payload as Record<string, unknown> | undefined)?.body,
-  ];
-  for (const c of candidates) {
-    if (typeof c === "string" && c.trim().length > 0) return c.trim();
-  }
-  return null;
+  return firstString(p, [
+    "text", "body", "msg", "pesan", "caption", "message", "conversation",
+    "data.text", "data.body", "data.message", "data.msg", "data.caption", "data.message.conversation",
+    "data.message.extendedTextMessage.text", "data.message.imageMessage.caption", "data.message.videoMessage.caption",
+    "message.text", "message.body", "message.conversation", "message.extendedTextMessage.text",
+    "payload.text", "payload.body", "payload.message",
+    "messages.0.text", "messages.0.body", "messages.0.message.conversation", "messages.0.message.extendedTextMessage.text",
+  ]);
 }
 
 function pickName(p: Record<string, unknown>): string | null {
-  const candidates: unknown[] = [
-    p.pushname, p.name, p.sender_name, p.contact_name,
-    (p.data as Record<string, unknown> | undefined)?.pushname,
-    (p.data as Record<string, unknown> | undefined)?.name,
-  ];
-  for (const c of candidates) if (typeof c === "string" && c.trim()) return c.trim();
-  return null;
+  return firstString(p, [
+    "pushname", "pushName", "name", "sender_name", "contact_name",
+    "data.pushname", "data.pushName", "data.name", "data.sender_name",
+    "message.pushName", "messages.0.pushName", "messages.0.pushname",
+  ]);
 }
 
-async function callAI(behavior: Behavior, kb: Kb[], userMessage: string, contactName: string | null): Promise<string> {
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
-
+async function callAI(behavior: Behavior, provider: Provider | null, kb: Kb[], userMessage: string, contactName: string | null): Promise<string> {
   const kbText = kb
     .map((k, i) => `${i + 1}. [${k.category ?? "Umum"}] Q: ${k.question}\n   A: ${k.answer}`)
     .join("\n\n");
 
-  const sys = `${behavior.system_prompt}\n\nNAMA PENGGUNA SAAT INI: ${contactName ?? "(tidak diketahui, sapa dengan 'Kak')"}\n\nBASIS PENGETAHUAN (gunakan HANYA info di sini, jangan mengarang):\n${kbText}\n\nJika tidak ada jawaban yang cocok, balas dengan: "${behavior.fallback_message}"`;
+  const sys = `${behavior.system_prompt}\n\nNAMA PENGGUNA SAAT INI: ${contactName ?? "(tidak diketahui, sapa dengan 'Kak')"}\n\nBASIS PENGETAHUAN (gunakan HANYA info di sini, jangan mengarang):\n${kbText}\n\nAturan balasan: gunakan panggilan Kak/Kakak, boleh menyebut nama peserta jika tersedia, jawab ringkas dan jelas. Jika tidak ada jawaban yang cocok, balas dengan: "${behavior.fallback_message}"`;
+  const vendor = provider?.enabled === false ? "lovable_ai" : provider?.vendor ?? "lovable_ai";
+  const endpoint = vendor === "openrouter" ? (provider?.base_url?.trim() || "https://openrouter.ai/api/v1/chat/completions") : "https://ai.gateway.lovable.dev/v1/chat/completions";
+  const apiKey = vendor === "openrouter" ? (provider?.api_key?.trim() || Deno.env.get("OPENROUTER_API_KEY")) : Deno.env.get("LOVABLE_API_KEY");
+  const model = provider?.model?.trim() || behavior.model || "google/gemini-3-flash-preview";
+  if (!apiKey) return behavior.fallback_message;
 
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const res = await fetch(endpoint, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+      "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json",
+      ...(vendor === "openrouter" ? { "HTTP-Referer": "https://prestasi-emas.lovable.app", "X-Title": "Kejar Prestasi AI" } : {}),
     },
     body: JSON.stringify({
-      model: behavior.model || "google/gemini-2.5-flash",
+      model,
       temperature: behavior.temperature ?? 0.5,
       max_tokens: behavior.max_tokens ?? 600,
       messages: [
@@ -108,7 +135,7 @@ async function callAI(behavior: Behavior, kb: Kb[], userMessage: string, contact
   if (res.status === 429) return behavior.fallback_message + "\n\n_(AI sedang sibuk, coba beberapa saat lagi ya Kak 🙏)_";
   if (res.status === 402) return behavior.fallback_message;
   if (!res.ok) {
-    console.error("AI gateway error", res.status, await res.text());
+    console.error("AI provider error", res.status, await res.text());
     return behavior.fallback_message;
   }
   const data = await res.json();
@@ -169,19 +196,26 @@ Deno.serve(async (req) => {
       try { payload = JSON.parse(txt); } catch { payload = { raw: txt }; }
     }
 
-    const phone = pickPhone(payload);
+    const rawPhone = pickRawPhone(payload);
+    const phone = rawPhone ? normalizePhone(rawPhone) : null;
     const text = pickText(payload);
     const contactName = pickName(payload);
 
-    if (!phone || !text) {
-      return new Response(JSON.stringify({ ok: true, ignored: "no_phone_or_text", payload }), { headers: { ...cors, "Content-Type": "application/json" } });
-    }
-
     // Skip echo of own outgoing messages if gateway sends them
     const isFromMe = (payload as { fromMe?: boolean }).fromMe === true ||
-      (payload as { is_from_me?: boolean }).is_from_me === true;
+      (payload as { is_from_me?: boolean }).is_from_me === true ||
+      getPath(payload, "data.key.fromMe") === true ||
+      getPath(payload, "messages.0.key.fromMe") === true;
     if (isFromMe) {
       return new Response(JSON.stringify({ ok: true, ignored: "from_me" }), { headers: { ...cors, "Content-Type": "application/json" } });
+    }
+
+    if ((rawPhone?.includes("@g.us") ?? false) || (payload as { isGroup?: boolean }).isGroup === true || getPath(payload, "data.isGroup") === true) {
+      return new Response(JSON.stringify({ ok: true, ignored: "group_message" }), { headers: { ...cors, "Content-Type": "application/json" } });
+    }
+
+    if (!phone || !text) {
+      return new Response(JSON.stringify({ ok: true, ignored: "no_phone_or_text", parsed: { phone, text }, payload }), { headers: { ...cors, "Content-Type": "application/json" } });
     }
 
     // Log incoming message
@@ -195,15 +229,24 @@ Deno.serve(async (req) => {
     }
 
     // Load enabled KB
-    const { data: kbRows } = await supabase
+    const [{ data: kbRows }, { data: providerRow }] = await Promise.all([
+      supabase
       .from("ai_knowledge_base")
       .select("id, question, answer, category")
       .eq("enabled", true)
-      .order("sort_order");
+      .order("sort_order"),
+      supabase
+        .from("ai_provider_settings")
+        .select("*")
+        .eq("enabled", true)
+        .limit(1)
+        .maybeSingle(),
+    ]);
     const kb = (kbRows ?? []) as Kb[];
+    const provider = (providerRow ?? null) as Provider | null;
 
     // Generate AI reply
-    const reply = await callAI(behavior, kb, text, contactName);
+    const reply = await callAI(behavior, provider, kb, text, contactName);
 
     // Send via WA
     const sendRes = await sendWA(supabase, phone, reply);

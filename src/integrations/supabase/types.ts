@@ -98,6 +98,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_provider_settings: {
+        Row: {
+          api_key: string | null
+          base_url: string | null
+          created_at: string
+          enabled: boolean
+          id: string
+          model: string
+          updated_at: string
+          vendor: string
+        }
+        Insert: {
+          api_key?: string | null
+          base_url?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          model?: string
+          updated_at?: string
+          vendor?: string
+        }
+        Update: {
+          api_key?: string | null
+          base_url?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          model?: string
+          updated_at?: string
+          vendor?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author: string | null
