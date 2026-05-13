@@ -36,6 +36,7 @@ function isValidUrl(v: string) {
 type RegInfo = {
   id?: string;
   full_name: string;
+  email?: string | null;
   whatsapp: string;
   school_name?: string | null;
   education_level?: string | null;
