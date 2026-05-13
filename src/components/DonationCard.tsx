@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { Heart, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Heart, Loader2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
 
 type DonationConfig = {
   enabled?: boolean;
@@ -46,6 +47,9 @@ export function DonationCard({
   const [email, setEmail] = useState(defaultEmail);
   const [whatsapp, setWhatsapp] = useState(defaultWhatsapp);
   const [submitting, setSubmitting] = useState(false);
+  const [payUrl, setPayUrl] = useState<string | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase
@@ -60,6 +64,14 @@ export function DonationCard({
         setLoading(false);
       });
   }, []);
+
+  // Lock body scroll while modal open
+  useEffect(() => {
+    if (!payUrl) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [payUrl]);
 
   if (loading) return null;
   if (!cfg.enabled) return null;
@@ -78,12 +90,32 @@ export function DonationCard({
       if (error) throw error;
       const r = data as { ok?: boolean; link?: string; error?: string };
       if (!r.ok || !r.link) throw new Error(r.error || "Gagal membuat invoice");
-      window.location.href = r.link;
+      setPayUrl(r.link);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Gagal memproses donasi");
+    } finally {
       setSubmitting(false);
     }
   };
+
+  const handleIframeLoad = () => {
+    // Same-origin redirect detection: when Mayar redirects back to our domain,
+    // we can read the iframe location and close the modal.
+    try {
+      const href = iframeRef.current?.contentWindow?.location.href;
+      if (href && href.includes("/donasi/terima-kasih")) {
+        setPayUrl(null);
+        navigate({ to: "/donasi/terima-kasih" });
+      }
+    } catch {
+      // Cross-origin (Mayar page) — expected, ignore.
+    }
+  };
+
+  const closeModal = () => {
+    if (confirm("Batalkan proses donasi?")) setPayUrl(null);
+  };
+
 
   return (
     <div className="rounded-3xl border border-border bg-card p-6 md:p-8 shadow-card">
@@ -183,6 +215,51 @@ export function DonationCard({
       <p className="mt-3 text-[11px] text-center text-muted-foreground">
         Pembayaran aman diproses oleh Mayar. Donasimu tidak memengaruhi proses seleksi.
       </p>
+
+      {payUrl && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-2 sm:p-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="relative w-full max-w-3xl h-[90vh] rounded-2xl overflow-hidden bg-card shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card">
+              <div className="flex items-center gap-2 min-w-0">
+                <Heart size={16} className="text-primary shrink-0" />
+                <span className="text-sm font-semibold text-foreground truncate">
+                  Pembayaran Donasi
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={payUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:inline-block text-xs text-muted-foreground hover:text-foreground underline"
+                >
+                  Buka di tab baru
+                </a>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-muted text-foreground"
+                  aria-label="Tutup"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+            <iframe
+              ref={iframeRef}
+              src={payUrl}
+              onLoad={handleIframeLoad}
+              title="Pembayaran Mayar"
+              className="flex-1 w-full bg-white"
+              allow="payment *"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
