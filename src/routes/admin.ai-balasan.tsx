@@ -84,6 +84,21 @@ function AdminAiBalasan() {
   const [showForm, setShowForm] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  const [waMsgs, setWaMsgs] = useState<WaMsg[]>([]);
+  const [loadingWa, setLoadingWa] = useState(false);
+  const [regenToken, setRegenToken] = useState(false);
+
+  const loadWaMsgs = async () => {
+    setLoadingWa(true);
+    const { data } = await supabase
+      .from("wa_chat_messages")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    setWaMsgs((data ?? []) as WaMsg[]);
+    setLoadingWa(false);
+  };
+
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -94,8 +109,29 @@ function AdminAiBalasan() {
       if (bhv) setBehavior(bhv as Behavior);
       if (kbRows) setKb(kbRows as KbItem[]);
       setLoading(false);
+      loadWaMsgs();
     })();
   }, []);
+
+  const webhookUrl = behavior?.wa_webhook_token
+    ? `https://zmlwicrlcuqgxfaskxic.functions.supabase.co/wa-webhook?token=${behavior.wa_webhook_token}`
+    : "";
+
+  async function regenerateToken() {
+    if (!behavior?.id) return;
+    if (!confirm("Buat ulang token webhook? URL lama akan langsung non-aktif.")) return;
+    setRegenToken(true);
+    const newToken = crypto.randomUUID().replace(/-/g, "");
+    const { error } = await supabase.from("ai_behavior").update({ wa_webhook_token: newToken }).eq("id", behavior.id);
+    setRegenToken(false);
+    if (error) return toast.error(error.message);
+    setBehavior({ ...behavior, wa_webhook_token: newToken });
+    toast.success("Token webhook diperbarui");
+  }
+
+  function copyText(t: string, label = "Disalin") {
+    navigator.clipboard.writeText(t).then(() => toast.success(label));
+  }
 
   const filtered = useMemo(() => {
     const t = q.trim().toLowerCase();
