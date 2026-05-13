@@ -221,34 +221,40 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
-            <h2 className="text-base font-bold text-foreground">Identitas Pendaftar</h2>
-            <p className="mt-1 text-xs text-muted-foreground">Cari data Anda dengan email yang digunakan saat mendaftar.</p>
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <KeyRound size={16} className="text-primary" /> Verifikasi Kode Pendaftar
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Masukkan kode pendaftar (format <span className="font-mono font-semibold">{tokenPrefix(kind)}XXXXXX</span>) yang Anda terima saat mendaftar (lihat WhatsApp atau halaman sukses).
+            </p>
             <div className="mt-5 grid sm:grid-cols-[1fr_auto] gap-3 items-end">
               <label className="block">
                 <span className="text-xs font-medium text-foreground/80">
-                  Email pendaftaran<span className="text-destructive"> *</span>
+                  Kode Pendaftar<span className="text-destructive"> *</span>
                 </span>
                 <div className="mt-1.5 relative">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <KeyRound size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => { setEmail(e.target.value); setRegistrant(null); setSearchError(null); }}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSearch(); } }}
-                    placeholder="email yang kamu pakai saat mendaftar"
-                    className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    type="text"
+                    value={token}
+                    onChange={(e) => { setToken(e.target.value.toUpperCase()); setRegistrant(null); setSearchError(null); }}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleVerify(); } }}
+                    placeholder={`${tokenPrefix(kind)}XXXXXX`}
+                    maxLength={20}
+                    autoCapitalize="characters"
+                    className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm font-mono tracking-wider text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     required
                   />
                 </div>
               </label>
               <button
                 type="button"
-                onClick={handleSearch}
-                disabled={searching}
+                onClick={() => handleVerify()}
+                disabled={verifying}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition disabled:opacity-60"
               >
-                {searching ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
-                Cari
+                {verifying ? <Loader2 size={14} className="animate-spin" /> : <KeyRound size={14} />}
+                Verifikasi
               </button>
             </div>
 
