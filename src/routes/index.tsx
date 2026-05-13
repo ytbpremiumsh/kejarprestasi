@@ -66,8 +66,19 @@ function Index() {
             <span className="hidden lg:inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
               <Sparkles size={14} /> Meraih Pendidikan, Mewujudkan Prestasi
             </span>
-            <h1 className="hidden lg:block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] text-foreground">
-              Beasiswa <span className="text-primary">Kejar Prestasi</span> Section <span className="text-[oklch(0.65_0.18_80)]">#3</span>
+            <h1 className="hidden lg:block relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight text-foreground">
+              <span className="block">Beasiswa</span>
+              <span className="relative inline-block bg-gradient-to-br from-primary via-[oklch(0.55_0.22_290)] to-[oklch(0.45_0.22_280)] bg-clip-text text-transparent drop-shadow-[0_4px_24px_oklch(0.55_0.22_290/0.3)]">
+                Kejar Prestasi
+                <svg aria-hidden="true" viewBox="0 0 300 10" preserveAspectRatio="none" className="absolute -bottom-2 left-0 h-2 w-full text-primary/60">
+                  <path d="M2 6 Q 75 1, 150 5 T 298 5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                </svg>
+              </span>{" "}
+              <span className="inline-block">Section</span>{" "}
+              <span className="relative inline-block bg-gradient-to-br from-[oklch(0.75_0.18_80)] to-[oklch(0.55_0.16_60)] bg-clip-text text-transparent">
+                #3
+                <span className="absolute -top-1 -right-3 h-2.5 w-2.5 rounded-full bg-[oklch(0.75_0.18_80)] shadow-[0_0_16px_oklch(0.75_0.18_80)]" />
+              </span>
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-xl">
               Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia.
