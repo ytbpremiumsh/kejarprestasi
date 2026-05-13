@@ -208,6 +208,11 @@ function AdminPendaftar() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={load}><RotateCcw className="h-4 w-4 mr-1" />Refresh</Button>
+          {selected.size > 0 && (
+            <Button variant="destructive" onClick={bulkDelete}>
+              <Trash2 className="h-4 w-4 mr-1" />Hapus ({selected.size})
+            </Button>
+          )}
           <Button variant="outline" onClick={exportCSV}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
           <Button onClick={exportExcel}><Download className="h-4 w-4 mr-1" />Export Excel</Button>
         </div>
