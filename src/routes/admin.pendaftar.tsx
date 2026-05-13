@@ -97,7 +97,7 @@ function AdminPendaftar() {
         return (
           r.full_name.toLowerCase().includes(s) ||
           r.email.toLowerCase().includes(s) ||
-
+          (r.token?.toLowerCase().includes(s) ?? false) ||
           r.school_name.toLowerCase().includes(s)
         );
       }
