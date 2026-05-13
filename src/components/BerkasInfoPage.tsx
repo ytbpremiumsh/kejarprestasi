@@ -23,7 +23,6 @@ const docsByKind = {
 
 const tips = [
   "Format file: PDF, JPG, PNG, MP4",
-  "Ukuran maksimum 20MB per file",
   "Pastikan dokumen jelas terbaca dan tidak terpotong",
   "Gunakan email yang sama saat pendaftaran",
 ];
