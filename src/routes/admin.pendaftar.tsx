@@ -247,6 +247,13 @@ function AdminPendaftar() {
             <table className="w-full text-sm">
               <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
                 <tr>
+                  <th className="px-4 py-3 w-10">
+                    <Checkbox
+                      checked={filtered.length > 0 && selected.size === filtered.length}
+                      onCheckedChange={toggleAll}
+                      aria-label="Pilih semua"
+                    />
+                  </th>
                   <th className="px-4 py-3">Nama</th>
                   <th className="px-4 py-3">Kode Token</th>
                   <th className="px-4 py-3">Kategori</th>
