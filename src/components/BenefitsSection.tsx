@@ -1,4 +1,4 @@
-import { Wallet, Award, Gift, FileCheck2, BookOpen, ShieldCheck } from "lucide-react";
+import { Wallet, Award, Gift, Trophy, BookOpen, PlaySquare } from "lucide-react";
 
 const benefits = [
   {
@@ -10,31 +10,31 @@ const benefits = [
   {
     icon: Award,
     title: "Sertifikat Resmi",
-    desc: "Sertifikat penerima beasiswa bermaterai resmi dari Kejar Prestasi.",
+    desc: "Sertifikat penerima beasiswa resmi dari Kejar Prestasi.",
     accent: "bg-[oklch(0.92_0.14_85)] text-gold-foreground",
   },
   {
-    icon: Gift,
-    title: "Merchandise Eksklusif",
-    desc: "Plakat, kaos, block note, goodie bag, dan paket merchandise lainnya.",
-    accent: "bg-primary-soft text-primary",
-  },
-  {
-    icon: FileCheck2,
-    title: "Proses Transparan",
-    desc: "Seleksi terbuka dengan tahapan jelas dan hasil yang dapat dipertanggungjawabkan.",
+    icon: Trophy,
+    title: "Plakat Penghargaan",
+    desc: "Plakat penghargaan eksklusif sebagai bentuk apresiasi atas prestasi penerima.",
     accent: "bg-primary-soft text-primary",
   },
   {
     icon: BookOpen,
-    title: "Mentoring & Pembinaan",
-    desc: "Sesi mentoring, kelas inspiratif, dan akses materi pengembangan diri.",
+    title: "E-Book Eksklusif",
+    desc: "Akses E-Book eksklusif berisi materi pengembangan diri dan akademik.",
     accent: "bg-primary-soft text-primary",
   },
   {
-    icon: ShieldCheck,
-    title: "Bebas Biaya",
-    desc: "Tanpa biaya pendaftaran, tanpa potongan, dan seleksi 100% transparan.",
+    icon: PlaySquare,
+    title: "Video Eksklusif",
+    desc: "Konten video eksklusif berupa kelas inspiratif dan materi pembinaan.",
+    accent: "bg-primary-soft text-primary",
+  },
+  {
+    icon: Gift,
+    title: "Merchandise Eksklusif",
+    desc: "Kaos, block note, goodie bag, dan paket merchandise lainnya.",
     accent: "bg-primary-soft text-primary",
   },
 ];
