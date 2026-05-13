@@ -11,6 +11,7 @@ import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, U
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { TokenBadge } from "@/components/admin/TokenBadge";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/admin/berkas")({
   component: AdminBerkas,
