@@ -43,8 +43,7 @@ function injectGA(id: string) {
 
 export function AnalyticsInjector() {
   const idRef = useRef<string>("");
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const search = useRouterState({ select: (s) => s.location.searchStr });
+  const href = useRouterState({ select: (s) => s.location.href });
 
   // Load + subscribe to settings
   useEffect(() => {
