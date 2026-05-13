@@ -129,20 +129,6 @@ function CekStatusPage() {
   );
 }
 
-function StatusBadge({ status }: { status: "pending" | "approved" | "rejected" | string }) {
-  const map: Record<string, { label: string; cls: string; icon: typeof CheckCircle2 }> = {
-    approved: { label: "Disetujui", cls: "bg-green-500/15 text-green-700 dark:text-green-400 border-green-500/30", icon: CheckCircle2 },
-    pending: { label: "Diproses", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30", icon: Clock },
-    rejected: { label: "Ditolak", cls: "bg-destructive/15 text-destructive border-destructive/30", icon: XCircle },
-  };
-  const m = map[status] ?? map.pending;
-  const Icon = m.icon;
-  return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${m.cls}`}>
-      <Icon size={12} /> {m.label}
-    </span>
-  );
-}
 
 function StatusResult({ data }: { data: StatusData }) {
   const jenis = data.kind === "prestasi" ? "Beasiswa Prestasi" : "Beasiswa Ekonomi";
