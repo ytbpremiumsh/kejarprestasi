@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { Heart, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Heart, Loader2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
 
 type DonationConfig = {
   enabled?: boolean;
