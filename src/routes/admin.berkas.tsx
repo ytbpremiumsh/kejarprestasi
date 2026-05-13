@@ -178,10 +178,7 @@ function AdminBerkas() {
         "Tanggal Kirim": new Date(d.created_at).toLocaleString("id-ID"),
       };
     });
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Berkas");
-    XLSX.writeFile(wb, `pengiriman-berkas-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    await exportRowsToXlsx(data, "Berkas", `pengiriman-berkas-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
   const updateCandidate = async (
