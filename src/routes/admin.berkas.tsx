@@ -41,6 +41,7 @@ type Registration = {
   school_name: string;
   grade: string;
   kind: string;
+  token: string | null;
   candidate_status: CandidateStatus;
 };
 
