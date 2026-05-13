@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { AdSlot } from "@/components/ads/AdSlot";
 
-export const Route = createFileRoute("/artikel")({
+export const Route = createFileRoute("/artikel/")({
   head: () => ({
     meta: [
       { title: "Artikel — Kejar Prestasi" },
