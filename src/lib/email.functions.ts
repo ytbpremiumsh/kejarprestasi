@@ -6,7 +6,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { TEMPLATES } from "./email-templates/registry";
 
 const SENDER_DOMAIN = "notify.kejarprestasi.id";
-const FROM_EMAIL = "Kejar Prestasi <noreply@notify.kejarprestasi.id>";
+const FROM_EMAIL = "Prestasi Kita <noreply@notify.kejarprestasi.id>";
 
 export const sendAppEmail = createServerFn({ method: "POST" })
   .inputValidator((input) =>
