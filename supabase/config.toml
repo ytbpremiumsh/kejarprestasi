@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.mayar-webhook]
 verify_jwt = false
+
+[functions.recent-donations]
+verify_jwt = false
