@@ -196,19 +196,26 @@ Deno.serve(async (req) => {
       try { payload = JSON.parse(txt); } catch { payload = { raw: txt }; }
     }
 
-    const phone = pickPhone(payload);
+    const rawPhone = pickRawPhone(payload);
+    const phone = rawPhone ? normalizePhone(rawPhone) : null;
     const text = pickText(payload);
     const contactName = pickName(payload);
 
-    if (!phone || !text) {
-      return new Response(JSON.stringify({ ok: true, ignored: "no_phone_or_text", payload }), { headers: { ...cors, "Content-Type": "application/json" } });
-    }
-
     // Skip echo of own outgoing messages if gateway sends them
     const isFromMe = (payload as { fromMe?: boolean }).fromMe === true ||
-      (payload as { is_from_me?: boolean }).is_from_me === true;
+      (payload as { is_from_me?: boolean }).is_from_me === true ||
+      getPath(payload, "data.key.fromMe") === true ||
+      getPath(payload, "messages.0.key.fromMe") === true;
     if (isFromMe) {
       return new Response(JSON.stringify({ ok: true, ignored: "from_me" }), { headers: { ...cors, "Content-Type": "application/json" } });
+    }
+
+    if ((rawPhone?.includes("@g.us") ?? false) || (payload as { isGroup?: boolean }).isGroup === true || getPath(payload, "data.isGroup") === true) {
+      return new Response(JSON.stringify({ ok: true, ignored: "group_message" }), { headers: { ...cors, "Content-Type": "application/json" } });
+    }
+
+    if (!phone || !text) {
+      return new Response(JSON.stringify({ ok: true, ignored: "no_phone_or_text", parsed: { phone, text }, payload }), { headers: { ...cors, "Content-Type": "application/json" } });
     }
 
     // Log incoming message
@@ -222,15 +229,24 @@ Deno.serve(async (req) => {
     }
 
     // Load enabled KB
-    const { data: kbRows } = await supabase
+    const [{ data: kbRows }, { data: providerRow }] = await Promise.all([
+      supabase
       .from("ai_knowledge_base")
       .select("id, question, answer, category")
       .eq("enabled", true)
-      .order("sort_order");
+      .order("sort_order"),
+      supabase
+        .from("ai_provider_settings")
+        .select("*")
+        .eq("enabled", true)
+        .limit(1)
+        .maybeSingle(),
+    ]);
     const kb = (kbRows ?? []) as Kb[];
+    const provider = (providerRow ?? null) as Provider | null;
 
     // Generate AI reply
-    const reply = await callAI(behavior, kb, text, contactName);
+    const reply = await callAI(behavior, provider, kb, text, contactName);
 
     // Send via WA
     const sendRes = await sendWA(supabase, phone, reply);
