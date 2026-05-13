@@ -197,25 +197,22 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         setSubmitting(false);
         return;
       }
-      const submittedAt = new Date().toISOString();
-      const rows = docs
+      const submittedDocs = docs
         .map((d) => ({ d, v: (values[d.key] ?? "").trim() }))
         .filter(({ v }) => v.length > 0)
         .map(({ d, v }) => ({
-          email: regEmail,
-          kind,
-          doc_type: d.label,
-          file_url: v,
-          registration_id: registrant.id ?? null,
-          created_at: submittedAt,
-          review_status: "pending" as const,
-          reviewed_at: null,
+          key: d.key,
+          label: d.label,
+          url: v,
         }));
 
-      const { error } = await supabase
-        .from("documents")
-        .upsert(rows, { onConflict: "email_key,kind,doc_key" });
-      if (error) throw error;
+      const result = await submitBerkas({
+        data: {
+          token: token.trim().toUpperCase(),
+          kind,
+          documents: submittedDocs,
+        },
+      });
 
       supabase.functions
         .invoke("send-whatsapp", {
@@ -225,7 +222,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
             email: regEmail,
             whatsapp: "",
             kind,
-            doc_count: rows.length,
+            doc_count: result.count,
             token: registrant.token ?? token,
           },
         })
@@ -234,7 +231,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         });
 
       toast.success("Berkas berhasil dikirim!");
-      navigate({ to: "/berkas/terkirim", search: { kind, count: rows.length } });
+      navigate({ to: "/berkas/terkirim", search: { kind, count: result.count } });
     } catch (err) {
       console.error(err);
       toast.error("Gagal mengirim berkas. Silakan coba lagi.");
