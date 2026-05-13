@@ -169,7 +169,7 @@ Deno.serve(async (req) => {
   try {
     // Verify token
     const url = new URL(req.url);
-    const token = url.searchParams.get("token") || req.headers.get("x-webhook-token");
+    const queryPayload = Object.fromEntries(url.searchParams.entries()) as Record<string, unknown>;
 
     const { data: bhvRow } = await supabase
       .from("ai_behavior")
@@ -185,17 +185,27 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ ok: false, error: "invalid_token" }), { status: 401, headers: { ...cors, "Content-Type": "application/json" } });
     }
 
-    // Parse payload (support JSON or form-encoded)
-    let payload: Record<string, unknown> = {};
+    // Parse payload (support JSON, form-encoded, and GET query payloads)
+    let payload: Record<string, unknown> = { ...queryPayload };
     const ct = req.headers.get("content-type") || "";
-    if (ct.includes("application/json")) {
-      payload = await req.json().catch(() => ({}));
+    if (req.method === "GET" || req.method === "HEAD") {
+      payload = queryPayload;
+    } else if (ct.includes("application/json")) {
+      payload = { ...queryPayload, ...await req.json().catch(() => ({})) };
     } else if (ct.includes("application/x-www-form-urlencoded") || ct.includes("multipart/form-data")) {
       const fd = await req.formData();
       fd.forEach((v, k) => { payload[k] = typeof v === "string" ? v : "(file)"; });
     } else {
       const txt = await req.text();
-      try { payload = JSON.parse(txt); } catch { payload = { raw: txt }; }
+      if (txt.trim()) {
+        try { payload = { ...queryPayload, ...JSON.parse(txt) }; } catch { payload = { ...queryPayload, raw: txt }; }
+      }
+    }
+
+    const bearer = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "").trim();
+    const token = url.searchParams.get("token") || req.headers.get("x-webhook-token") || bearer || firstString(payload, ["token", "webhook_token", "secret", "data.token", "payload.token"]);
+    if (!behavior.wa_webhook_token || token !== behavior.wa_webhook_token) {
+      return new Response(JSON.stringify({ ok: false, error: "invalid_token" }), { status: 401, headers: { ...cors, "Content-Type": "application/json" } });
     }
 
     const rawPhone = pickRawPhone(payload);
@@ -217,6 +227,11 @@ Deno.serve(async (req) => {
     }
 
     if (!phone || !text) {
+      await supabase.from("wa_chat_messages").insert({
+        phone: phone || "unknown", contact_name: contactName, direction: "in",
+        message: text || "[Webhook diterima, tetapi nomor atau isi pesan belum terbaca]",
+        raw: payload, status: "ignored_no_phone_or_text",
+      });
       return new Response(JSON.stringify({ ok: true, ignored: "no_phone_or_text", parsed: { phone, text }, payload }), { headers: { ...cors, "Content-Type": "application/json" } });
     }
 
