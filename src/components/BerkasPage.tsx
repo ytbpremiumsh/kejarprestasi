@@ -248,10 +248,18 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }).catch(() => { /* ignore */ });
 
       toast.success("Berkas berhasil dikirim!");
-      navigate({ to: "/berkas/terkirim", search: { kind, count: result.count } });
+      try {
+        navigate({ to: "/berkas/terkirim", search: { kind, count: result.count } });
+      } catch (navErr) {
+        console.error("navigate error", navErr);
+        if (typeof window !== "undefined") {
+          window.location.href = `/berkas/terkirim?kind=${kind}&count=${result.count}`;
+        }
+      }
     } catch (err) {
-      console.error(err);
-      toast.error("Gagal mengirim berkas. Silakan coba lagi.");
+      console.error("berkas submit error", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`Gagal mengirim berkas: ${msg}`);
     } finally {
       setSubmitting(false);
     }
