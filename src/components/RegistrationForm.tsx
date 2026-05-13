@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { FormField, FormSchema } from "@/lib/form-schema";
 import { STANDARD_REG_COLUMNS } from "@/lib/form-schema";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { sendAppEmail } from "@/lib/email.functions";
 
 const FALLBACK: Record<"prestasi" | "ekonomi", FormSchema> = {
   prestasi: { fields: [] },
