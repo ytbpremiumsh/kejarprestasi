@@ -47,6 +47,9 @@ export function DonationCard({
   const [email, setEmail] = useState(defaultEmail);
   const [whatsapp, setWhatsapp] = useState(defaultWhatsapp);
   const [submitting, setSubmitting] = useState(false);
+  const [payUrl, setPayUrl] = useState<string | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase
@@ -61,6 +64,14 @@ export function DonationCard({
         setLoading(false);
       });
   }, []);
+
+  // Lock body scroll while modal open
+  useEffect(() => {
+    if (!payUrl) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [payUrl]);
 
   if (loading) return null;
   if (!cfg.enabled) return null;
@@ -79,12 +90,32 @@ export function DonationCard({
       if (error) throw error;
       const r = data as { ok?: boolean; link?: string; error?: string };
       if (!r.ok || !r.link) throw new Error(r.error || "Gagal membuat invoice");
-      window.location.href = r.link;
+      setPayUrl(r.link);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Gagal memproses donasi");
+    } finally {
       setSubmitting(false);
     }
   };
+
+  const handleIframeLoad = () => {
+    // Same-origin redirect detection: when Mayar redirects back to our domain,
+    // we can read the iframe location and close the modal.
+    try {
+      const href = iframeRef.current?.contentWindow?.location.href;
+      if (href && href.includes("/donasi/terima-kasih")) {
+        setPayUrl(null);
+        navigate({ to: "/donasi/terima-kasih" });
+      }
+    } catch {
+      // Cross-origin (Mayar page) — expected, ignore.
+    }
+  };
+
+  const closeModal = () => {
+    if (confirm("Batalkan proses donasi?")) setPayUrl(null);
+  };
+
 
   return (
     <div className="rounded-3xl border border-border bg-card p-6 md:p-8 shadow-card">
