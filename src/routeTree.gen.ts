@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DaftarRouteImport } from './routes/daftar'
+import { Route as CekStatusRouteImport } from './routes/cek-status'
 import { Route as BeasiswaPrestasiRouteImport } from './routes/beasiswa-prestasi'
 import { Route as BeasiswaEkonomiRouteImport } from './routes/beasiswa-ekonomi'
 import { Route as AdsDottxtRouteImport } from './routes/ads[.]txt'
@@ -59,6 +60,11 @@ const LoginRoute = LoginRouteImport.update({
 const DaftarRoute = DaftarRouteImport.update({
   id: '/daftar',
   path: '/daftar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CekStatusRoute = CekStatusRouteImport.update({
+  id: '/cek-status',
+  path: '/cek-status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BeasiswaPrestasiRoute = BeasiswaPrestasiRouteImport.update({
@@ -233,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/ads.txt': typeof AdsDottxtRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
+  '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
@@ -270,6 +277,7 @@ export interface FileRoutesByTo {
   '/ads.txt': typeof AdsDottxtRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
+  '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
@@ -307,6 +315,7 @@ export interface FileRoutesById {
   '/ads.txt': typeof AdsDottxtRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
+  '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
@@ -347,6 +356,7 @@ export interface FileRouteTypes {
     | '/ads.txt'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
+    | '/cek-status'
     | '/daftar'
     | '/login'
     | '/tentang'
@@ -384,6 +394,7 @@ export interface FileRouteTypes {
     | '/ads.txt'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
+    | '/cek-status'
     | '/daftar'
     | '/login'
     | '/tentang'
@@ -420,6 +431,7 @@ export interface FileRouteTypes {
     | '/ads.txt'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
+    | '/cek-status'
     | '/daftar'
     | '/login'
     | '/tentang'
@@ -459,6 +471,7 @@ export interface RootRouteChildren {
   AdsDottxtRoute: typeof AdsDottxtRoute
   BeasiswaEkonomiRoute: typeof BeasiswaEkonomiRoute
   BeasiswaPrestasiRoute: typeof BeasiswaPrestasiRoute
+  CekStatusRoute: typeof CekStatusRoute
   DaftarRoute: typeof DaftarRoute
   LoginRoute: typeof LoginRoute
   TentangRoute: typeof TentangRoute
@@ -498,6 +511,13 @@ declare module '@tanstack/react-router' {
       path: '/daftar'
       fullPath: '/daftar'
       preLoaderRoute: typeof DaftarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cek-status': {
+      id: '/cek-status'
+      path: '/cek-status'
+      fullPath: '/cek-status'
+      preLoaderRoute: typeof CekStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/beasiswa-prestasi': {
@@ -798,6 +818,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdsDottxtRoute: AdsDottxtRoute,
   BeasiswaEkonomiRoute: BeasiswaEkonomiRoute,
   BeasiswaPrestasiRoute: BeasiswaPrestasiRoute,
+  CekStatusRoute: CekStatusRoute,
   DaftarRoute: DaftarRoute,
   LoginRoute: LoginRoute,
   TentangRoute: TentangRoute,
@@ -818,13 +839,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -16,6 +16,7 @@ type Payload = {
   kind?: "prestasi" | "ekonomi";
   doc_count?: number;
   status?: string;
+  token?: string;
   to?: string; // override recipient (admin test)
   message?: string; // override message (admin test)
 };
@@ -28,8 +29,8 @@ function normalizeNumber(raw: string): string {
 }
 
 const DEFAULT_TEMPLATES = {
-  pendaftaran_user: `*Kejar Prestasi*\n\nHalo {nama}, pendaftaran {jenis} Anda telah kami terima.\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website.\n\nTerima kasih.`,
-  pendaftaran_admin: `*Pendaftar Baru — Kejar Prestasi*\n\nNama: {nama}\nJenis: {jenis}\nEmail: {email}\nWhatsApp: {whatsapp}`,
+  pendaftaran_user: `*Kejar Prestasi*\n\nHalo {nama}, pendaftaran {jenis} Anda telah kami terima.\n\n🔑 *KODE PENDAFTAR ANDA:*\n*{token}*\n\n_Simpan kode ini baik-baik. Kode wajib digunakan saat:_\n• Mengirim berkas pendukung\n• Mengecek status pendaftaran\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website dan masukkan kode di atas.\n\nTerima kasih.`,
+  pendaftaran_admin: `*Pendaftar Baru — Kejar Prestasi*\n\nNama: {nama}\nJenis: {jenis}\nKode: {token}\nEmail: {email}\nWhatsApp: {whatsapp}`,
   berkas_user: `*Kejar Prestasi*\n\nBerkas {jenis} dari email {email} ({jumlah_berkas} file) berhasil kami terima dan sedang dalam tahap verifikasi.\n\nKami akan menghubungi Anda kembali setelah proses selesai.`,
   berkas_admin: `*Berkas Masuk — Kejar Prestasi*\n\nJenis: {jenis}\nEmail: {email}\nJumlah file: {jumlah_berkas}`,
   status_user: `*Kejar Prestasi*\n\nHalo {nama}, status pendaftaran {jenis} Anda saat ini: *{status}*.`,
@@ -51,6 +52,7 @@ function buildMessage(p: Payload, tpls: Templates, audience: "user" | "admin"): 
     whatsapp: p.whatsapp ?? "-",
     jumlah_berkas: String(p.doc_count ?? 0),
     status: p.status ?? "-",
+    token: p.token ?? "-",
   };
   let key: keyof typeof DEFAULT_TEMPLATES | null = null;
   if (p.type === "pendaftaran") key = audience === "admin" ? "pendaftaran_admin" : "pendaftaran_user";
@@ -90,11 +92,11 @@ Deno.serve(async (req) => {
     const endpoint = cfg.send_endpoint || "https://app.ayopintar.com/send-message";
     const tpls = ((cfg as { templates?: Templates }).templates) || {};
 
-    // Lookup nomor WA + nama dari registrations jika tidak diberikan / kosong
-    if (!body.to && (!body.whatsapp || !body.full_name) && body.email && body.kind) {
+    // Lookup nomor WA + nama + token dari registrations jika tidak diberikan / kosong
+    if (!body.to && (!body.whatsapp || !body.full_name || !body.token) && body.email && body.kind) {
       const { data: reg } = await supabase
         .from("registrations")
-        .select("full_name, whatsapp")
+        .select("full_name, whatsapp, token")
         .ilike("email", body.email)
         .eq("kind", body.kind)
         .order("created_at", { ascending: false })
@@ -103,6 +105,7 @@ Deno.serve(async (req) => {
       if (reg) {
         if (!body.whatsapp) body.whatsapp = reg.whatsapp ?? "";
         if (!body.full_name) body.full_name = reg.full_name ?? "";
+        if (!body.token) body.token = (reg as { token?: string }).token ?? "";
       }
     }
 

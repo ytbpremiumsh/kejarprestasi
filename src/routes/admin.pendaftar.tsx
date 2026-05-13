@@ -27,6 +27,7 @@ type Registration = {
   grade: string;
   kind: "prestasi" | "ekonomi";
   status: "pending" | "approved" | "rejected";
+  token?: string | null;
   parent_income: string | null;
   dependents: number | null;
   main_achievement: string | null;
@@ -107,6 +108,7 @@ function AdminPendaftar() {
 
   const exportExcel = () => {
     const data = filtered.map((r) => ({
+      Kode: r.token ?? "",
       "Nama Lengkap": r.full_name,
       Email: r.email,
       WhatsApp: r.whatsapp,
@@ -132,6 +134,7 @@ function AdminPendaftar() {
 
   const exportCSV = () => {
     const data = filtered.map((r) => ({
+      Kode: r.token ?? "",
       "Nama Lengkap": r.full_name,
       Email: r.email,
       WhatsApp: r.whatsapp,

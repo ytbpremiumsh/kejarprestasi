@@ -174,6 +174,7 @@ export type Database = {
           school_name: string
           status: Database["public"]["Enums"]["registration_status"]
           student_card_url: string | null
+          token: string
           updated_at: string
           whatsapp: string
         }
@@ -199,6 +200,7 @@ export type Database = {
           school_name: string
           status?: Database["public"]["Enums"]["registration_status"]
           student_card_url?: string | null
+          token: string
           updated_at?: string
           whatsapp: string
         }
@@ -224,6 +226,7 @@ export type Database = {
           school_name?: string
           status?: Database["public"]["Enums"]["registration_status"]
           student_card_url?: string | null
+          token?: string
           updated_at?: string
           whatsapp?: string
         }
@@ -273,6 +276,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_registration_token: { Args: { p_kind: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

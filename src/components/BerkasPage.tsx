@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, LinkIcon, Loader2, Search, UserCheck, AlertCircle } from "lucide-react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { ArrowRight, CheckCircle2, LinkIcon, Loader2, KeyRound, UserCheck, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
@@ -36,6 +36,7 @@ function isValidUrl(v: string) {
 type RegInfo = {
   id?: string;
   full_name: string;
+  email?: string | null;
   whatsapp: string;
   school_name?: string | null;
   education_level?: string | null;
@@ -44,16 +45,20 @@ type RegInfo = {
   birth_date?: string | null;
   address?: string | null;
   grade?: string | null;
+  token?: string | null;
 };
+
+const tokenPrefix = (k: "prestasi" | "ekonomi") => (k === "prestasi" ? "KP-PRE-" : "KP-EKO-");
 
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const search = useSearch({ strict: false }) as { token?: string };
+  const [token, setToken] = useState((search.token ?? "").toUpperCase());
   const [docs, setDocs] = useState<DocSlot[]>(defaultDocs[kind]);
   const [loading, setLoading] = useState(true);
   const [values, setValues] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
-  const [searching, setSearching] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [registrant, setRegistrant] = useState<RegInfo | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
 
@@ -89,42 +94,54 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
   const setVal = (key: string, v: string) => setValues((s) => ({ ...s, [key]: v }));
 
-  const handleSearch = async () => {
-    const e = email.trim();
-    if (!e || !e.includes("@")) {
-      toast.error("Masukkan email pendaftaran yang valid");
+  const handleVerify = async (silent = false) => {
+    const t = token.trim().toUpperCase();
+    if (!t) {
+      if (!silent) toast.error("Masukkan kode pendaftar Anda");
       return;
     }
-    setSearching(true);
+    if (!t.startsWith(tokenPrefix(kind))) {
+      setSearchError(`Kode tidak sesuai jenis beasiswa. Kode ${kind === "prestasi" ? "Prestasi" : "Ekonomi"} diawali ${tokenPrefix(kind)}`);
+      return;
+    }
+    setVerifying(true);
     setSearchError(null);
     setRegistrant(null);
     try {
       const { data, error } = await supabase.functions.invoke("lookup-pendaftar", {
-        body: { email: e, kind },
+        body: { token: t, kind },
       });
       if (error) throw error;
       const payload = data as { ok: boolean; data?: RegInfo; error?: string };
       if (!payload?.ok || !payload.data) {
         const msg = payload?.error === "not_found"
-          ? `Data pendaftar dengan email tersebut tidak ditemukan untuk Beasiswa ${kind === "prestasi" ? "Prestasi" : "Ekonomi"}.`
-          : "Gagal mencari data pendaftar.";
+          ? "Kode tidak ditemukan. Periksa kembali kode dari WhatsApp / halaman sukses pendaftaran kamu."
+          : "Gagal memverifikasi kode.";
         setSearchError(msg);
         return;
       }
       setRegistrant(payload.data);
-      toast.success(`Data ditemukan: ${payload.data.full_name}`);
+      if (!silent) toast.success(`Selamat datang, ${payload.data.full_name}`);
     } catch (err) {
       console.error(err);
-      setSearchError("Terjadi kesalahan saat mencari data.");
+      setSearchError("Terjadi kesalahan saat memverifikasi kode.");
     } finally {
-      setSearching(false);
+      setVerifying(false);
     }
   };
+
+  // Auto-verify if token came from URL
+  useEffect(() => {
+    if (search.token && !registrant && !verifying) {
+      handleVerify(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.token, kind]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!registrant) {
-      toast.error("Cari data pendaftar terlebih dahulu");
+      toast.error("Verifikasi kode pendaftar terlebih dahulu");
       return;
     }
     const missing = docs.filter((d) => d.required && !(values[d.key] ?? "").trim());
@@ -144,10 +161,22 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
     setSubmitting(true);
     try {
+      const regEmail = (registrant.email ?? "").trim();
+      if (!regEmail || !regEmail.includes("@")) {
+        toast.error("Email pendaftar tidak ditemukan. Hubungi admin.");
+        setSubmitting(false);
+        return;
+      }
       const rows = docs
         .map((d) => ({ d, v: (values[d.key] ?? "").trim() }))
         .filter(({ v }) => v.length > 0)
-        .map(({ d, v }) => ({ email: email.trim(), kind, doc_type: d.label, file_url: v }));
+        .map(({ d, v }) => ({
+          email: regEmail,
+          kind,
+          doc_type: d.label,
+          file_url: v,
+          registration_id: registrant.id ?? null,
+        }));
 
       const { error } = await supabase.from("documents").insert(rows);
       if (error) throw error;
@@ -155,11 +184,12 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       supabase.functions.invoke("send-whatsapp", {
         body: {
           type: "berkas",
-          email: email.trim(),
           full_name: registrant.full_name,
+          email: regEmail,
           whatsapp: "",
           kind,
           doc_count: rows.length,
+          token: registrant.token ?? token,
         },
       }).catch(() => { /* ignore */ });
 
@@ -199,34 +229,40 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
-            <h2 className="text-base font-bold text-foreground">Identitas Pendaftar</h2>
-            <p className="mt-1 text-xs text-muted-foreground">Cari data Anda dengan email yang digunakan saat mendaftar.</p>
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <KeyRound size={16} className="text-primary" /> Verifikasi Kode Pendaftar
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Masukkan kode pendaftar (format <span className="font-mono font-semibold">{tokenPrefix(kind)}XXXXXX</span>) yang Anda terima saat mendaftar (lihat WhatsApp atau halaman sukses).
+            </p>
             <div className="mt-5 grid sm:grid-cols-[1fr_auto] gap-3 items-end">
               <label className="block">
                 <span className="text-xs font-medium text-foreground/80">
-                  Email pendaftaran<span className="text-destructive"> *</span>
+                  Kode Pendaftar<span className="text-destructive"> *</span>
                 </span>
                 <div className="mt-1.5 relative">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <KeyRound size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => { setEmail(e.target.value); setRegistrant(null); setSearchError(null); }}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSearch(); } }}
-                    placeholder="email yang kamu pakai saat mendaftar"
-                    className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    type="text"
+                    value={token}
+                    onChange={(e) => { setToken(e.target.value.toUpperCase()); setRegistrant(null); setSearchError(null); }}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleVerify(); } }}
+                    placeholder={`${tokenPrefix(kind)}XXXXXX`}
+                    maxLength={20}
+                    autoCapitalize="characters"
+                    className="w-full rounded-xl border border-border bg-background pl-9 pr-3.5 py-2.5 text-sm font-mono tracking-wider text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     required
                   />
                 </div>
               </label>
               <button
                 type="button"
-                onClick={handleSearch}
-                disabled={searching}
+                onClick={() => handleVerify()}
+                disabled={verifying}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition disabled:opacity-60"
               >
-                {searching ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
-                Cari
+                {verifying ? <Loader2 size={14} className="animate-spin" /> : <KeyRound size={14} />}
+                Verifikasi
               </button>
             </div>
 
@@ -302,7 +338,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           <div className={`rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card transition ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}>
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
-              {!registrant && <span className="text-[11px] font-semibold text-muted-foreground">Cari pendaftar dulu</span>}
+              {!registrant && <span className="text-[11px] font-semibold text-muted-foreground">Verifikasi kode dulu</span>}
             </div>
             <div className="mt-5 space-y-6">
               {docs.map((d) => {
