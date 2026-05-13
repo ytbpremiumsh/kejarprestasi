@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.set_registration_token() FROM PUBLIC, anon, authenticated;
