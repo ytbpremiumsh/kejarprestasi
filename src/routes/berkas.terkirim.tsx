@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
-import { CheckCircle2, MessageCircle, Home, FileText } from "lucide-react";
+import { CheckCircle2, Home, FileText } from "lucide-react";
 import { z } from "zod";
 
 const searchSchema = z.object({
@@ -35,22 +35,6 @@ function BerkasTerkirim() {
           Terima kasih, berkas {jenis} Anda{count ? ` (${count} file)` : ""} telah kami terima dan
           sedang dalam tahap verifikasi oleh tim kami.
         </p>
-
-        <div className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card text-left">
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <MessageCircle size={18} className="text-primary" /> Notifikasi WhatsApp
-          </h2>
-          <p className="mt-2 text-sm text-foreground/85">
-            Kami telah mengirim notifikasi konfirmasi ke nomor WhatsApp yang Anda daftarkan.
-            Mohon periksa pesan masuk Anda. Jika belum menerima dalam beberapa menit, mohon
-            tunggu — pengiriman bisa tertunda.
-          </p>
-          <ul className="mt-4 space-y-2 text-sm text-foreground/85">
-            <li className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> Berkas akan diverifikasi dalam 1–3 hari kerja</li>
-            <li className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> Hasil verifikasi akan dikirim via WhatsApp</li>
-            <li className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> Pastikan nomor WhatsApp Anda aktif</li>
-          </ul>
-        </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link

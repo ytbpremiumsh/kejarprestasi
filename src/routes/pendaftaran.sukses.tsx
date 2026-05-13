@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
-import { CheckCircle2, ArrowRight, MessageCircle, Heart, FileUp } from "lucide-react";
+import { CheckCircle2, ArrowRight, Heart, FileUp } from "lucide-react";
 import { DonationCard } from "@/components/DonationCard";
 
 type Search = {
@@ -67,21 +67,6 @@ function SuksesPage() {
           >
             Kirim Berkas Sekarang <ArrowRight size={16} />
           </Link>
-        </div>
-
-        {/* Notifikasi WhatsApp */}
-        <div className="mt-6 rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card">
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <MessageCircle size={18} className="text-primary" /> Notifikasi WhatsApp
-          </h2>
-          <p className="mt-2 text-sm text-foreground/85">
-            Kami sudah mengirim konfirmasi ke nomor WhatsApp yang kamu daftarkan. Mohon periksa pesan masuk.
-          </p>
-          <ul className="mt-3 space-y-2 text-sm text-foreground/85">
-            <li className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> Verifikasi pendaftaran 1–3 hari kerja setelah berkas lengkap</li>
-            <li className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> Hasil seleksi dikirim via WhatsApp</li>
-            <li className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> Pastikan nomor WhatsApp aktif</li>
-          </ul>
         </div>
 
         {/* Pemisah + soft-sell donasi */}
