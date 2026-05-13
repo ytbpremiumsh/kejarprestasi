@@ -227,6 +227,10 @@ function AdminAiBalasan() {
             <BookOpen className="h-4 w-4" /> AI Knowledge
             <Badge variant="secondary" className="ml-1">{kb.length}</Badge>
           </TabsTrigger>
+          <TabsTrigger value="whatsapp" className="gap-2">
+            <MessageCircle className="h-4 w-4" /> WhatsApp & Riwayat
+            <Badge variant="secondary" className="ml-1">{waMsgs.length}</Badge>
+          </TabsTrigger>
         </TabsList>
 
         {/* BEHAVIOR */}
