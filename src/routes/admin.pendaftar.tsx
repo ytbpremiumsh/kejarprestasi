@@ -224,6 +224,7 @@ function AdminPendaftar() {
                       <div className="font-medium text-foreground">{r.full_name}</div>
                       <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("id-ID")}</div>
                     </td>
+                    <td className="px-4 py-3"><TokenBadge token={r.token} /></td>
                     <td className="px-4 py-3 capitalize">{r.kind}</td>
                     <td className="px-4 py-3">
                       <div>{r.school_name}</div>
