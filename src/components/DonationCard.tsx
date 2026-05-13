@@ -215,6 +215,51 @@ export function DonationCard({
       <p className="mt-3 text-[11px] text-center text-muted-foreground">
         Pembayaran aman diproses oleh Mayar. Donasimu tidak memengaruhi proses seleksi.
       </p>
+
+      {payUrl && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-2 sm:p-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="relative w-full max-w-3xl h-[90vh] rounded-2xl overflow-hidden bg-card shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card">
+              <div className="flex items-center gap-2 min-w-0">
+                <Heart size={16} className="text-primary shrink-0" />
+                <span className="text-sm font-semibold text-foreground truncate">
+                  Pembayaran Donasi
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={payUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:inline-block text-xs text-muted-foreground hover:text-foreground underline"
+                >
+                  Buka di tab baru
+                </a>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-muted text-foreground"
+                  aria-label="Tutup"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+            <iframe
+              ref={iframeRef}
+              src={payUrl}
+              onLoad={handleIframeLoad}
+              title="Pembayaran Mayar"
+              className="flex-1 w-full bg-white"
+              allow="payment *"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
