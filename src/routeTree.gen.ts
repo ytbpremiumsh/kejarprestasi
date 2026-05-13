@@ -46,6 +46,8 @@ import { Route as BerkasPrestasiIndexRouteImport } from './routes/berkas.prestas
 import { Route as BerkasEkonomiIndexRouteImport } from './routes/berkas.ekonomi.index'
 import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
+import { Route as AdminInstalasiVpsRouteImport } from './routes/admin.instalasi.vps'
+import { Route as AdminInstalasiHostingRouteImport } from './routes/admin.instalasi.hosting'
 
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
@@ -232,6 +234,16 @@ const BerkasEkonomiUploadRoute = BerkasEkonomiUploadRouteImport.update({
   path: '/upload',
   getParentRoute: () => BerkasEkonomiRoute,
 } as any)
+const AdminInstalasiVpsRoute = AdminInstalasiVpsRouteImport.update({
+  id: '/instalasi/vps',
+  path: '/instalasi/vps',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInstalasiHostingRoute = AdminInstalasiHostingRouteImport.update({
+  id: '/instalasi/hosting',
+  path: '/instalasi/hosting',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -267,6 +279,8 @@ export interface FileRoutesByFullPath {
   '/artikel/': typeof ArtikelIndexRoute
   '/bagikan-poster/': typeof BagikanPosterIndexRoute
   '/berkas/': typeof BerkasIndexRoute
+  '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
+  '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
@@ -303,6 +317,8 @@ export interface FileRoutesByTo {
   '/artikel': typeof ArtikelIndexRoute
   '/bagikan-poster': typeof BagikanPosterIndexRoute
   '/berkas': typeof BerkasIndexRoute
+  '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
+  '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/berkas/ekonomi': typeof BerkasEkonomiIndexRoute
@@ -343,6 +359,8 @@ export interface FileRoutesById {
   '/artikel/': typeof ArtikelIndexRoute
   '/bagikan-poster/': typeof BagikanPosterIndexRoute
   '/berkas/': typeof BerkasIndexRoute
+  '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
+  '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
@@ -384,6 +402,8 @@ export interface FileRouteTypes {
     | '/artikel/'
     | '/bagikan-poster/'
     | '/berkas/'
+    | '/admin/instalasi/hosting'
+    | '/admin/instalasi/vps'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
     | '/berkas/ekonomi/'
@@ -420,6 +440,8 @@ export interface FileRouteTypes {
     | '/artikel'
     | '/bagikan-poster'
     | '/berkas'
+    | '/admin/instalasi/hosting'
+    | '/admin/instalasi/vps'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
     | '/berkas/ekonomi'
@@ -459,6 +481,8 @@ export interface FileRouteTypes {
     | '/artikel/'
     | '/bagikan-poster/'
     | '/berkas/'
+    | '/admin/instalasi/hosting'
+    | '/admin/instalasi/vps'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
     | '/berkas/ekonomi/'
@@ -751,6 +775,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BerkasEkonomiUploadRouteImport
       parentRoute: typeof BerkasEkonomiRoute
     }
+    '/admin/instalasi/vps': {
+      id: '/admin/instalasi/vps'
+      path: '/instalasi/vps'
+      fullPath: '/admin/instalasi/vps'
+      preLoaderRoute: typeof AdminInstalasiVpsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/instalasi/hosting': {
+      id: '/admin/instalasi/hosting'
+      path: '/instalasi/hosting'
+      fullPath: '/admin/instalasi/hosting'
+      preLoaderRoute: typeof AdminInstalasiHostingRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
@@ -766,6 +804,8 @@ interface AdminRouteChildren {
   AdminPengaturanRoute: typeof AdminPengaturanRoute
   AdminWhatsappRoute: typeof AdminWhatsappRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminInstalasiHostingRoute: typeof AdminInstalasiHostingRoute
+  AdminInstalasiVpsRoute: typeof AdminInstalasiVpsRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -780,6 +820,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPengaturanRoute: AdminPengaturanRoute,
   AdminWhatsappRoute: AdminWhatsappRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminInstalasiHostingRoute: AdminInstalasiHostingRoute,
+  AdminInstalasiVpsRoute: AdminInstalasiVpsRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
