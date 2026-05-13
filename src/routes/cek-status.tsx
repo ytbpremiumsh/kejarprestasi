@@ -157,11 +157,10 @@ function StatusResult({ data }: { data: StatusData }) {
           <div className="mt-1 text-xl font-extrabold text-foreground">{data.full_name}</div>
           <div className="mt-1 text-sm text-muted-foreground">{jenis} · Kode: <span className="font-mono font-semibold text-foreground">{data.token}</span></div>
         </div>
-        <StatusBadge status={data.status} />
       </div>
 
       {/* Timeline */}
-      <div className="mt-6 grid sm:grid-cols-3 gap-3">
+      <div className="mt-6 grid sm:grid-cols-2 gap-3">
         <Step
           n={1}
           label="Pendaftaran"
@@ -173,17 +172,6 @@ function StatusResult({ data }: { data: StatusData }) {
           label="Berkas Pendukung"
           done={hasDocs}
           desc={hasDocs ? `${data.docs.total} berkas masuk` : "Belum dikirim"}
-        />
-        <Step
-          n={3}
-          label="Hasil Seleksi"
-          done={data.status === "approved"}
-          rejected={data.status === "rejected"}
-          desc={
-            data.status === "approved" ? "Selamat, Anda lolos!" :
-            data.status === "rejected" ? "Belum berhasil" :
-            "Menunggu pengumuman"
-          }
         />
       </div>
 
