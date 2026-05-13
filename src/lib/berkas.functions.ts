@@ -2,20 +2,29 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const DocumentInput = z.object({
-  key: z.string().min(1).max(80),
-  label: z.string().min(1).max(180),
-  url: z.string().url().max(1000),
-});
-
-const SubmitBerkasInput = z.object({
-  token: z.string().trim().toUpperCase().regex(/^KP-(PRE|EKO)-[A-Z0-9]{4,10}$/),
-  kind: z.enum(["prestasi", "ekonomi"]),
-  documents: z.array(DocumentInput).min(1).max(20),
-});
-
 export const submitBerkasDocuments = createServerFn({ method: "POST" })
-  .inputValidator((input) => SubmitBerkasInput.parse(input))
+  .inputValidator((input) =>
+    z
+      .object({
+        token: z
+          .string()
+          .trim()
+          .transform((value) => value.toUpperCase())
+          .pipe(z.string().regex(/^KP-(PRE|EKO)-[A-Z0-9]{4,10}$/)),
+        kind: z.enum(["prestasi", "ekonomi"]),
+        documents: z
+          .array(
+            z.object({
+              key: z.string().min(1).max(80),
+              label: z.string().min(1).max(180),
+              url: z.string().url().max(1000),
+            }),
+          )
+          .min(1)
+          .max(20),
+      })
+      .parse(input),
+  )
   .handler(async ({ data }) => {
     const expectedPrefix = data.kind === "prestasi" ? "KP-PRE-" : "KP-EKO-";
     if (!data.token.startsWith(expectedPrefix)) {
