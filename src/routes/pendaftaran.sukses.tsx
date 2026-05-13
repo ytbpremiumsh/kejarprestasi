@@ -103,7 +103,7 @@ function SuksesPage() {
             </div>
           </div>
           <Link
-            to={berkasTo as "/berkas/prestasi" | "/berkas/ekonomi"}
+            to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload"}
             search={token ? { token } : undefined}
             className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
           >
