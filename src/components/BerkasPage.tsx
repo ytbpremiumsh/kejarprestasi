@@ -168,6 +168,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         setSubmitting(false);
         return;
       }
+      const submittedAt = new Date().toISOString();
       const rows = docs
         .map((d) => ({ d, v: (values[d.key] ?? "").trim() }))
         .filter(({ v }) => v.length > 0)
@@ -177,9 +178,14 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           doc_type: d.label,
           file_url: v,
           registration_id: registrant.id ?? null,
+          created_at: submittedAt,
+          review_status: "pending" as const,
+          reviewed_at: null,
         }));
 
-      const { error } = await supabase.from("documents").insert(rows);
+      const { error } = await supabase
+        .from("documents")
+        .upsert(rows, { onConflict: "email_key,kind,doc_key" });
       if (error) throw error;
 
       supabase.functions.invoke("send-whatsapp", {
