@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
 
     let q = supabase
       .from("registrations")
-      .select("id, full_name, whatsapp, school_name, education_level, gender, birth_place, birth_date, address, grade, token")
+      .select("id, full_name, email, whatsapp, school_name, education_level, gender, birth_place, birth_date, address, grade, token")
       .eq("kind", kind)
       .order("created_at", { ascending: false })
       .limit(1);
