@@ -22,6 +22,20 @@ async function uploadFile(file: File, prefix: string): Promise<string> {
   return supabase.storage.from("kp-uploads").getPublicUrl(path).data.publicUrl;
 }
 
+function serializeError(err: unknown): string {
+  if (!err) return "Terjadi kesalahan";
+  if (typeof err === "string") return err;
+  if (err instanceof Error) return err.message || err.name || "Error";
+  if (typeof err === "object") {
+    const e = err as Record<string, unknown>;
+    const parts = [e.message, e.error_description, e.error, e.details, e.hint, e.code]
+      .filter((v) => typeof v === "string" && v.length > 0);
+    if (parts.length > 0) return parts.join(" — ");
+    try { return JSON.stringify(err); } catch { return "Error"; }
+  }
+  return String(err);
+}
+
 function validate(field: FormField, value: unknown): string | null {
   if (field.required && (value === "" || value == null || (Array.isArray(value) && value.length === 0))) {
     return `${field.label} wajib diisi`;
