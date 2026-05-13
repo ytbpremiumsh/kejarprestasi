@@ -258,7 +258,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }
     } catch (err) {
       console.error("berkas submit error", err);
-      const msg = err instanceof Error ? err.message : String(err);
+      const e = err as { message?: unknown; error?: unknown; details?: unknown; hint?: unknown; code?: unknown } | null;
+      const parts = e ? [e.message, e.error, e.details, e.hint, e.code].filter((v) => typeof v === "string" && v.length > 0) : [];
+      const msg = err instanceof Error ? err.message : (parts.length ? parts.join(" — ") : (() => { try { return JSON.stringify(err); } catch { return "Error"; } })());
       toast.error(`Gagal mengirim berkas: ${msg}`);
     } finally {
       setSubmitting(false);
