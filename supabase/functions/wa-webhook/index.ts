@@ -35,47 +35,63 @@ type Behavior = {
 
 type Kb = { id: string; question: string; answer: string; category: string | null };
 
-function pickPhone(p: Record<string, unknown>): string | null {
-  // Try common payload shapes (MPWA / WAHA / Wablas / generic)
-  const candidates: unknown[] = [
-    p.from, p.sender, p.number, p.phone, p.wa_number,
-    (p.data as Record<string, unknown> | undefined)?.from,
-    (p.data as Record<string, unknown> | undefined)?.sender,
-    (p.message as Record<string, unknown> | undefined)?.from,
-    (p.payload as Record<string, unknown> | undefined)?.from,
-  ];
-  for (const c of candidates) {
-    if (typeof c === "string" && c.length >= 6) {
-      return c.replace(/\D/g, "");
-    }
+function getPath(source: unknown, path: string): unknown {
+  return path.split(".").reduce<unknown>((current, key) => {
+    if (current == null) return undefined;
+    if (Array.isArray(current)) return current[Number(key)];
+    if (typeof current === "object") return (current as Record<string, unknown>)[key];
+    return undefined;
+  }, source);
+}
+
+function firstString(p: Record<string, unknown>, paths: string[]): string | null {
+  for (const path of paths) {
+    const value = getPath(p, path);
+    if (typeof value === "string" && value.trim()) return value.trim();
   }
   return null;
+}
+
+function normalizePhone(raw: string): string {
+  const withoutJid = raw.split("@")[0];
+  const match = withoutJid.match(/(?:62|0|8)\d{7,15}/);
+  let phone = (match?.[0] ?? withoutJid).replace(/\D/g, "");
+  if (phone.startsWith("0")) phone = `62${phone.slice(1)}`;
+  if (phone.startsWith("8")) phone = `62${phone}`;
+  return phone;
+}
+
+function pickRawPhone(p: Record<string, unknown>): string | null {
+  return firstString(p, [
+    "from", "sender", "number", "phone", "wa_number", "remoteJid", "jid", "chatId",
+    "data.from", "data.sender", "data.number", "data.phone", "data.remoteJid", "data.key.remoteJid",
+    "message.from", "message.sender", "message.key.remoteJid", "payload.from", "payload.sender",
+    "messages.0.from", "messages.0.sender", "messages.0.key.remoteJid", "messages.0.remoteJid",
+  ]);
+}
+
+function pickPhone(p: Record<string, unknown>): string | null {
+  const raw = pickRawPhone(p);
+  return raw ? normalizePhone(raw) : null;
 }
 
 function pickText(p: Record<string, unknown>): string | null {
-  const candidates: unknown[] = [
-    p.message, p.text, p.body, p.msg, p.pesan,
-    (p.data as Record<string, unknown> | undefined)?.message,
-    (p.data as Record<string, unknown> | undefined)?.body,
-    (p.message as Record<string, unknown> | undefined)?.text,
-    (p.message as Record<string, unknown> | undefined)?.body,
-    ((p.message as Record<string, unknown> | undefined)?.conversation),
-    (p.payload as Record<string, unknown> | undefined)?.body,
-  ];
-  for (const c of candidates) {
-    if (typeof c === "string" && c.trim().length > 0) return c.trim();
-  }
-  return null;
+  return firstString(p, [
+    "text", "body", "msg", "pesan", "caption", "message", "conversation",
+    "data.text", "data.body", "data.message", "data.msg", "data.caption", "data.message.conversation",
+    "data.message.extendedTextMessage.text", "data.message.imageMessage.caption", "data.message.videoMessage.caption",
+    "message.text", "message.body", "message.conversation", "message.extendedTextMessage.text",
+    "payload.text", "payload.body", "payload.message",
+    "messages.0.text", "messages.0.body", "messages.0.message.conversation", "messages.0.message.extendedTextMessage.text",
+  ]);
 }
 
 function pickName(p: Record<string, unknown>): string | null {
-  const candidates: unknown[] = [
-    p.pushname, p.name, p.sender_name, p.contact_name,
-    (p.data as Record<string, unknown> | undefined)?.pushname,
-    (p.data as Record<string, unknown> | undefined)?.name,
-  ];
-  for (const c of candidates) if (typeof c === "string" && c.trim()) return c.trim();
-  return null;
+  return firstString(p, [
+    "pushname", "pushName", "name", "sender_name", "contact_name",
+    "data.pushname", "data.pushName", "data.name", "data.sender_name",
+    "message.pushName", "messages.0.pushName", "messages.0.pushname",
+  ]);
 }
 
 async function callAI(behavior: Behavior, kb: Kb[], userMessage: string, contactName: string | null): Promise<string> {

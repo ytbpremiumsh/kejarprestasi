@@ -50,6 +50,7 @@ import { Route as BerkasEkonomiIndexRouteImport } from './routes/berkas.ekonomi.
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
+import { Route as ApiPublicWaWebhookRouteImport } from './routes/api/public/wa-webhook'
 import { Route as AdminInstalasiVpsRouteImport } from './routes/admin.instalasi.vps'
 import { Route as AdminInstalasiHostingRouteImport } from './routes/admin.instalasi.hosting'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -263,6 +264,11 @@ const BerkasEkonomiUploadRoute = BerkasEkonomiUploadRouteImport.update({
   path: '/upload',
   getParentRoute: () => BerkasEkonomiRoute,
 } as any)
+const ApiPublicWaWebhookRoute = ApiPublicWaWebhookRouteImport.update({
+  id: '/api/public/wa-webhook',
+  path: '/api/public/wa-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminInstalasiVpsRoute = AdminInstalasiVpsRouteImport.update({
   id: '/instalasi/vps',
   path: '/instalasi/vps',
@@ -341,6 +347,7 @@ export interface FileRoutesByFullPath {
   '/berkas/': typeof BerkasIndexRoute
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
+  '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -388,6 +395,7 @@ export interface FileRoutesByTo {
   '/berkas': typeof BerkasIndexRoute
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
+  '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -439,6 +447,7 @@ export interface FileRoutesById {
   '/berkas/': typeof BerkasIndexRoute
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
+  '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -491,6 +500,7 @@ export interface FileRouteTypes {
     | '/berkas/'
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
+    | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
     | '/lovable/email/suppression'
@@ -538,6 +548,7 @@ export interface FileRouteTypes {
     | '/berkas'
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
+    | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
     | '/lovable/email/suppression'
@@ -588,6 +599,7 @@ export interface FileRouteTypes {
     | '/berkas/'
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
+    | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
     | '/lovable/email/suppression'
@@ -624,6 +636,7 @@ export interface RootRouteChildren {
   ArtikelIndexRoute: typeof ArtikelIndexRoute
   BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
   BerkasIndexRoute: typeof BerkasIndexRoute
+  ApiPublicWaWebhookRoute: typeof ApiPublicWaWebhookRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -921,6 +934,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BerkasEkonomiUploadRouteImport
       parentRoute: typeof BerkasEkonomiRoute
     }
+    '/api/public/wa-webhook': {
+      id: '/api/public/wa-webhook'
+      path: '/api/public/wa-webhook'
+      fullPath: '/api/public/wa-webhook'
+      preLoaderRoute: typeof ApiPublicWaWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/instalasi/vps': {
       id: '/admin/instalasi/vps'
       path: '/instalasi/vps'
@@ -1063,6 +1083,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArtikelIndexRoute: ArtikelIndexRoute,
   BagikanPosterIndexRoute: BagikanPosterIndexRoute,
   BerkasIndexRoute: BerkasIndexRoute,
+  ApiPublicWaWebhookRoute: ApiPublicWaWebhookRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
