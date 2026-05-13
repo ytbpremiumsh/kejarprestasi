@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 
 const defaultDocs: Record<"prestasi" | "ekonomi", DocSlot[]> = {
   prestasi: [
@@ -334,6 +335,8 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
               </div>
             )}
           </div>
+
+          <KetentuanBerkasCard kind={kind} />
 
           <div className={`rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card transition ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}>
             <div className="flex items-center justify-between gap-3">
