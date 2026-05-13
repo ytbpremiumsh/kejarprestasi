@@ -16,7 +16,6 @@ import {
   Server,
   Globe,
   BarChart3,
-  BookOpen,
 } from "lucide-react";
 import {
   Sidebar,
