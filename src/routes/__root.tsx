@@ -129,6 +129,7 @@ function RootComponent() {
       <AdSettingsProvider>
         <AdsenseLoader />
         <CustomCodeInjector />
+        <AnalyticsInjector />
         {isBareLayout ? (
           <Outlet />
         ) : (
