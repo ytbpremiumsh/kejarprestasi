@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { insertRegistration } from "@/lib/registration.server";
 
 const emptyToNull = (value: unknown) => {
   if (value == null) return null;
@@ -51,31 +51,5 @@ export const submitRegistration = createServerFn({ method: "POST" })
     return parsed.data;
   })
   .handler(async ({ data }) => {
-    const { data: inserted, error } = await supabaseAdmin
-      .from("registrations")
-      .insert({
-        kind: data.kind,
-        status: "approved",
-        full_name: data.full_name,
-        birth_place: data.birth_place,
-        birth_date: data.birth_date,
-        gender: data.gender,
-        address: data.address,
-        whatsapp: data.whatsapp,
-        email: data.email,
-        education_level: data.education_level,
-        school_name: data.school_name,
-        grade: data.grade,
-        main_achievement: data.main_achievement ?? null,
-        parent_income: data.parent_income ?? null,
-        dependents: data.dependents ?? null,
-        photo_url: data.photo_url ?? null,
-        student_card_url: data.student_card_url ?? null,
-        extra: data.extra,
-      } as never)
-      .select("token")
-      .single();
-
-    if (error) throw new Error(error.message);
-    return { token: (inserted as { token?: string } | null)?.token ?? "" };
+    return insertRegistration(data);
   });
