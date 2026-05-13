@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
-import { CheckCircle2, MessageCircle, Home, FileText } from "lucide-react";
+import { CheckCircle2, Home, FileText } from "lucide-react";
 import { z } from "zod";
 
 const searchSchema = z.object({
