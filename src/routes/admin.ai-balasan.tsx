@@ -16,7 +16,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Bot, Save, Plus, Pencil, Trash2, Search, Sparkles, Loader2, BookOpen } from "lucide-react";
+import { Bot, Save, Plus, Pencil, Trash2, Search, Sparkles, Loader2, BookOpen, MessageCircle, Copy, RefreshCw, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/ai-balasan")({
