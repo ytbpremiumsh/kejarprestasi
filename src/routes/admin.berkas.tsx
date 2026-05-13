@@ -193,6 +193,28 @@ function AdminBerkas() {
     setDetail((prev) => (prev ? { ...prev, items: prev.items.filter((x) => x.id !== id) } : prev));
   };
 
+  const toggleOne = (key: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  };
+  const toggleAll = () => {
+    if (selected.size === grouped.length) setSelected(new Set());
+    else setSelected(new Set(grouped.map((g) => g.key)));
+  };
+  const bulkDelete = async () => {
+    if (selected.size === 0) return;
+    if (!confirm(`Hapus ${selected.size} pengirim beserta semua berkasnya?`)) return;
+    const ids = grouped.filter((g) => selected.has(g.key)).flatMap((g) => g.items.map((i) => i.id));
+    const { error } = await supabase.from("documents").delete().in("id", ids);
+    if (error) return toast.error(error.message);
+    toast.success(`${ids.length} berkas dihapus`);
+    setDocs((prev) => prev.filter((d) => !ids.includes(d.id)));
+    setSelected(new Set());
+  };
+
   const statusBadge = (s: CandidateStatus) => {
     if (s === "approved") return <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20">✓ Kandidat</Badge>;
     if (s === "rejected") return <Badge className="bg-red-500/15 text-red-700 border-red-500/30 hover:bg-red-500/20">✕ Ditolak</Badge>;
