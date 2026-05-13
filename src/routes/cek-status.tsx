@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { KeyRound, Loader2, AlertCircle, CheckCircle2, Clock, XCircle, FileText, ArrowRight } from "lucide-react";
+import { KeyRound, Loader2, AlertCircle, FileText, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -129,20 +129,6 @@ function CekStatusPage() {
   );
 }
 
-function StatusBadge({ status }: { status: "pending" | "approved" | "rejected" | string }) {
-  const map: Record<string, { label: string; cls: string; icon: typeof CheckCircle2 }> = {
-    approved: { label: "Disetujui", cls: "bg-green-500/15 text-green-700 dark:text-green-400 border-green-500/30", icon: CheckCircle2 },
-    pending: { label: "Diproses", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30", icon: Clock },
-    rejected: { label: "Ditolak", cls: "bg-destructive/15 text-destructive border-destructive/30", icon: XCircle },
-  };
-  const m = map[status] ?? map.pending;
-  const Icon = m.icon;
-  return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${m.cls}`}>
-      <Icon size={12} /> {m.label}
-    </span>
-  );
-}
 
 function StatusResult({ data }: { data: StatusData }) {
   const jenis = data.kind === "prestasi" ? "Beasiswa Prestasi" : "Beasiswa Ekonomi";
@@ -157,11 +143,10 @@ function StatusResult({ data }: { data: StatusData }) {
           <div className="mt-1 text-xl font-extrabold text-foreground">{data.full_name}</div>
           <div className="mt-1 text-sm text-muted-foreground">{jenis} · Kode: <span className="font-mono font-semibold text-foreground">{data.token}</span></div>
         </div>
-        <StatusBadge status={data.status} />
       </div>
 
       {/* Timeline */}
-      <div className="mt-6 grid sm:grid-cols-3 gap-3">
+      <div className="mt-6 grid sm:grid-cols-2 gap-3">
         <Step
           n={1}
           label="Pendaftaran"
@@ -173,17 +158,6 @@ function StatusResult({ data }: { data: StatusData }) {
           label="Berkas Pendukung"
           done={hasDocs}
           desc={hasDocs ? `${data.docs.total} berkas masuk` : "Belum dikirim"}
-        />
-        <Step
-          n={3}
-          label="Hasil Seleksi"
-          done={data.status === "approved"}
-          rejected={data.status === "rejected"}
-          desc={
-            data.status === "approved" ? "Selamat, Anda lolos!" :
-            data.status === "rejected" ? "Belum berhasil" :
-            "Menunggu pengumuman"
-          }
         />
       </div>
 
