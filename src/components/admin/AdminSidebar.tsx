@@ -15,6 +15,7 @@ import {
   Heart,
   Server,
   Globe,
+  BarChart3,
 } from "lucide-react";
 import {
   Sidebar,
@@ -34,28 +35,38 @@ type Item = { title: string; url: string; icon: React.ComponentType<{ className?
 
 const groups: { label: string; items: Item[] }[] = [
   {
-    label: "Ringkasan",
-    items: [{ title: "Overview", url: "/admin", icon: LayoutDashboard }],
+    label: "Dashboard",
+    items: [
+      { title: "Ringkasan", url: "/admin", icon: LayoutDashboard },
+      { title: "Google Analytics", url: "/admin/analytics", icon: BarChart3 },
+    ],
   },
   {
-    label: "Manajemen Pendaftaran",
+    label: "Pendaftaran",
     items: [
       { title: "Pendaftar", url: "/admin/pendaftar", icon: Users },
       { title: "Pengiriman Berkas", url: "/admin/berkas", icon: FolderArchive },
-      { title: "Kandidat", url: "/admin/kandidat", icon: Trophy },
+      { title: "Kandidat Lolos", url: "/admin/kandidat", icon: Trophy },
+    ],
+  },
+  {
+    label: "Konten & Formulir",
+    items: [
+      { title: "Artikel", url: "/admin/artikel", icon: FileText },
       { title: "Formulir", url: "/admin/formulir", icon: FileEdit },
     ],
   },
   {
-    label: "Konten",
-    items: [{ title: "Artikel", url: "/admin/artikel", icon: FileText }],
-  },
-  {
-    label: "Pengaturan Situs",
+    label: "Komunikasi & Donasi",
     items: [
-      { title: "Pengaturan", url: "/admin/pengaturan", icon: Settings },
       { title: "WhatsApp", url: "/admin/whatsapp", icon: MessageCircle },
       { title: "Donasi", url: "/admin/donasi", icon: Heart },
+    ],
+  },
+  {
+    label: "Integrasi & Pengaturan",
+    items: [
+      { title: "Pengaturan Situs", url: "/admin/pengaturan", icon: Settings },
       { title: "AdSense", url: "/admin/adsense", icon: Megaphone },
       { title: "Kode & Performa", url: "/admin/kode-kustom", icon: Code2 },
     ],
