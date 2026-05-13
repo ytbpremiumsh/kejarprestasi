@@ -34,6 +34,19 @@ type Behavior = {
   max_tokens: number;
   enabled: boolean;
   fallback_message: string;
+  wa_auto_reply: boolean;
+  wa_webhook_token: string | null;
+};
+
+type WaMsg = {
+  id: string;
+  phone: string;
+  contact_name: string | null;
+  direction: "in" | "out";
+  message: string;
+  ai_used: boolean;
+  status: string;
+  created_at: string;
 };
 
 type KbItem = {
