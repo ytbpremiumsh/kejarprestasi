@@ -185,6 +185,7 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         body: {
           type: "berkas",
           full_name: registrant.full_name,
+          email: regEmail,
           whatsapp: "",
           kind,
           doc_count: rows.length,
