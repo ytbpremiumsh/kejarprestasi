@@ -126,6 +126,7 @@ function AdminBerkas() {
     const data = docs.map((d) => {
       const r = findReg(d);
       return {
+        Kode: r?.token ?? "",
         "Nama Lengkap": r?.full_name ?? "",
         Email: d.email,
         WhatsApp: r?.whatsapp ?? "",
