@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, LinkIcon, Loader2, KeyRound, UserCheck, AlertCircle } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  LinkIcon,
+  Loader2,
+  KeyRound,
+  UserCheck,
+  AlertCircle,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
@@ -10,8 +18,18 @@ import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 const defaultDocs: Record<"prestasi" | "ekonomi", DocSlot[]> = {
   prestasi: [
     { id: "identity", key: "identity", label: "Kartu Identitas", required: true },
-    { id: "transcript", key: "transcript", label: "Transkrip Nilai atau Kartu Hasil Studi (Mahasiswa)", required: true },
-    { id: "achievement", key: "achievement", label: "Verifikasi Penghargaan yang Diterima", required: true },
+    {
+      id: "transcript",
+      key: "transcript",
+      label: "Transkrip Nilai atau Kartu Hasil Studi (Mahasiswa)",
+      required: true,
+    },
+    {
+      id: "achievement",
+      key: "achievement",
+      label: "Verifikasi Penghargaan yang Diterima",
+      required: true,
+    },
     { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true },
     { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
   ],
@@ -19,7 +37,12 @@ const defaultDocs: Record<"prestasi" | "ekonomi", DocSlot[]> = {
     { id: "identity", key: "identity", label: "Kartu Identitas", required: true },
     { id: "sktm", key: "sktm", label: "Surat Keterangan Tidak Mampu (SKTM)", required: true },
     { id: "income", key: "income", label: "Keterangan Penghasilan Orang Tua", required: true },
-    { id: "electricity", key: "electricity", label: "Bukti Pembayaran Listrik Rumah Terakhir", required: true },
+    {
+      id: "electricity",
+      key: "electricity",
+      label: "Bukti Pembayaran Listrik Rumah Terakhir",
+      required: true,
+    },
     { id: "essay", key: "essay", label: "Esai dengan Tema yang Sudah Ditentukan", required: true },
     { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
   ],
@@ -102,7 +125,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       return;
     }
     if (!t.startsWith(tokenPrefix(kind))) {
-      setSearchError(`Kode tidak sesuai jenis beasiswa. Kode ${kind === "prestasi" ? "Prestasi" : "Ekonomi"} diawali ${tokenPrefix(kind)}`);
+      setSearchError(
+        `Kode tidak sesuai jenis beasiswa. Kode ${kind === "prestasi" ? "Prestasi" : "Ekonomi"} diawali ${tokenPrefix(kind)}`,
+      );
       return;
     }
     setVerifying(true);
@@ -115,9 +140,10 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
       if (error) throw error;
       const payload = data as { ok: boolean; data?: RegInfo; error?: string };
       if (!payload?.ok || !payload.data) {
-        const msg = payload?.error === "not_found"
-          ? "Kode tidak ditemukan. Periksa kembali kode dari WhatsApp / halaman sukses pendaftaran kamu."
-          : "Gagal memverifikasi kode.";
+        const msg =
+          payload?.error === "not_found"
+            ? "Kode tidak ditemukan. Periksa kembali kode dari WhatsApp / halaman sukses pendaftaran kamu."
+            : "Gagal memverifikasi kode.";
         setSearchError(msg);
         return;
       }
@@ -188,17 +214,21 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         .upsert(rows, { onConflict: "email_key,kind,doc_key" });
       if (error) throw error;
 
-      supabase.functions.invoke("send-whatsapp", {
-        body: {
-          type: "berkas",
-          full_name: registrant.full_name,
-          email: regEmail,
-          whatsapp: "",
-          kind,
-          doc_count: rows.length,
-          token: registrant.token ?? token,
-        },
-      }).catch(() => { /* ignore */ });
+      supabase.functions
+        .invoke("send-whatsapp", {
+          body: {
+            type: "berkas",
+            full_name: registrant.full_name,
+            email: regEmail,
+            whatsapp: "",
+            kind,
+            doc_count: rows.length,
+            token: registrant.token ?? token,
+          },
+        })
+        .catch(() => {
+          /* ignore */
+        });
 
       toast.success("Berkas berhasil dikirim!");
       navigate({ to: "/berkas/terkirim", search: { kind, count: rows.length } });
@@ -220,14 +250,19 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
   return (
     <section className="container-page py-12 md:py-16">
-      <Link to="/" className="text-xs font-semibold text-primary hover:underline">← Kembali ke Beranda</Link>
+      <Link to="/" className="text-xs font-semibold text-primary hover:underline">
+        ← Kembali ke Beranda
+      </Link>
       <div className="mt-4 max-w-3xl">
         <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
           Berkas {kind === "prestasi" ? "Beasiswa Prestasi" : "Beasiswa Ekonomi"}
         </span>
-        <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">Pengiriman Berkas Pendukung</h1>
+        <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">
+          Pengiriman Berkas Pendukung
+        </h1>
         <p className="mt-2 text-muted-foreground">
-          Masukkan tautan (URL) berkas-berkas pendukung sesuai persyaratan. Pastikan dokumen dapat diakses (Google Drive, Dropbox, dsb. — atur izin "Siapa saja dengan link").
+          Masukkan tautan (URL) berkas-berkas pendukung sesuai persyaratan. Pastikan dokumen dapat
+          diakses (Google Drive, Dropbox, dsb. — atur izin "Siapa saja dengan link").
         </p>
       </div>
 
@@ -240,7 +275,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
               <KeyRound size={16} className="text-primary" /> Verifikasi Kode Pendaftar
             </h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              Masukkan kode pendaftar (format <span className="font-mono font-semibold">{tokenPrefix(kind)}XXXXXX</span>) yang Anda terima saat mendaftar (lihat WhatsApp atau halaman sukses).
+              Masukkan kode pendaftar (format{" "}
+              <span className="font-mono font-semibold">{tokenPrefix(kind)}XXXXXX</span>) yang Anda
+              terima saat mendaftar (lihat WhatsApp atau halaman sukses).
             </p>
             <div className="mt-5 grid sm:grid-cols-[1fr_auto] gap-3 items-end">
               <label className="block">
@@ -248,12 +285,24 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                   Kode Pendaftar<span className="text-destructive"> *</span>
                 </span>
                 <div className="mt-1.5 relative">
-                  <KeyRound size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <KeyRound
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  />
                   <input
                     type="text"
                     value={token}
-                    onChange={(e) => { setToken(e.target.value.toUpperCase()); setRegistrant(null); setSearchError(null); }}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleVerify(); } }}
+                    onChange={(e) => {
+                      setToken(e.target.value.toUpperCase());
+                      setRegistrant(null);
+                      setSearchError(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleVerify();
+                      }
+                    }}
                     placeholder={`${tokenPrefix(kind)}XXXXXX`}
                     maxLength={20}
                     autoCapitalize="characters"
@@ -268,7 +317,11 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                 disabled={verifying}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition disabled:opacity-60"
               >
-                {verifying ? <Loader2 size={14} className="animate-spin" /> : <KeyRound size={14} />}
+                {verifying ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <KeyRound size={14} />
+                )}
                 Verifikasi
               </button>
             </div>
@@ -278,7 +331,10 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                 <AlertCircle size={14} className="mt-0.5 shrink-0" />
                 <div>
                   {searchError}{" "}
-                  <Link to={kind === "prestasi" ? "/pendaftaran/prestasi" : "/pendaftaran/ekonomi"} className="font-semibold underline">
+                  <Link
+                    to={kind === "prestasi" ? "/pendaftaran/prestasi" : "/pendaftaran/ekonomi"}
+                    className="font-semibold underline"
+                  >
                     Daftar dulu
                   </Link>
                 </div>
@@ -292,22 +348,32 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                 </div>
                 <div className="mt-3 grid sm:grid-cols-2 gap-3 text-sm">
                   <div>
-                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Nama Lengkap</div>
+                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                      Nama Lengkap
+                    </div>
                     <div className="font-semibold text-foreground">{registrant.full_name}</div>
                   </div>
                   <div>
-                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">WhatsApp</div>
-                    <div className="font-semibold text-foreground">{registrant.whatsapp || "-"}</div>
+                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                      WhatsApp
+                    </div>
+                    <div className="font-semibold text-foreground">
+                      {registrant.whatsapp || "-"}
+                    </div>
                   </div>
                   {registrant.gender && (
                     <div>
-                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Jenis Kelamin</div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Jenis Kelamin
+                      </div>
                       <div className="font-semibold text-foreground">{registrant.gender}</div>
                     </div>
                   )}
                   {(registrant.birth_place || registrant.birth_date) && (
                     <div>
-                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Tempat / Tanggal Lahir</div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Tempat / Tanggal Lahir
+                      </div>
                       <div className="font-semibold text-foreground">
                         {[registrant.birth_place, registrant.birth_date].filter(Boolean).join(", ")}
                       </div>
@@ -315,25 +381,35 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                   )}
                   {registrant.school_name && (
                     <div>
-                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Sekolah / Kampus</div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Sekolah / Kampus
+                      </div>
                       <div className="font-semibold text-foreground">{registrant.school_name}</div>
                     </div>
                   )}
                   {registrant.education_level && (
                     <div>
-                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Jenjang</div>
-                      <div className="font-semibold text-foreground">{registrant.education_level}</div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Jenjang
+                      </div>
+                      <div className="font-semibold text-foreground">
+                        {registrant.education_level}
+                      </div>
                     </div>
                   )}
                   {registrant.grade && (
                     <div>
-                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Kelas / Tingkat</div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Kelas / Tingkat
+                      </div>
                       <div className="font-semibold text-foreground">{registrant.grade}</div>
                     </div>
                   )}
                   {registrant.address && (
                     <div className="sm:col-span-2">
-                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Alamat</div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Alamat
+                      </div>
                       <div className="font-semibold text-foreground">{registrant.address}</div>
                     </div>
                   )}
@@ -344,10 +420,16 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
           <KetentuanBerkasCard kind={kind} />
 
-          <div className={`rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card transition ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}>
+          <div
+            className={`rounded-3xl border border-border bg-card p-6 md:p-7 shadow-card transition ${!registrant ? "opacity-60 pointer-events-none select-none" : ""}`}
+          >
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-base font-bold text-foreground">Tautan Berkas</h2>
-              {!registrant && <span className="text-[11px] font-semibold text-muted-foreground">Verifikasi kode dulu</span>}
+              {!registrant && (
+                <span className="text-[11px] font-semibold text-muted-foreground">
+                  Verifikasi kode dulu
+                </span>
+              )}
             </div>
             <div className="mt-5 space-y-6">
               {docs.map((d) => {
@@ -361,11 +443,16 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                         {d.required && <span className="text-destructive"> *</span>}
                       </span>
                       {!d.required && (
-                        <span className="text-[10px] font-semibold uppercase rounded-full bg-secondary text-muted-foreground px-2 py-0.5">Opsional</span>
+                        <span className="text-[10px] font-semibold uppercase rounded-full bg-secondary text-muted-foreground px-2 py-0.5">
+                          Opsional
+                        </span>
                       )}
                     </span>
                     <div className="mt-1.5 relative">
-                      <LinkIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <LinkIcon
+                        size={14}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                      />
                       <input
                         type="url"
                         value={v}
@@ -376,17 +463,22 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                         required={d.required}
                       />
                     </div>
-                    {showError && <div className="mt-1 text-[11px] text-destructive">URL tidak valid (gunakan http/https)</div>}
+                    {showError && (
+                      <div className="mt-1 text-[11px] text-destructive">
+                        URL tidak valid (gunakan http/https)
+                      </div>
+                    )}
                   </label>
                 );
               })}
               {docs.length === 0 && (
-                <p className="text-sm text-muted-foreground">Belum ada daftar berkas. Admin belum mengonfigurasi.</p>
+                <p className="text-sm text-muted-foreground">
+                  Belum ada daftar berkas. Admin belum mengonfigurasi.
+                </p>
               )}
             </div>
           </div>
         </div>
-
 
         <aside className="space-y-4 lg:sticky lg:top-24 h-fit">
           <div className="rounded-3xl border border-border bg-card p-6 shadow-card">
@@ -398,7 +490,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
                 "Pastikan tautan benar dan dapat dibuka",
                 "Berkas akan diverifikasi oleh tim",
               ].map((t) => (
-                <li key={t} className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}</li>
+                <li key={t} className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}
+                </li>
               ))}
             </ul>
           </div>
@@ -407,7 +501,15 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
             disabled={submitting || !registrant}
             className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
           >
-            {submitting ? <><Loader2 size={16} className="animate-spin" /> Mengirim…</> : <>Kirim Berkas <ArrowRight size={16} /></>}
+            {submitting ? (
+              <>
+                <Loader2 size={16} className="animate-spin" /> Mengirim…
+              </>
+            ) : (
+              <>
+                Kirim Berkas <ArrowRight size={16} />
+              </>
+            )}
           </button>
         </aside>
       </form>
