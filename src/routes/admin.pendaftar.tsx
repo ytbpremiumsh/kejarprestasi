@@ -246,7 +246,7 @@ function AdminPendaftar() {
                     </td>
                     
                     <td className="px-4 py-3">
-                      <Button size="sm" variant="outline" onClick={() => setSelected(r)}>Detail</Button>
+                      <Button size="sm" variant="outline" onClick={() => setSelectedRow(r)}>Detail</Button>
                     </td>
                   </tr>
                 ))}
@@ -256,11 +256,11 @@ function AdminPendaftar() {
         )}
       </Card>
 
-      {selected && (
+      {selectedRow && (
         <DetailDialog
-          row={selected}
-          docs={docsForRow(selected)}
-          onClose={() => setSelected(null)}
+          row={selectedRow}
+          docs={docsForRow(selectedRow)}
+          onClose={() => setSelectedRow(null)}
         />
       )}
     </div>
