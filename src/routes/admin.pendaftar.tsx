@@ -116,7 +116,7 @@ function AdminPendaftar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, q, filterKind, filterBerkas, docs]);
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
     const data = filtered.map((r) => ({
       Kode: r.token ?? "",
       "Nama Lengkap": r.full_name,
@@ -136,10 +136,7 @@ function AdminPendaftar() {
       Prestasi: r.main_achievement ?? "",
       "Tanggal Daftar": new Date(r.created_at).toLocaleString("id-ID"),
     }));
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Pendaftar");
-    XLSX.writeFile(wb, `pendaftar-beasiswa-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    await exportRowsToXlsx(data, "Pendaftar", `pendaftar-beasiswa-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
   const exportCSV = () => {
@@ -162,15 +159,7 @@ function AdminPendaftar() {
       Prestasi: r.main_achievement?.replace(/\n/g, " ") ?? "",
       "Tanggal Daftar": new Date(r.created_at).toLocaleString("id-ID"),
     }));
-    const ws = XLSX.utils.json_to_sheet(data);
-    const csv = XLSX.utils.sheet_to_csv(ws);
-    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pendaftar-beasiswa-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    exportRowsToCsv(data, `pendaftar-beasiswa-${new Date().toISOString().slice(0, 10)}.csv`);
   };
 
   const toggleOne = (id: string) => {
