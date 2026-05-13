@@ -38,6 +38,15 @@ type Behavior = {
   wa_webhook_token: string | null;
 };
 
+type AiProvider = {
+  id?: string;
+  vendor: "lovable_ai" | "openrouter";
+  api_key: string | null;
+  base_url: string | null;
+  model: string;
+  enabled: boolean;
+};
+
 type WaMsg = {
   id: string;
   phone: string;
@@ -67,11 +76,29 @@ const TONES = [
 ];
 
 const MODELS = [
-  { v: "google/gemini-2.5-flash", l: "Gemini 2.5 Flash (cepat & murah)" },
-  { v: "google/gemini-2.5-pro", l: "Gemini 2.5 Pro (paling akurat)" },
-  { v: "google/gemini-2.5-flash-lite", l: "Gemini 2.5 Flash Lite (paling hemat)" },
-  { v: "openai/gpt-5-mini", l: "GPT-5 Mini (seimbang)" },
+  { v: "google/gemini-3-flash-preview", l: "Gemini 3 Flash Preview" },
+  { v: "google/gemini-2.5-flash", l: "Gemini 2.5 Flash" },
+  { v: "openai/gpt-5-mini", l: "GPT-5 Mini" },
+  { v: "openai/gpt-5.2", l: "GPT-5.2" },
 ];
+
+const OPENROUTER_MODELS = [
+  "google/gemini-2.5-flash-lite-preview-09-2025",
+  "google/gemini-2.5-flash",
+  "google/gemini-2.5-pro",
+  "openai/gpt-4o-mini",
+  "openai/gpt-4o",
+  "meta-llama/llama-3.3-70b-instruct",
+  "anthropic/claude-3.5-sonnet",
+];
+
+const DEFAULT_PROVIDER: AiProvider = {
+  vendor: "lovable_ai",
+  api_key: "",
+  base_url: "https://openrouter.ai/api/v1/chat/completions",
+  model: "google/gemini-3-flash-preview",
+  enabled: true,
+};
 
 function AdminAiBalasan() {
   const [behavior, setBehavior] = useState<Behavior | null>(null);
