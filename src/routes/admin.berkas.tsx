@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, User, Check, X, Eye } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import { TokenBadge } from "@/components/admin/TokenBadge";
 
 export const Route = createFileRoute("/admin/berkas")({
   component: AdminBerkas,
