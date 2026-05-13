@@ -161,11 +161,17 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
     setSubmitting(true);
     try {
+      const regEmail = (registrant.email ?? "").trim();
+      if (!regEmail || !regEmail.includes("@")) {
+        toast.error("Email pendaftar tidak ditemukan. Hubungi admin.");
+        setSubmitting(false);
+        return;
+      }
       const rows = docs
         .map((d) => ({ d, v: (values[d.key] ?? "").trim() }))
         .filter(({ v }) => v.length > 0)
         .map(({ d, v }) => ({
-          email: registrant.id ? `token:${registrant.token ?? token}` : token,
+          email: regEmail,
           kind,
           doc_type: d.label,
           file_url: v,
