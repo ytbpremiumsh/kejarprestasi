@@ -10,6 +10,7 @@ import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2 } 
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { TokenBadge } from "@/components/admin/TokenBadge";
+import { uniqueLatestDocuments } from "@/lib/document-utils";
 
 export const Route = createFileRoute("/admin/pendaftar")({
   component: AdminPendaftar,
@@ -70,10 +71,18 @@ function AdminPendaftar() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
-  const docsForRow = (r: Registration) =>
-    docs.filter((d) => d.registration_id === r.id || d.email === r.email);
+  const docsForRow = (r: Registration) => {
+    const matched = docs.filter(
+      (d) =>
+        d.registration_id === r.id ||
+        (d.email.toLowerCase() === r.email.toLowerCase() && d.kind === r.kind),
+    );
+    return uniqueLatestDocuments(matched);
+  };
 
   const counts = useMemo(() => {
     let submitted = 0;
@@ -107,7 +116,6 @@ function AdminPendaftar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, q, filterKind, filterBerkas, docs]);
 
-
   const exportExcel = () => {
     const data = filtered.map((r) => ({
       Kode: r.token ?? "",
@@ -118,7 +126,7 @@ function AdminPendaftar() {
       "Tempat Lahir": r.birth_place,
       "Tanggal Lahir": r.birth_date,
       Alamat: r.address,
-      "Jenjang": r.education_level,
+      Jenjang: r.education_level,
       Sekolah: r.school_name,
       Kelas: r.grade,
       Kategori: r.kind,
@@ -168,7 +176,8 @@ function AdminPendaftar() {
   const toggleOne = (id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
@@ -178,15 +187,21 @@ function AdminPendaftar() {
   };
   const deleteIds = async (ids: string[]) => {
     if (ids.length === 0) return;
-    const emails = rows.filter((r) => ids.includes(r.id)).map((r) => r.email);
+    const deletedRows = rows.filter((r) => ids.includes(r.id));
     const { error } = await supabase.from("registrations").delete().in("id", ids);
     if (error) return toast.error(error.message);
-    if (emails.length > 0) {
-      await supabase.from("documents").delete().in("email", emails);
+    for (const row of deletedRows) {
+      await supabase.from("documents").delete().eq("email", row.email).eq("kind", row.kind);
     }
     toast.success(`${ids.length} pendaftar dihapus`);
     setRows((prev) => prev.filter((r) => !ids.includes(r.id)));
-    setDocs((prev) => prev.filter((d) => !ids.includes(d.registration_id ?? "") && !emails.includes(d.email)));
+    setDocs((prev) =>
+      prev.filter(
+        (d) =>
+          !ids.includes(d.registration_id ?? "") &&
+          !deletedRows.some((r) => r.email === d.email && r.kind === d.kind),
+      ),
+    );
     setSelected(new Set());
   };
   const bulkDelete = () => {
@@ -204,17 +219,29 @@ function AdminPendaftar() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Pendaftar</h1>
-          <p className="text-sm text-muted-foreground">{filtered.length} dari {rows.length} pendaftar</p>
+          <p className="text-sm text-muted-foreground">
+            {filtered.length} dari {rows.length} pendaftar
+          </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={load}><RotateCcw className="h-4 w-4 mr-1" />Refresh</Button>
+          <Button variant="outline" onClick={load}>
+            <RotateCcw className="h-4 w-4 mr-1" />
+            Refresh
+          </Button>
           {selected.size > 0 && (
             <Button variant="destructive" onClick={bulkDelete}>
-              <Trash2 className="h-4 w-4 mr-1" />Hapus ({selected.size})
+              <Trash2 className="h-4 w-4 mr-1" />
+              Hapus ({selected.size})
             </Button>
           )}
-          <Button variant="outline" onClick={exportCSV}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
-          <Button onClick={exportExcel}><Download className="h-4 w-4 mr-1" />Export Excel</Button>
+          <Button variant="outline" onClick={exportCSV}>
+            <Download className="h-4 w-4 mr-1" />
+            Export CSV
+          </Button>
+          <Button onClick={exportExcel}>
+            <Download className="h-4 w-4 mr-1" />
+            Export Excel
+          </Button>
         </div>
       </div>
 
@@ -222,14 +249,27 @@ function AdminPendaftar() {
         <div className="flex flex-wrap gap-2">
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, sekolah, kode token..." className="pl-9" />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Cari nama, email, sekolah, kode token..."
+              className="pl-9"
+            />
           </div>
-          <select value={filterKind} onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
+          <select
+            value={filterKind}
+            onChange={(e) => setFilterKind(e.target.value as "all" | "prestasi" | "ekonomi")}
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
             <option value="all">Semua Kategori</option>
             <option value="prestasi">Prestasi</option>
             <option value="ekonomi">Ekonomi</option>
           </select>
-          <select value={filterBerkas} onChange={(e) => setFilterBerkas(e.target.value as "all" | "submitted" | "pending")} className="rounded-md border border-input bg-background px-3 py-2 text-sm">
+          <select
+            value={filterBerkas}
+            onChange={(e) => setFilterBerkas(e.target.value as "all" | "submitted" | "pending")}
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
             <option value="all">Semua Berkas ({rows.length})</option>
             <option value="submitted">Sudah Kirim Berkas ({counts.submitted})</option>
             <option value="pending">Belum Kirim Berkas ({counts.pending})</option>
@@ -239,9 +279,13 @@ function AdminPendaftar() {
 
       <Card className="rounded-2xl shadow-soft overflow-hidden">
         {loading ? (
-          <div className="flex justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+          <div className="flex justify-center py-16">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </div>
         ) : filtered.length === 0 ? (
-          <div className="py-16 text-center text-sm text-muted-foreground">Belum ada pendaftar.</div>
+          <div className="py-16 text-center text-sm text-muted-foreground">
+            Belum ada pendaftar.
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -265,7 +309,10 @@ function AdminPendaftar() {
               </thead>
               <tbody>
                 {filtered.map((r) => (
-                  <tr key={r.id} className={`border-t hover:bg-muted/30 ${selected.has(r.id) ? "bg-muted/40" : ""}`}>
+                  <tr
+                    key={r.id}
+                    className={`border-t hover:bg-muted/30 ${selected.has(r.id) ? "bg-muted/40" : ""}`}
+                  >
                     <td className="px-4 py-3">
                       <Checkbox
                         checked={selected.has(r.id)}
@@ -275,13 +322,19 @@ function AdminPendaftar() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="font-medium text-foreground">{r.full_name}</div>
-                      <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("id-ID")}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(r.created_at).toLocaleDateString("id-ID")}
+                      </div>
                     </td>
-                    <td className="px-4 py-3"><TokenBadge token={r.token} /></td>
+                    <td className="px-4 py-3">
+                      <TokenBadge token={r.token} />
+                    </td>
                     <td className="px-4 py-3 capitalize">{r.kind}</td>
                     <td className="px-4 py-3">
                       <div>{r.school_name}</div>
-                      <div className="text-xs text-muted-foreground uppercase">{r.education_level} · {r.grade}</div>
+                      <div className="text-xs text-muted-foreground uppercase">
+                        {r.education_level} · {r.grade}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <div>{r.email}</div>
@@ -293,13 +346,23 @@ function AdminPendaftar() {
                           ✓ {docsForRow(r).length} berkas
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="text-muted-foreground">Belum kirim</Badge>
+                        <Badge variant="outline" className="text-muted-foreground">
+                          Belum kirim
+                        </Badge>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
-                        <Button size="sm" variant="outline" onClick={() => setSelectedRow(r)}>Detail</Button>
-                        <Button size="sm" variant="ghost" className="text-destructive" onClick={() => deleteOne(r)} title="Hapus">
+                        <Button size="sm" variant="outline" onClick={() => setSelectedRow(r)}>
+                          Detail
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-destructive"
+                          onClick={() => deleteOne(r)}
+                          title="Hapus"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -323,27 +386,40 @@ function AdminPendaftar() {
   );
 }
 
-
 function DetailDialog({
-  row, docs, onClose,
+  row,
+  docs,
+  onClose,
 }: {
   row: Registration;
   docs: Document[];
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
-      <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-background p-6 shadow-soft" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-background p-6 shadow-soft"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-foreground">{row.full_name}</h2>
             <div className="mt-1 flex flex-wrap items-center gap-2">
-              <Badge variant="outline" className="capitalize">{row.kind}</Badge>
+              <Badge variant="outline" className="capitalize">
+                {row.kind}
+              </Badge>
               <TokenBadge token={row.token} size="md" />
-              <span className="text-xs text-muted-foreground">Daftar {new Date(row.created_at).toLocaleString("id-ID")}</span>
+              <span className="text-xs text-muted-foreground">
+                Daftar {new Date(row.created_at).toLocaleString("id-ID")}
+              </span>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>Tutup</Button>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            Tutup
+          </Button>
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 text-sm">
@@ -360,17 +436,22 @@ function DetailDialog({
         </div>
 
         <div className="mt-6">
-          <h3 className="text-sm font-semibold text-foreground mb-2">Berkas ({docs.length + (row.photo_url ? 1 : 0) + (row.student_card_url ? 1 : 0)})</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-2">
+            Berkas ({docs.length + (row.photo_url ? 1 : 0) + (row.student_card_url ? 1 : 0)})
+          </h3>
           <div className="space-y-2">
             {row.photo_url && <DocLink type="Foto" url={row.photo_url} />}
-            {row.student_card_url && <DocLink type="Kartu Pelajar / KTP" url={row.student_card_url} />}
-            {docs.map((d) => <DocLink key={d.id} type={d.doc_type} url={d.file_url} />)}
+            {row.student_card_url && (
+              <DocLink type="Kartu Pelajar / KTP" url={row.student_card_url} />
+            )}
+            {docs.map((d) => (
+              <DocLink key={d.id} type={d.doc_type} url={d.file_url} />
+            ))}
             {docs.length === 0 && !row.photo_url && !row.student_card_url && (
               <p className="text-sm text-muted-foreground">Belum ada berkas.</p>
             )}
           </div>
         </div>
-
       </div>
     </div>
   );
@@ -387,7 +468,12 @@ function Field({ label, value }: { label: string; value: string }) {
 
 function DocLink({ type, url }: { type: string; url: string }) {
   return (
-    <a href={url} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2 hover:bg-muted">
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2 hover:bg-muted"
+    >
       <div className="flex items-center gap-2 text-sm">
         <FileText className="h-4 w-4 text-primary" />
         <span className="font-medium">{type}</span>
