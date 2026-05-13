@@ -1,142 +1,143 @@
+
+# Mayar Webhook Hub — Plan Diskusi
+
 ## Tujuan
-Implementasi **Titik 1 — Donasi Sukarela Pasca-Daftar** dengan integrasi Mayar (invoice payment), API key Mayar diatur lewat admin dashboard, peserta bebas memasukkan jumlah donasi sendiri.
+Membuat **1 project Lovable baru** (sebut saja `mayar-hub`) yang:
+1. Menerima webhook dari **3 akun Mayar berbeda** lewat **1 URL webhook saja per akun** (URL hub-nya sama, dibedakan token).
+2. Menyimpan & menampilkan **semua transaksi 3 website di 1 dashboard admin terpusat**.
+3. Meneruskan (forward) notifikasi ke project tujuan masing-masing (Langganan / Donasi / Pembayaran) supaya database lokal mereka tetap update.
+
+> Catatan penting: Mayar tetap butuh URL webhook diisi di tiap dashboard akun. Yang kita hemat: kamu cukup punya **1 codebase webhook** + **1 panel monitoring**, bukan 3.
 
 ---
 
-## Alur Pengguna
+## Arsitektur
 
-```
-[Submit form pendaftaran berhasil]
-        ↓
-[Halaman /pendaftaran/sukses]
-   ├─ Ucapan terima kasih + info next step (kirim berkas)
-   └─ Card "Dukung Program Ini" (opsional, soft-sell)
-        ├─ Input nominal bebas (preset chip: 10rb / 25rb / 50rb / 100rb / lainnya)
-        ├─ Catatan kecil: "Opsional. Tidak memengaruhi seleksi."
-        └─ Tombol "Donasi Sekarang"
-              ↓
-        [Server function → Mayar /hl/v1/invoice/create]
-              ↓
-        [Redirect ke Mayar payment link]
-              ↓
-        [Mayar redirect kembali ke /donasi/terima-kasih]
-```
-
----
-
-## Perubahan UI
-
-### 1. Halaman sukses pendaftaran (baru / refactor)
-`src/routes/pendaftaran.sukses.tsx` — landing setelah submit registrasi yang berisi:
-- Konfirmasi pendaftaran diterima + nama peserta + langkah berikutnya
-- Komponen `<DonationCard />` di bawahnya
-
-`RegistrationForm` setelah submit redirect ke `/pendaftaran/sukses?name=...` (atau pakai sessionStorage). Saat ini kemungkinan langsung ke halaman terkirim — akan disesuaikan.
-
-### 2. Komponen `DonationCard`
-`src/components/DonationCard.tsx`
-- Heading lembut, copy soft-sell
-- Preset nominal (chip): Rp10rb, Rp25rb, Rp50rb, Rp100rb, Lainnya
-- Input manual (min Rp10.000)
-- Validasi zod: angka, min 10.000, max 10.000.000
-- Tombol "Donasi via Mayar" → panggil server function
-
-### 3. Halaman terima kasih donasi
-`src/routes/donasi.terima-kasih.tsx` — tampil setelah redirect dari Mayar.
-
----
-
-## Perubahan Admin Dashboard
-
-### Halaman baru `src/routes/admin.donasi.tsx`
-- Form pengaturan integrasi Mayar:
-  - **API Key Mayar** (password input, disimpan ke Supabase secret via edge function — bukan di `site_settings` agar tidak ter-expose ke publik)
-  - Toggle **Aktifkan donasi**
-  - Judul + subjudul + deskripsi card donasi (editable copy)
-  - Default nominal preset (CSV)
-  - Min & max donasi
-- Tabel riwayat donasi (lihat tabel baru di bawah)
-
-Sidebar admin (`AdminSidebar.tsx`) ditambah menu "Donasi".
-
----
-
-## Perubahan Database
-
-### Tabel baru `donations`
-- `id` uuid pk
-- `registration_id` uuid nullable (opsional, link ke pendaftar)
-- `name`, `email`, `whatsapp` text
-- `amount` integer (rupiah)
-- `mayar_invoice_id` text
-- `mayar_link` text
-- `status` enum: `pending` | `paid` | `failed` | `expired` (default `pending`)
-- `paid_at` timestamptz nullable
-- `created_at`, `updated_at`
-
-**RLS**: insert publik diperbolehkan (siapa saja bisa berdonasi), select hanya admin. Update hanya via service role (edge function webhook).
-
-### `site_settings` key baru `donation`
-Menyimpan setting **non-sensitif** saja:
-```json
-{
-  "enabled": true,
-  "title": "Dukung Program Ini",
-  "subtitle": "Opsional. Tidak memengaruhi seleksi.",
-  "description": "...",
-  "presets": [10000, 25000, 50000, 100000],
-  "min_amount": 10000,
-  "max_amount": 10000000
-}
+```text
+   ┌─────────────────┐       ┌──────────────────────────────┐       ┌──────────────────┐
+   │ Mayar Akun A    │──────▶│                              │──────▶│ Project A        │
+   │ (Langganan)     │       │   MAYAR HUB (project baru)   │       │ (Langganan DB)   │
+   └─────────────────┘       │                              │       └──────────────────┘
+                             │  /api/public/mayar           │
+   ┌─────────────────┐       │     ?site=A&token=xxx        │       ┌──────────────────┐
+   │ Mayar Akun B    │──────▶│                              │──────▶│ Project B        │
+   │ (Donasi)        │       │  - Verifikasi token          │       │ (Donasi DB)      │
+   └─────────────────┘       │  - Simpan ke DB hub          │       └──────────────────┘
+                             │  - Forward ke target site    │
+   ┌─────────────────┐       │  - Tampilkan di dashboard    │       ┌──────────────────┐
+   │ Mayar Akun C    │──────▶│                              │──────▶│ Project C        │
+   │ (Pembayaran)    │       └──────────────────────────────┘       │ (Pembayaran DB)  │
+   └─────────────────┘                                              └──────────────────┘
 ```
 
-### Secret `MAYAR_API_KEY`
-Disimpan via Lovable Cloud secret, diakses di edge function. Admin set lewat halaman admin → memanggil edge function khusus untuk update secret (atau alternatif: minta user input via tombol "Set API Key" yang membuka prompt secret).
+---
 
-> Catatan: Lovable secrets tidak bisa diupdate dari UI app sendiri. **Solusi praktis**: simpan API key di tabel `site_settings` key `mayar_config` dengan RLS admin-only (select & update hanya admin, tidak ada akses anon). Edge function membaca via service role. Trade-off: API key tersimpan di DB tapi tidak ter-expose ke publik karena RLS ketat.
+## Yang dibangun di project HUB
+
+### 1. Database hub (Supabase di project hub)
+
+Tabel `sites` — daftar website yang terhubung:
+- `slug` (siteA, siteB, siteC)
+- `name` (label tampilan: "Langganan", "Donasi", "Pembayaran")
+- `kind` (enum: subscription | donation | payment)
+- `forward_url` (URL endpoint di project tujuan, misal `https://xxx.supabase.co/functions/v1/mayar-receive`)
+- `forward_secret` (token yang dikirim ke project tujuan untuk verifikasi)
+- `incoming_token` (token yang harus ada di query webhook Mayar untuk site ini)
+- `enabled` (on/off)
+
+Tabel `transactions` — semua transaksi 3 site disimpan di sini:
+- `site_slug`, `kind`, `mayar_invoice_id`, `reference_id`, `customer_name`, `customer_email`, `amount`, `status`, `event_type`, `raw_payload` (jsonb), `received_at`
+
+Tabel `forward_logs` — log hasil forward ke project tujuan:
+- `transaction_id`, `target_url`, `http_status`, `response_body`, `attempt`, `succeeded`, `created_at`
+
+### 2. Endpoint webhook (server route TanStack)
+
+`/api/public/mayar` — POST:
+- Ambil `?site=<slug>&token=<token>` dari query
+- Lookup `sites` → cocokkan token, tolak jika invalid
+- Simpan payload mentah ke `transactions`
+- Coba POST ke `forward_url` site tersebut, simpan hasilnya ke `forward_logs`
+- Return 200 ke Mayar (supaya tidak retry sia-sia, walaupun forward gagal — kita retry sendiri)
+
+### 3. Dashboard admin terpusat (di hub)
+
+Halaman-halaman:
+- **`/admin/sites`** — kelola 3 site (tambah/edit slug, forward URL, token, on/off). Form ini yang men-generate URL webhook yang harus dipaste user ke dashboard Mayar masing-masing akun.
+- **`/admin/transactions`** — tabel semua transaksi gabungan, filter by site, by kind, by status, search by email/invoice. Klik baris → lihat raw payload + forward log.
+- **`/admin/forward-logs`** — riwayat forward gagal, tombol "retry" manual.
+- **`/admin/dashboard`** — ringkasan: total transaksi 7 hari terakhir per site, total nominal paid, pie chart per kind.
+
+### 4. Auth admin
+Login standar Supabase + tabel `user_roles` (admin only) — pola yang sama seperti project sekarang.
 
 ---
 
-## Edge Functions
+## Yang dibangun di tiap PROJECT TUJUAN (A, B, C)
 
-### `create-donation`
-Input: `{ name, email, whatsapp?, amount, registration_id? }`
-Flow:
-1. Validasi input (zod).
-2. Cek setting `donation.enabled`, validasi amount range.
-3. Ambil `MAYAR_API_KEY` dari `site_settings.mayar_config` (service role).
-4. POST ke `https://api.mayar.id/hl/v1/invoice/create` dengan header `Authorization: Bearer <key>` dan body Mayar (name, email, amount, mobile, description, redirectUrl, expiredAt 24h).
-5. Insert row ke `donations` (status `pending`, simpan invoice id & link).
-6. Return `{ link }` ke client → client `window.location.href = link`.
+Tiap project tujuan tinggal punya **1 endpoint penerima** sederhana:
 
-### `mayar-webhook` (`/api/public/mayar-webhook` via edge function)
-- Verifikasi signature (Mayar mengirim header signature; kalau tidak ada, gunakan secret token unik di URL sebagai fallback).
-- Update `donations.status` jadi `paid` saat event `payment.received`.
+`/api/public/mayar-receive` — POST:
+- Verifikasi `Authorization: Bearer <forward_secret>` (dikirim hub)
+- Update tabel lokal (`subscriptions` / `donations` / `payments`) berdasarkan `reference_id` atau `mayar_invoice_id` di payload
+- Return 200
 
-URL webhook diisi user di dashboard Mayar.
+Untuk **project ini (Donasi)** yang sudah ada: cukup tambah endpoint `mayar-receive` baru atau modifikasi `mayar-webhook` yang ada agar terima dari hub (bukan langsung dari Mayar). Setting Mayar di project ini di-disable, diganti pointer ke hub.
 
 ---
 
-## File yang akan dibuat / diubah
+## Flow saat ada pembayaran masuk
 
-**Baru:**
-- `src/routes/pendaftaran.sukses.tsx`
-- `src/routes/donasi.terima-kasih.tsx`
-- `src/routes/admin.donasi.tsx`
-- `src/components/DonationCard.tsx`
-- `supabase/functions/create-donation/index.ts`
-- `supabase/functions/mayar-webhook/index.ts`
-- Migration: tabel `donations` + key `donation` & `mayar_config` di `site_settings`
-
-**Diubah:**
-- `src/components/RegistrationForm.tsx` — redirect ke `/pendaftaran/sukses` setelah submit
-- `src/components/admin/AdminSidebar.tsx` — tambah menu Donasi
-- `supabase/config.toml` — config edge function
+1. User bayar di Mayar untuk **Donasi** (akun Mayar B)
+2. Mayar POST ke `https://mayar-hub.lovable.app/api/public/mayar?site=siteB&token=xxx`
+3. Hub: verifikasi token → simpan ke `transactions` (site_slug=siteB, kind=donation)
+4. Hub: lookup `sites.forward_url` siteB → POST payload + `Bearer <forward_secret>` ke project Donasi
+5. Project Donasi: update tabel `donations.status = paid`
+6. Hub: simpan respons di `forward_logs`
+7. Admin buka `/admin/transactions` di hub → lihat transaksi baru muncul realtime
 
 ---
 
-## Hal yang perlu konfirmasi
+## Detail teknis (untuk referensi internal)
 
-1. **Penempatan donation card**: hanya di halaman sukses pendaftaran, atau juga di halaman "berkas terkirim"? (Rekomendasi: dua-duanya, tapi mulai dari sukses pendaftaran dulu.)
-2. **Penyimpanan API key**: setuju pakai `site_settings` dengan RLS admin-only (lebih praktis, tetap aman karena tidak ter-expose ke anon)? Atau mau pakai Lovable Cloud secret (lebih aman tapi update key harus lewat dialog secret manual)?
-3. **Webhook Mayar**: aktifkan sekarang (perlu user setup webhook URL di dashboard Mayar) atau cukup andalkan redirect success dulu?
+- **Stack hub:** sama dengan project ini — TanStack Start + Lovable Cloud (Supabase) + shadcn.
+- **Endpoint webhook** pakai server route `/api/public/*` (bypass auth, aman karena ada token check).
+- **Forward retry:** versi awal: hub retry 3x dengan exponential backoff dalam request handler. Versi lanjut: pakai pg_cron untuk retry `forward_logs` yang gagal.
+- **Realtime dashboard:** Supabase Realtime pada tabel `transactions`.
+- **Storage payload:** kolom `raw_payload jsonb` — full payload Mayar disimpan untuk audit & re-process.
+- **Idempotency:** unique index `(site_slug, mayar_invoice_id, event_type)` untuk cegah duplicate insert kalau Mayar retry.
+
+---
+
+## Perubahan di project Donasi (yang sekarang)
+
+Minimal:
+- Webhook `mayar-webhook` di-update agar bisa terima dari hub: cek `Authorization: Bearer <forward_secret>` selain token query lama (back-compat).
+- Di Mayar dashboard akun donasi, ganti URL webhook ke URL hub.
+- Field `webhook_token` di admin sekarang bisa dipakai sebagai `forward_secret` (token antara hub→project).
+
+---
+
+## Trade-off & risiko
+
+**✅ Untung:**
+- 1 panel pantau semua transaksi 3 bisnis
+- 1 codebase webhook → bug fix sekali
+- Audit log lengkap (raw payload + forward log)
+- Mudah tambah site ke-4 nanti (cukup insert row di `sites`)
+
+**⚠️ Hati-hati:**
+- Hub jadi **single point of failure**. Mitigasi: Lovable Cloud uptime tinggi + Mayar biasanya retry kalau webhook timeout.
+- Setiap Mayar webhook tetap perlu disetting per akun (3x setting URL di Mayar) — ini batasan Mayar, bukan kita.
+- Latency tambah ~200ms (Mayar → Hub → Project). Tidak masalah untuk webhook.
+
+---
+
+## Pertanyaan terakhir sebelum eksekusi
+
+Karena ini **project Lovable baru**, langkah selanjutnya:
+
+1. **Saya tidak bisa bikin project baru otomatis dari sini** — kamu perlu klik "+ New Project" di sidebar Lovable, namai (misal `mayar-hub`), aktifkan Lovable Cloud, lalu di chat pertama project itu, paste plan ini & saya bangun di sana.
+2. Setelah hub jadi, balik ke project Donasi ini, saya update webhook handler-nya agar terima dari hub.
+
+Mau lanjut dengan flow ini? Atau ada bagian arsitektur yang mau diubah dulu (misal mau dashboard pantaunya **di project ini** saja, bukan project terpisah)?
