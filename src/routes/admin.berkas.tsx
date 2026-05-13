@@ -286,7 +286,14 @@ function AdminBerkas() {
             </TableHeader>
             <TableBody>
               {grouped.map((g) => (
-                <TableRow key={g.key} className="align-top">
+                <TableRow key={g.key} className="align-top" data-state={selected.has(g.key) ? "selected" : undefined}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selected.has(g.key)}
+                      onCheckedChange={() => toggleOne(g.key)}
+                      aria-label="Pilih baris"
+                    />
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 font-medium">
                       <User className="h-4 w-4 text-primary shrink-0" />
