@@ -41,6 +41,7 @@ import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminDonasiRouteImport } from './routes/admin.donasi'
 import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
 import { Route as AdminArtikelRouteImport } from './routes/admin.artikel'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminAdsenseRouteImport } from './routes/admin.adsense'
 import { Route as BerkasPrestasiIndexRouteImport } from './routes/berkas.prestasi.index'
 import { Route as BerkasEkonomiIndexRouteImport } from './routes/berkas.ekonomi.index'
@@ -209,6 +210,11 @@ const AdminArtikelRoute = AdminArtikelRouteImport.update({
   path: '/artikel',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAdsenseRoute = AdminAdsenseRouteImport.update({
   id: '/adsense',
   path: '/adsense',
@@ -256,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/artikel': typeof AdminArtikelRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/donasi': typeof AdminDonasiRoute
@@ -296,6 +303,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/artikel': typeof AdminArtikelRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/donasi': typeof AdminDonasiRoute
@@ -336,6 +344,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/artikel': typeof AdminArtikelRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/donasi': typeof AdminDonasiRoute
@@ -379,6 +388,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/tentang'
     | '/admin/adsense'
+    | '/admin/analytics'
     | '/admin/artikel'
     | '/admin/berkas'
     | '/admin/donasi'
@@ -419,6 +429,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/tentang'
     | '/admin/adsense'
+    | '/admin/analytics'
     | '/admin/artikel'
     | '/admin/berkas'
     | '/admin/donasi'
@@ -458,6 +469,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/tentang'
     | '/admin/adsense'
+    | '/admin/analytics'
     | '/admin/artikel'
     | '/admin/berkas'
     | '/admin/donasi'
@@ -740,6 +752,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminArtikelRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/adsense': {
       id: '/admin/adsense'
       path: '/adsense'
@@ -794,6 +813,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAdsenseRoute: typeof AdminAdsenseRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminArtikelRoute: typeof AdminArtikelRoute
   AdminBerkasRoute: typeof AdminBerkasRoute
   AdminDonasiRoute: typeof AdminDonasiRoute
@@ -810,6 +830,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAdsenseRoute: AdminAdsenseRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminArtikelRoute: AdminArtikelRoute,
   AdminBerkasRoute: AdminBerkasRoute,
   AdminDonasiRoute: AdminDonasiRoute,

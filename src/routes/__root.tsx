@@ -15,6 +15,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { AdSettingsProvider, AdsenseLoader } from "@/components/ads/AdSettings";
 import { CustomCodeInjector } from "@/components/CustomCodeInjector";
+import { AnalyticsInjector } from "@/components/AnalyticsInjector";
 
 function NotFoundComponent() {
   return (
