@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
-import { CheckCircle2, ArrowRight, Heart, FileUp, KeyRound, Copy, Check } from "lucide-react";
+import { CheckCircle2, ArrowRight, Heart, FileUp, KeyRound, Copy, Check, Share2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { DonationCard } from "@/components/DonationCard";
