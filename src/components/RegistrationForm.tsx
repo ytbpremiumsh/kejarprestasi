@@ -29,20 +29,32 @@ function serializeError(err: unknown): string {
   if (err instanceof Error) return err.message || err.name || "Error";
   if (typeof err === "object") {
     const e = err as Record<string, unknown>;
-    const parts = [e.message, e.error_description, e.error, e.details, e.hint, e.code]
-      .filter((v) => typeof v === "string" && v.length > 0);
+    const parts = [e.message, e.error_description, e.error, e.details, e.hint, e.code].filter(
+      (v) => typeof v === "string" && v.length > 0,
+    );
     if (parts.length > 0) return parts.join(" — ");
-    try { return JSON.stringify(err); } catch { return "Error"; }
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return "Error";
+    }
   }
   return String(err);
 }
 
 function validate(field: FormField, value: unknown): string | null {
-  if (field.required && (value === "" || value == null || (Array.isArray(value) && value.length === 0))) {
+  if (
+    field.required &&
+    (value === "" || value == null || (Array.isArray(value) && value.length === 0))
+  ) {
     return `${field.label} wajib diisi`;
   }
   if (!value) return null;
-  if (field.type === "email" && typeof value === "string" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+  if (
+    field.type === "email" &&
+    typeof value === "string" &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+  ) {
     return "Email tidak valid";
   }
   if (field.type === "tel" && typeof value === "string" && !/^[+\d\s-]{6,25}$/.test(value)) {
@@ -136,7 +148,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       const extra: Record<string, unknown> = {};
       for (const f of schema.fields) {
         const isFile = f.type === "file";
-        const v = isFile ? fileUrls[f.name] ?? null : values[f.name] ?? "";
+        const v = isFile ? (fileUrls[f.name] ?? null) : (values[f.name] ?? "");
         if (f.standard && STANDARD_REG_COLUMNS.has(f.name)) {
           if (f.name === "dependents") payload[f.name] = v ? Number(v) : null;
           else payload[f.name] = v || null;
@@ -145,7 +157,18 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
         }
       }
       // Required-by-DB fallbacks (NOT NULL columns)
-      for (const k of ["full_name", "birth_place", "birth_date", "gender", "address", "whatsapp", "email", "education_level", "school_name", "grade"]) {
+      for (const k of [
+        "full_name",
+        "birth_place",
+        "birth_date",
+        "gender",
+        "address",
+        "whatsapp",
+        "email",
+        "education_level",
+        "school_name",
+        "grade",
+      ]) {
         if (payload[k] == null) payload[k] = "";
       }
       payload.extra = extra;
@@ -154,17 +177,23 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
       // Fire-and-forget WA notification (include token)
       try {
-        supabase.functions.invoke("send-whatsapp", {
-          body: {
-            type: "pendaftaran",
-            full_name: String(payload.full_name ?? ""),
-            email: String(payload.email ?? ""),
-            whatsapp: String(payload.whatsapp ?? ""),
-            kind,
-            token,
-          },
-        }).catch(() => { /* ignore */ });
-      } catch { /* ignore */ }
+        supabase.functions
+          .invoke("send-whatsapp", {
+            body: {
+              type: "pendaftaran",
+              full_name: String(payload.full_name ?? ""),
+              email: String(payload.email ?? ""),
+              whatsapp: String(payload.whatsapp ?? ""),
+              kind,
+              token,
+            },
+          })
+          .catch(() => {
+            /* ignore */
+          });
+      } catch {
+        /* ignore */
+      }
 
       // Fire-and-forget email confirmation with token
       try {
@@ -182,9 +211,13 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
                 whatsapp: String(payload.whatsapp ?? ""),
               },
             },
-          }).catch(() => { /* ignore */ });
+          }).catch(() => {
+            /* ignore */
+          });
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
 
       toast.success("Pendaftaran berhasil dikirim!");
       setValues({});
@@ -239,7 +272,9 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
 
   return (
     <section className="container-page py-12 md:py-16">
-      <Link to="/" className="text-xs font-semibold text-primary hover:underline">← Kembali ke Beranda</Link>
+      <Link to="/" className="text-xs font-semibold text-primary hover:underline">
+        ← Kembali ke Beranda
+      </Link>
       <div className="mt-4 max-w-3xl">
         <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
           {isPrestasi ? "Beasiswa Prestasi" : "Beasiswa Ekonomi"}
@@ -295,7 +330,9 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
                 "Email & WhatsApp aktif",
                 "Tidak dipungut biaya apapun",
               ].map((t) => (
-                <li key={t} className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}</li>
+                <li key={t} className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="mt-0.5 text-primary shrink-0" /> {t}
+                </li>
               ))}
             </ul>
           </div>
@@ -304,7 +341,15 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
             disabled={submitting}
             className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition disabled:opacity-60"
           >
-            {submitting ? <><Loader2 size={16} className="animate-spin" /> Mengirim…</> : <>Kirim Pendaftaran <ArrowRight size={16} /></>}
+            {submitting ? (
+              <>
+                <Loader2 size={16} className="animate-spin" /> Mengirim…
+              </>
+            ) : (
+              <>
+                Kirim Pendaftaran <ArrowRight size={16} />
+              </>
+            )}
           </button>
           <p className="text-[11px] text-muted-foreground text-center">
             Pastikan seluruh data sudah benar sebelum mengirim.
@@ -326,9 +371,17 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 }
 
 function FieldRenderer({
-  field, value, onChange, error, fullWidth,
+  field,
+  value,
+  onChange,
+  error,
+  fullWidth,
 }: {
-  field: FormField; value: string; onChange: (v: string) => void; error?: string; fullWidth?: boolean;
+  field: FormField;
+  value: string;
+  onChange: (v: string) => void;
+  error?: string;
+  fullWidth?: boolean;
 }) {
   const cls = `w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-primary/30 ${error ? "border-destructive" : "border-border focus:border-primary"}`;
 
@@ -340,15 +393,35 @@ function FieldRenderer({
       </span>
       <div className="mt-1.5">
         {field.type === "textarea" ? (
-          <textarea rows={3} value={value} onChange={(e) => onChange(e.target.value)} placeholder={field.placeholder} className={cls} />
+          <textarea
+            rows={3}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={field.placeholder}
+            className={cls}
+          />
         ) : field.type === "select" ? (
           <select value={value} onChange={(e) => onChange(e.target.value)} className={cls}>
             <option value="">Pilih…</option>
-            {(field.options ?? []).map((o) => <option key={o} value={o}>{o}</option>)}
+            {(field.options ?? []).map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
           </select>
         ) : (
           <input
-            type={field.type === "number" ? "number" : field.type === "date" ? "date" : field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text"}
+            type={
+              field.type === "number"
+                ? "number"
+                : field.type === "date"
+                  ? "date"
+                  : field.type === "email"
+                    ? "email"
+                    : field.type === "tel"
+                      ? "tel"
+                      : "text"
+            }
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={field.placeholder}
@@ -362,9 +435,15 @@ function FieldRenderer({
 }
 
 function FileFieldRenderer({
-  field, file, onChange, error,
+  field,
+  file,
+  onChange,
+  error,
 }: {
-  field: FormField; file: File | null; onChange: (f: File | null) => void; error?: string;
+  field: FormField;
+  file: File | null;
+  onChange: (f: File | null) => void;
+  error?: string;
 }) {
   return (
     <label className="block">
@@ -372,7 +451,9 @@ function FileFieldRenderer({
         {field.label}
         {field.required && <span className="text-destructive"> *</span>}
       </span>
-      <div className={`mt-1.5 flex items-center gap-3 rounded-xl border border-dashed bg-background px-3.5 py-3 hover:border-primary transition cursor-pointer ${error ? "border-destructive" : "border-border"}`}>
+      <div
+        className={`mt-1.5 flex items-center gap-3 rounded-xl border border-dashed bg-background px-3.5 py-3 hover:border-primary transition cursor-pointer ${error ? "border-destructive" : "border-border"}`}
+      >
         <UploadCloud size={18} className="text-primary shrink-0" />
         <input
           type="file"
@@ -381,7 +462,11 @@ function FileFieldRenderer({
           onChange={(e) => onChange(e.target.files?.[0] ?? null)}
         />
       </div>
-      {file && <span className="mt-1 block text-[11px] text-muted-foreground">{file.name} · {(file.size / 1024 / 1024).toFixed(2)}MB</span>}
+      {file && (
+        <span className="mt-1 block text-[11px] text-muted-foreground">
+          {file.name} · {(file.size / 1024 / 1024).toFixed(2)}MB
+        </span>
+      )}
       {error && <span className="mt-1 block text-[11px] text-destructive">{error}</span>}
     </label>
   );
