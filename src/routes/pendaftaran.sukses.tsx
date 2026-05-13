@@ -69,17 +69,18 @@ function SuksesPage() {
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
               <KeyRound size={14} /> Kode Pendaftar Anda
             </div>
-            <div className="mt-3 flex items-center gap-3">
-              <div className="flex-1 rounded-xl bg-card border-2 border-dashed border-primary/40 px-4 py-4 font-mono text-2xl md:text-3xl font-extrabold tracking-[0.2em] text-foreground text-center select-all break-all">
+            <div className="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="flex-1 min-w-0 rounded-xl bg-card border-2 border-dashed border-primary/40 px-3 py-3 sm:px-4 sm:py-4 font-mono text-lg sm:text-2xl md:text-3xl font-extrabold tracking-[0.1em] sm:tracking-[0.2em] text-foreground text-center select-all break-all leading-tight">
                 {token}
               </div>
               <button
                 type="button"
                 onClick={copy}
-                className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition"
+                className="inline-flex h-11 sm:h-12 w-full sm:w-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition text-sm font-semibold"
                 aria-label="Salin kode"
               >
                 {copied ? <Check size={18} /> : <Copy size={18} />}
+                <span className="sm:hidden">{copied ? "Tersalin" : "Salin Kode"}</span>
               </button>
             </div>
             <div className="mt-4 rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:border-amber-900/40 dark:text-amber-200">
