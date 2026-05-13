@@ -74,6 +74,7 @@ Deno.serve(async (req) => {
       data: {
         id: data.id,
         full_name: data.full_name,
+        email: data.email,
         whatsapp: maskWa(data.whatsapp || ""),
         school_name: data.school_name,
         education_level: data.education_level,
