@@ -75,7 +75,8 @@ async function handleWebhook(request: Request) {
 
     const rawPhone = pickRawPhone(payload);
     const phone = normalizeNumber(rawPhone ?? "");
-    const text = pickText(payload) ?? mediaFallbackText(payload);
+    const mediaText = mediaFallbackText(payload);
+    const text = pickText(payload) ?? mediaText;
     const contactName = pickName(payload);
 
     if (isFromMe(payload)) return json({ ok: true, ignored: "from_me" });
@@ -107,6 +108,23 @@ async function handleWebhook(request: Request) {
 
     if (!behavior.enabled || !behavior.wa_auto_reply) {
       return json({ ok: true, replied: false, reason: "auto_reply_off" });
+    }
+
+    if (mediaText) {
+      const reply = mediaDirectReply();
+      const sendRes = await sendWA(db, phone, reply);
+
+      await db.from("wa_chat_messages").insert({
+        phone,
+        contact_name: contactName,
+        direction: "out",
+        message: reply,
+        ai_used: false,
+        status: sendRes.ok ? "sent" : "failed",
+        raw: { send_result: sendRes, media_auto_reply: true },
+      });
+
+      return json({ ok: true, replied: true, sent: sendRes.ok, send_error: sendRes.error, media_auto_reply: true });
     }
 
     const [{ data: kbRows }, provider] = await Promise.all([
@@ -209,6 +227,10 @@ function pickText(payload: AnyRecord): string | null {
 function mediaFallbackText(payload: AnyRecord): string | null {
   if (!hasMediaPayload(payload)) return null;
   return "Peserta mengirim gambar/screenshot bukti share poster Beasiswa Kejar Prestasi melalui WhatsApp/Instagram/Grup WA. Balas dengan ucapan terima kasih karena bukti share poster sudah dikirim, lalu arahkan peserta untuk lanjut ke tahapan Pengiriman Berkas di www.kejarprestasi.id dengan Kode Token dan format PDF atau JPG.";
+}
+
+function mediaDirectReply(): string {
+  return "Terima kasih Kak, bukti share poster sudah kami terima. 🙏\n\nKakak bisa langsung melanjutkan ke tahapan berikutnya yaitu Pengiriman Berkas melalui www.kejarprestasi.id.\n\nSilakan pilih menu Kirim Berkas, lalu masukkan Kode Token yang Kakak terima saat pendaftaran. Format file yang diterima hanya PDF atau JPG ya Kak.";
 }
 
 function hasMediaPayload(payload: AnyRecord): boolean {
