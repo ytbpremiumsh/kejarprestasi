@@ -232,6 +232,21 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
           /* ignore */
         });
 
+      // Fire-and-forget email confirmation
+      sendEmail({
+        data: {
+          templateName: "berkas-confirmation",
+          recipientEmail: regEmail,
+          idempotencyKey: `berkas-${registrant.token ?? token}-${result.count}`,
+          templateData: {
+            fullName: registrant.full_name,
+            token: registrant.token ?? token,
+            kind,
+            count: result.count,
+          },
+        },
+      }).catch(() => { /* ignore */ });
+
       toast.success("Berkas berhasil dikirim!");
       navigate({ to: "/berkas/terkirim", search: { kind, count: result.count } });
     } catch (err) {
