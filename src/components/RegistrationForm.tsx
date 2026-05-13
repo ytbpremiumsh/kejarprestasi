@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -38,6 +38,7 @@ function validate(field: FormField, value: unknown): string | null {
 }
 
 export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
+  const navigate = useNavigate();
   const [schema, setSchema] = useState<FormSchema>(FALLBACK[kind]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -147,6 +148,15 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       toast.success("Pendaftaran berhasil dikirim!");
       setValues({});
       setFiles({});
+      navigate({
+        to: "/pendaftaran/sukses",
+        search: {
+          name: String(payload.full_name ?? ""),
+          email: String(payload.email ?? ""),
+          whatsapp: String(payload.whatsapp ?? ""),
+          kind,
+        },
+      });
     } catch (err) {
       console.error(err);
       toast.error("Gagal mengirim pendaftaran. Silakan coba lagi.");

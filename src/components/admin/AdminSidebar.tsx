@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   ChevronRight,
   Trophy,
+  Heart,
 } from "lucide-react";
 import {
   Sidebar,
@@ -52,6 +53,7 @@ const groups: { label: string; items: Item[] }[] = [
     items: [
       { title: "Pengaturan", url: "/admin/pengaturan", icon: Settings },
       { title: "WhatsApp", url: "/admin/whatsapp", icon: MessageCircle },
+      { title: "Donasi", url: "/admin/donasi", icon: Heart },
       { title: "AdSense", url: "/admin/adsense", icon: Megaphone },
       { title: "Kode & Performa", url: "/admin/kode-kustom", icon: Code2 },
     ],

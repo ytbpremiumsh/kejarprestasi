@@ -106,6 +106,51 @@ export type Database = {
           },
         ]
       }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string
+          email: string
+          id: string
+          mayar_invoice_id: string | null
+          mayar_link: string | null
+          name: string
+          paid_at: string | null
+          registration_id: string | null
+          status: Database["public"]["Enums"]["donation_status"]
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          email: string
+          id?: string
+          mayar_invoice_id?: string | null
+          mayar_link?: string | null
+          name: string
+          paid_at?: string | null
+          registration_id?: string | null
+          status?: Database["public"]["Enums"]["donation_status"]
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          email?: string
+          id?: string
+          mayar_invoice_id?: string | null
+          mayar_link?: string | null
+          name?: string
+          paid_at?: string | null
+          registration_id?: string | null
+          status?: Database["public"]["Enums"]["donation_status"]
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       registrations: {
         Row: {
           address: string
@@ -240,6 +285,7 @@ export type Database = {
       app_role: "admin" | "moderator" | "user"
       candidate_status: "pending" | "approved" | "rejected"
       doc_review_status: "pending" | "approved" | "rejected"
+      donation_status: "pending" | "paid" | "failed" | "expired"
       registration_status: "pending" | "verified" | "approved" | "rejected"
       scholarship_kind: "prestasi" | "ekonomi"
     }
@@ -372,6 +418,7 @@ export const Constants = {
       app_role: ["admin", "moderator", "user"],
       candidate_status: ["pending", "approved", "rejected"],
       doc_review_status: ["pending", "approved", "rejected"],
+      donation_status: ["pending", "paid", "failed", "expired"],
       registration_status: ["pending", "verified", "approved", "rejected"],
       scholarship_kind: ["prestasi", "ekonomi"],
     },

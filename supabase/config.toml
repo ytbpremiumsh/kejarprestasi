@@ -11,3 +11,9 @@ verify_jwt = true
 
 [functions.lookup-pendaftar]
 verify_jwt = false
+
+[functions.create-donation]
+verify_jwt = false
+
+[functions.mayar-webhook]
+verify_jwt = false
