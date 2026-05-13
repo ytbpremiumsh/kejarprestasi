@@ -27,6 +27,7 @@ type Registration = {
   grade: string;
   kind: "prestasi" | "ekonomi";
   status: "pending" | "approved" | "rejected";
+  token?: string | null;
   parent_income: string | null;
   dependents: number | null;
   main_achievement: string | null;
