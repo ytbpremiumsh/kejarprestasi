@@ -156,7 +156,7 @@ function AdminBerkas() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [docs, regs, filterKind, filterStatus, q]);
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
     const data = docs.map((d) => {
       const r = findReg(d);
       return {
