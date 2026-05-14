@@ -5,7 +5,6 @@ import {
   FileEdit,
   FileText,
   FolderArchive,
-  Settings,
   Megaphone,
   Code2,
   MessageCircle,
@@ -18,6 +17,7 @@ import {
   Globe,
   BarChart3,
   Zap,
+  CalendarClock,
 } from "lucide-react";
 import {
   Sidebar,
@@ -44,43 +44,48 @@ const groups: { label: string; items: Item[] }[] = [
     ],
   },
   {
-    label: "Pendaftaran",
+    label: "Pendaftaran Beasiswa",
     items: [
-      { title: "Pendaftar", url: "/admin/pendaftar", icon: Users },
-      { title: "Pengiriman Berkas", url: "/admin/berkas", icon: FolderArchive },
-      { title: "Kandidat Lolos", url: "/admin/kandidat", icon: Trophy },
+      { title: "Data Pendaftar", url: "/admin/pendaftar", icon: Users },
+      { title: "Berkas Masuk", url: "/admin/berkas", icon: FolderArchive },
+      { title: "Kandidat Lolos Berkas", url: "/admin/kandidat", icon: Trophy },
     ],
   },
   {
-    label: "Konten & Formulir",
+    label: "Konten Website",
     items: [
-      { title: "Artikel", url: "/admin/artikel", icon: FileText },
-      { title: "Formulir", url: "/admin/formulir", icon: FileEdit },
+      { title: "Artikel & Berita", url: "/admin/artikel", icon: FileText },
+      { title: "Soal Formulir Pendaftaran", url: "/admin/formulir", icon: FileEdit },
+      { title: "Countdown & Tahapan Seleksi", url: "/admin/pengaturan", icon: CalendarClock },
     ],
   },
   {
-    label: "Komunikasi & Donasi",
+    label: "WhatsApp & Donasi",
     items: [
-      { title: "WhatsApp", url: "/admin/whatsapp", icon: MessageCircle },
-      { title: "Balasan AI", url: "/admin/ai-balasan", icon: Bot },
-      { title: "Donasi", url: "/admin/donasi", icon: Heart },
+      { title: "Pesan WhatsApp", url: "/admin/whatsapp", icon: MessageCircle },
+      { title: "Auto-Reply AI WhatsApp", url: "/admin/ai-balasan", icon: Bot },
+      { title: "Donasi Masuk", url: "/admin/donasi", icon: Heart },
     ],
   },
   {
-    label: "Integrasi & Pengaturan",
+    label: "Iklan & Kode Kustom",
     items: [
-      { title: "Pengaturan Situs", url: "/admin/pengaturan", icon: Settings },
-      { title: "Keamanan (2FA)", url: "/admin/keamanan", icon: ShieldCheck },
-      { title: "AdSense", url: "/admin/adsense", icon: Megaphone },
-      { title: "Kode & Performa", url: "/admin/kode-kustom", icon: Code2 },
+      { title: "Google AdSense", url: "/admin/adsense", icon: Megaphone },
+      { title: "Kode Kustom (HTML/JS)", url: "/admin/kode-kustom", icon: Code2 },
+    ],
+  },
+  {
+    label: "Sistem & Keamanan",
+    items: [
+      { title: "Login 2 Langkah (2FA)", url: "/admin/keamanan", icon: ShieldCheck },
       { title: "Bersihkan Cache", url: "/admin/cache", icon: Zap },
     ],
   },
   {
-    label: "Dokumentasi",
+    label: "Panduan Instalasi",
     items: [
-      { title: "Instalasi VPS", url: "/admin/instalasi/vps", icon: Server },
-      { title: "Instalasi Hosting", url: "/admin/instalasi/hosting", icon: Globe },
+      { title: "Install di VPS", url: "/admin/instalasi/vps", icon: Server },
+      { title: "Install di Hosting", url: "/admin/instalasi/hosting", icon: Globe },
     ],
   },
 ];
