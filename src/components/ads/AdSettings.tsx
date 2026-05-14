@@ -7,13 +7,31 @@ export type AdSenseConfig = {
   ads_txt: string;
 };
 
+export type AdPosition =
+  | "top_of_page"
+  | "bottom_of_page"
+  | "before_each_image"
+  | "after_each_image"
+  | "before_each_heading"
+  | "after_each_heading"
+  | "after_each_paragraph"
+  | "between_sections";
+
 export type AdSlotConfig = {
   id: string;
   name: string;
-  slot_id: string;
-  placement: string;
-  format: "auto" | "horizontal" | "rectangle" | "vertical";
+  /** Full ad HTML/script snippet (e.g. <ins class="adsbygoogle" .../> + <script>(adsbygoogle=...).push({})</script>) */
+  code: string;
+  position: AdPosition;
+  /** Inject only on every Nth matching node (default 1 = every match) */
+  every_nth?: number;
+  /** Cap how many times this slot is injected per page (default 3) */
+  max_per_page?: number;
   enabled: boolean;
+  // Legacy fields (kept optional so old data still parses; ignored at runtime)
+  slot_id?: string;
+  placement?: string;
+  format?: "auto" | "horizontal" | "rectangle" | "vertical";
 };
 
 type Ctx = {
