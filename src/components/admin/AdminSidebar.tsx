@@ -5,7 +5,6 @@ import {
   FileEdit,
   FileText,
   FolderArchive,
-  Settings,
   Megaphone,
   Code2,
   MessageCircle,
@@ -18,6 +17,7 @@ import {
   Globe,
   BarChart3,
   Zap,
+  CalendarClock,
 } from "lucide-react";
 import {
   Sidebar,
