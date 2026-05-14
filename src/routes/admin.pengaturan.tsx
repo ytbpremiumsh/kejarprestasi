@@ -93,9 +93,9 @@ function AdminSettings() {
     <div className="space-y-6">
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Countdown & Tahapan Seleksi</h1>
+          <h1 className="text-2xl font-bold text-foreground">Pengaturan Halaman</h1>
           <p className="text-sm text-muted-foreground">
-            Atur hitung mundur penutupan pendaftaran dan jadwal tahapan seleksi yang tampil di halaman utama (landing page).
+            Atur countdown pendaftaran dan tanggal tahapan seleksi yang tampil di halaman utama.
           </p>
         </div>
         <Button onClick={save} disabled={saving}>
