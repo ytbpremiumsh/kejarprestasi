@@ -16,59 +16,33 @@ import {
 } from "@/components/ui/select";
 import { Loader2, Plus, Trash2, Save, Megaphone } from "lucide-react";
 import { toast } from "sonner";
+import type { AdPosition, AdSlotConfig } from "@/components/ads/AdSettings";
 
 export const Route = createFileRoute("/admin/adsense")({
   component: AdminAdsense,
 });
 
 type AdSenseConfig = { enabled: boolean; publisher_id: string; ads_txt: string };
-type AdSlot = {
-  id: string;
-  name: string;
-  slot_id: string;
-  placement: string;
-  format: "auto" | "horizontal" | "rectangle" | "vertical";
-  enabled: boolean;
-};
 
-const PLACEMENTS = [
-  { value: "header_top", label: "Global — Bawah Header (semua halaman)" },
-  { value: "footer_top", label: "Global — Atas Footer (semua halaman)" },
-  { value: "after_hero", label: "Beranda — Setelah Hero" },
-  { value: "after_categories", label: "Beranda — Setelah Kategori" },
-  { value: "after_benefits", label: "Beranda — Setelah Benefit" },
-  { value: "after_alumni", label: "Beranda — Setelah Peraih Beasiswa" },
-  { value: "after_faq", label: "Beranda — Setelah FAQ" },
-  { value: "category_middle", label: "Halaman Kategori — Tengah" },
-  { value: "category_bottom", label: "Halaman Kategori — Bawah" },
-  { value: "article_list_top", label: "Daftar Artikel — Atas" },
-  { value: "article_list_bottom", label: "Daftar Artikel — Bawah" },
-  { value: "in_article_top", label: "Detail Artikel — Atas (high CPC)" },
-  { value: "in_article_middle", label: "Detail Artikel — Tengah (high CPC)" },
-  { value: "in_article_bottom", label: "Detail Artikel — Bawah" },
-  { value: "form_top", label: "Form Pendaftaran — Atas" },
-  { value: "form_bottom", label: "Form Pendaftaran — Bawah" },
-  { value: "berkas_top", label: "Halaman Berkas — Atas" },
-  { value: "berkas_bottom", label: "Halaman Berkas — Bawah" },
-  { value: "share_top", label: "Bagikan Poster — Atas" },
-  { value: "share_bottom", label: "Bagikan Poster — Bawah" },
-  { value: "tentang_middle", label: "Tentang — Tengah" },
+const POSITIONS: { value: AdPosition; label: string }[] = [
+  { value: "top_of_page", label: "Atas halaman (semua halaman)" },
+  { value: "bottom_of_page", label: "Bawah halaman (semua halaman)" },
+  { value: "before_each_image", label: "Sebelum setiap gambar" },
+  { value: "after_each_image", label: "Sesudah setiap gambar" },
+  { value: "before_each_heading", label: "Sebelum setiap judul (H2/H3)" },
+  { value: "after_each_heading", label: "Sesudah setiap judul (H2/H3)" },
+  { value: "after_each_paragraph", label: "Sesudah setiap paragraf" },
+  { value: "between_sections", label: "Di antara setiap section" },
 ];
 
-const FORMATS = [
-  { value: "auto", label: "Responsif (auto)" },
-  { value: "horizontal", label: "Horizontal (728x90)" },
-  { value: "rectangle", label: "Rectangle (336x280)" },
-  { value: "vertical", label: "Vertical (160x600)" },
-];
-
-function newSlot(): AdSlot {
+function newSlot(): AdSlotConfig {
   return {
     id: crypto.randomUUID(),
     name: "Slot Baru",
-    slot_id: "",
-    placement: "after_hero",
-    format: "auto",
+    code: "",
+    position: "after_each_paragraph",
+    every_nth: 3,
+    max_per_page: 3,
     enabled: true,
   };
 }
@@ -81,7 +55,7 @@ function AdminAdsense() {
     publisher_id: "",
     ads_txt: "",
   });
-  const [slots, setSlots] = useState<AdSlot[]>([]);
+  const [slots, setSlots] = useState<AdSlotConfig[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -90,15 +64,27 @@ function AdminAdsense() {
         .select("key,value")
         .in("key", ["adsense", "ad_slots"]);
       const a = data?.find((d) => d.key === "adsense")?.value as AdSenseConfig | undefined;
-      const s = data?.find((d) => d.key === "ad_slots")?.value as AdSlot[] | undefined;
+      const s = data?.find((d) => d.key === "ad_slots")?.value as AdSlotConfig[] | undefined;
       if (a) setAdsense(a);
-      if (Array.isArray(s)) setSlots(s.map((x) => ({ ...x, id: x.id || crypto.randomUUID() })));
+      if (Array.isArray(s)) {
+        setSlots(
+          s.map((x) => ({
+            id: x.id || crypto.randomUUID(),
+            name: x.name || "Slot",
+            code: x.code || "",
+            position: (x.position as AdPosition) || "after_each_paragraph",
+            every_nth: x.every_nth ?? 3,
+            max_per_page: x.max_per_page ?? 3,
+            enabled: x.enabled ?? true,
+          })),
+        );
+      }
       setLoading(false);
     };
     load();
   }, []);
 
-  const updateSlot = (i: number, patch: Partial<AdSlot>) =>
+  const updateSlot = (i: number, patch: Partial<AdSlotConfig>) =>
     setSlots((arr) => arr.map((x, idx) => (idx === i ? { ...x, ...patch } : x)));
 
   const removeSlot = (i: number) => setSlots((arr) => arr.filter((_, idx) => idx !== i));
@@ -116,7 +102,7 @@ function AdminAdsense() {
         .from("site_settings")
         .upsert(
           { key: "adsense", value: { ...adsense, publisher_id: pid } },
-          { onConflict: "key" }
+          { onConflict: "key" },
         );
       if (e1) throw e1;
       const { error: e2 } = await supabase
@@ -148,7 +134,7 @@ function AdminAdsense() {
             <Megaphone className="h-6 w-6 text-primary" /> Quick AdSense
           </h1>
           <p className="text-sm text-muted-foreground">
-            Aktifkan Google AdSense, kelola publisher ID, ads.txt, dan slot iklan tanpa coding.
+            Aktifkan Google AdSense, kelola publisher ID, ads.txt, dan slot iklan otomatis ke seluruh halaman.
           </p>
         </div>
         <Button onClick={save} disabled={saving}>
@@ -200,9 +186,10 @@ function AdminAdsense() {
       <Card className="p-6 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Slot Iklan</h2>
+            <h2 className="text-lg font-semibold text-foreground">Slot Iklan Otomatis</h2>
             <p className="text-xs text-muted-foreground">
-              Tambahkan unit iklan dan tentukan posisinya. Slot yang nonaktif tidak ditampilkan.
+              Tempel kode iklan lengkap dari AdSense (tag <code>&lt;ins&gt;</code> + <code>&lt;script&gt;</code>),
+              pilih posisi otomatisnya, dan iklan akan tampil di seluruh halaman publik.
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={() => setSlots((s) => [...s, newSlot()])}>
@@ -242,42 +229,56 @@ function AdminAdsense() {
                   <Input value={s.name} onChange={(e) => updateSlot(i, { name: e.target.value })} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Slot ID (data-ad-slot)</Label>
-                  <Input
-                    placeholder="1234567890"
-                    value={s.slot_id}
-                    onChange={(e) => updateSlot(i, { slot_id: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Penempatan</Label>
-                  <Select value={s.placement} onValueChange={(v) => updateSlot(i, { placement: v })}>
+                  <Label className="text-xs">Posisi otomatis</Label>
+                  <Select
+                    value={s.position}
+                    onValueChange={(v) => updateSlot(i, { position: v as AdPosition })}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {PLACEMENTS.map((p) => (
+                      {POSITIONS.map((p) => (
                         <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Format</Label>
-                  <Select
-                    value={s.format}
-                    onValueChange={(v) => updateSlot(i, { format: v as AdSlot["format"] })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {FORMATS.map((f) => (
-                        <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-xs">Setiap ke-berapa? (untuk posisi berulang)</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={s.every_nth ?? 1}
+                    onChange={(e) => updateSlot(i, { every_nth: Math.max(1, Number(e.target.value) || 1) })}
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Contoh: 3 = setiap paragraf/gambar/heading ke-3.
+                  </p>
                 </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Maksimal per halaman</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={s.max_per_page ?? 3}
+                    onChange={(e) => updateSlot(i, { max_per_page: Math.max(1, Number(e.target.value) || 1) })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs">Kode iklan lengkap (HTML + script)</Label>
+                <Textarea
+                  rows={6}
+                  className="font-mono text-xs"
+                  placeholder={`<ins class="adsbygoogle"\n     style="display:block"\n     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"\n     data-ad-slot="1234567890"\n     data-ad-format="auto"\n     data-full-width-responsive="true"></ins>\n<script>\n     (adsbygoogle = window.adsbygoogle || []).push({});\n</script>`}
+                  value={s.code}
+                  onChange={(e) => updateSlot(i, { code: e.target.value })}
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Tempel persis seperti yang diberikan AdSense. Tag <code>&lt;script&gt;</code> akan dieksekusi otomatis.
+                </p>
               </div>
             </div>
           ))}
