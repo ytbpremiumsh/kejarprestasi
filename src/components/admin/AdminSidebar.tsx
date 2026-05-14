@@ -69,6 +69,7 @@ const groups: { label: string; items: Item[] }[] = [
     label: "Integrasi & Pengaturan",
     items: [
       { title: "Pengaturan Situs", url: "/admin/pengaturan", icon: Settings },
+      { title: "Keamanan (2FA)", url: "/admin/keamanan", icon: ShieldCheck },
       { title: "AdSense", url: "/admin/adsense", icon: Megaphone },
       { title: "Kode & Performa", url: "/admin/kode-kustom", icon: Code2 },
     ],
