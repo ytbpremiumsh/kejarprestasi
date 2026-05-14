@@ -17,6 +17,7 @@ import {
   Server,
   Globe,
   BarChart3,
+  Zap,
 } from "lucide-react";
 import {
   Sidebar,
@@ -72,6 +73,7 @@ const groups: { label: string; items: Item[] }[] = [
       { title: "Keamanan (2FA)", url: "/admin/keamanan", icon: ShieldCheck },
       { title: "AdSense", url: "/admin/adsense", icon: Megaphone },
       { title: "Kode & Performa", url: "/admin/kode-kustom", icon: Code2 },
+      { title: "Bersihkan Cache", url: "/admin/cache", icon: Zap },
     ],
   },
   {
