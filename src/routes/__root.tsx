@@ -129,6 +129,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AdSettingsProvider>
         <AdsenseLoader />
+        <AutoAdInjector />
         <CustomCodeInjector />
         <AnalyticsInjector />
         {isBareLayout ? (
