@@ -90,6 +90,12 @@ function AdminKandidat() {
     });
   }, [regs, q, filterKind]);
 
+  const totals = useMemo(() => {
+    const prestasi = regs.filter((r) => r.kind === "prestasi").length;
+    const ekonomi = regs.filter((r) => r.kind === "ekonomi").length;
+    return { prestasi, ekonomi, total: regs.length };
+  }, [regs]);
+
   const setStatus = async (id: string, status: "pending" | "rejected") => {
     const { error } = await supabase
       .from("registrations")
