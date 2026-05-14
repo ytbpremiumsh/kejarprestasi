@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Search, Download, RotateCcw, Trophy, RotateCw, X, FileText, ExternalLink, Eye } from "lucide-react";
+import { Loader2, Search, Download, RotateCcw, Trophy, RotateCw, X, FileText, ExternalLink, Eye, Users, Award, HeartHandshake } from "lucide-react";
 import { toast } from "sonner";
 import { exportRowsToXlsx } from "@/lib/excel-export";
 
@@ -90,6 +90,12 @@ function AdminKandidat() {
     });
   }, [regs, q, filterKind]);
 
+  const totals = useMemo(() => {
+    const prestasi = regs.filter((r) => r.kind === "prestasi").length;
+    const ekonomi = regs.filter((r) => r.kind === "ekonomi").length;
+    return { prestasi, ekonomi, total: regs.length };
+  }, [regs]);
+
   const setStatus = async (id: string, status: "pending" | "rejected") => {
     const { error } = await supabase
       .from("registrations")
@@ -137,6 +143,30 @@ function AdminKandidat() {
           <Button variant="outline" onClick={load}><RotateCcw className="h-4 w-4 mr-1" />Refresh</Button>
           <Button onClick={exportExcel}><Download className="h-4 w-4 mr-1" />Export Excel</Button>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <StatCard
+          label="Total Kandidat"
+          value={totals.total}
+          icon={<Users className="h-5 w-5" />}
+          gradient="from-primary/15 to-primary/5"
+          iconBg="bg-primary/15 text-primary"
+        />
+        <StatCard
+          label="Beasiswa Prestasi"
+          value={totals.prestasi}
+          icon={<Award className="h-5 w-5" />}
+          gradient="from-amber-500/15 to-amber-500/5"
+          iconBg="bg-amber-500/15 text-amber-600"
+        />
+        <StatCard
+          label="Beasiswa Ekonomi"
+          value={totals.ekonomi}
+          icon={<HeartHandshake className="h-5 w-5" />}
+          gradient="from-emerald-500/15 to-emerald-500/5"
+          iconBg="bg-emerald-500/15 text-emerald-600"
+        />
       </div>
 
       <Card className="rounded-2xl p-4 shadow-soft">
@@ -282,5 +312,19 @@ function Field({ label, value, className }: { label: string; value: string; clas
       <div className="text-xs font-medium text-muted-foreground">{label}</div>
       <div className="text-sm">{value}</div>
     </div>
+  );
+}
+
+function StatCard({ label, value, icon, gradient, iconBg }: { label: string; value: number; icon: React.ReactNode; gradient: string; iconBg: string }) {
+  return (
+    <Card className={`rounded-2xl p-4 shadow-soft bg-gradient-to-br ${gradient} border-border/60`}>
+      <div className="flex items-center gap-3">
+        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${iconBg}`}>{icon}</div>
+        <div className="min-w-0">
+          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</div>
+          <div className="text-2xl font-bold text-foreground leading-tight">{value}</div>
+        </div>
+      </div>
+    </Card>
   );
 }
