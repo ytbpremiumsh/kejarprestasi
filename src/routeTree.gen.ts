@@ -37,6 +37,7 @@ import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
 import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
 import { Route as AdminKodeKustomRouteImport } from './routes/admin.kode-kustom'
+import { Route as AdminKeamananRouteImport } from './routes/admin.keamanan'
 import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminDonasiRouteImport } from './routes/admin.donasi'
@@ -199,6 +200,11 @@ const AdminKodeKustomRoute = AdminKodeKustomRouteImport.update({
   path: '/kode-kustom',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminKeamananRoute = AdminKeamananRouteImport.update({
+  id: '/keamanan',
+  path: '/keamanan',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminKandidatRoute = AdminKandidatRouteImport.update({
   id: '/kandidat',
   path: '/kandidat',
@@ -326,6 +332,7 @@ export interface FileRoutesByFullPath {
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kandidat': typeof AdminKandidatRoute
+  '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -376,6 +383,7 @@ export interface FileRoutesByTo {
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kandidat': typeof AdminKandidatRoute
+  '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -426,6 +434,7 @@ export interface FileRoutesById {
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kandidat': typeof AdminKandidatRoute
+  '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
@@ -479,6 +488,7 @@ export interface FileRouteTypes {
     | '/admin/donasi'
     | '/admin/formulir'
     | '/admin/kandidat'
+    | '/admin/keamanan'
     | '/admin/kode-kustom'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
@@ -529,6 +539,7 @@ export interface FileRouteTypes {
     | '/admin/donasi'
     | '/admin/formulir'
     | '/admin/kandidat'
+    | '/admin/keamanan'
     | '/admin/kode-kustom'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
@@ -578,6 +589,7 @@ export interface FileRouteTypes {
     | '/admin/donasi'
     | '/admin/formulir'
     | '/admin/kandidat'
+    | '/admin/keamanan'
     | '/admin/kode-kustom'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
@@ -843,6 +855,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminKodeKustomRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/keamanan': {
+      id: '/admin/keamanan'
+      path: '/keamanan'
+      fullPath: '/admin/keamanan'
+      preLoaderRoute: typeof AdminKeamananRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/kandidat': {
       id: '/admin/kandidat'
       path: '/kandidat'
@@ -1002,6 +1021,7 @@ interface AdminRouteChildren {
   AdminDonasiRoute: typeof AdminDonasiRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
   AdminKandidatRoute: typeof AdminKandidatRoute
+  AdminKeamananRoute: typeof AdminKeamananRoute
   AdminKodeKustomRoute: typeof AdminKodeKustomRoute
   AdminPendaftarRoute: typeof AdminPendaftarRoute
   AdminPengaturanRoute: typeof AdminPengaturanRoute
@@ -1020,6 +1040,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminDonasiRoute: AdminDonasiRoute,
   AdminFormulirRoute: AdminFormulirRoute,
   AdminKandidatRoute: AdminKandidatRoute,
+  AdminKeamananRoute: AdminKeamananRoute,
   AdminKodeKustomRoute: AdminKodeKustomRoute,
   AdminPendaftarRoute: AdminPendaftarRoute,
   AdminPengaturanRoute: AdminPengaturanRoute,
@@ -1094,13 +1115,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
