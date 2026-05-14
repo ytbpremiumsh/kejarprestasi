@@ -17,6 +17,7 @@ import {
   Server,
   Globe,
   BarChart3,
+  Zap,
 } from "lucide-react";
 import {
   Sidebar,
