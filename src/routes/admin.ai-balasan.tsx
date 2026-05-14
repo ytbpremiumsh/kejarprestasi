@@ -144,8 +144,9 @@ function AdminAiBalasan() {
     })();
   }, []);
 
-  const webhookUrl = behavior?.wa_webhook_token
-    ? `https://project--9c225128-d4b9-467e-9636-c0f33f20ecb8.lovable.app/api/public/wa-webhook?token=${behavior.wa_webhook_token}`
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const webhookUrl = behavior?.wa_webhook_token && origin
+    ? `${origin}/api/public/wa-webhook?token=${behavior.wa_webhook_token}`
     : "";
   const cloudWebhookUrl = behavior?.wa_webhook_token
     ? `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/wa-webhook?token=${behavior.wa_webhook_token}`
