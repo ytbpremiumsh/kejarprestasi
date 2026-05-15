@@ -12,10 +12,11 @@ import {
   Clock,
   HeartHandshake,
 } from "lucide-react";
-import logo from "@/assets/logo-kp.png";
+import { useBranding } from "@/hooks/use-branding";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
+  const { footerLogo } = useBranding();
 
   return (
     <footer className="mt-24 border-t border-border bg-secondary/40">
@@ -51,7 +52,7 @@ export function SiteFooter() {
         <div className="md:col-span-4">
           <div className="flex items-center">
             <img
-              src={logo}
+              src={footerLogo}
               alt="Logo Kejar Prestasi x Atskolla"
               className="h-10 w-auto"
               loading="lazy"

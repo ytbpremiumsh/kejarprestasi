@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import logo from "@/assets/logo-kp.png";
+import { useBranding } from "@/hooks/use-branding";
 
 const nav = [
   { to: "/", label: "Beranda" },
@@ -13,6 +13,7 @@ const nav = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { headerLogo } = useBranding();
 
   const goToTimeline = async () => {
     setOpen(false);
@@ -30,7 +31,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/85 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center" aria-label="Kejar Prestasi x Atskolla">
-          <img src={logo} alt="Logo Kejar Prestasi x Atskolla" className="h-10 w-auto" />
+          <img src={headerLogo} alt="Logo Kejar Prestasi x Atskolla" className="h-10 w-auto" />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-7">
