@@ -13,6 +13,7 @@ const nav = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { headerLogo } = useBranding();
 
   const goToTimeline = async () => {
     setOpen(false);
