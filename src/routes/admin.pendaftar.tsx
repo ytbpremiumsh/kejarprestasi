@@ -508,3 +508,17 @@ function DocLink({ type, url }: { type: string; url: string }) {
     </a>
   );
 }
+
+function StatCard({ label, value, icon, gradient, iconBg }: { label: string; value: number; icon: React.ReactNode; gradient: string; iconBg: string }) {
+  return (
+    <Card className={`rounded-2xl p-4 shadow-soft bg-gradient-to-br ${gradient} border-border/60`}>
+      <div className="flex items-center gap-3">
+        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${iconBg}`}>{icon}</div>
+        <div className="min-w-0">
+          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</div>
+          <div className="text-2xl font-bold text-foreground leading-tight">{value}</div>
+        </div>
+      </div>
+    </Card>
+  );
+}
