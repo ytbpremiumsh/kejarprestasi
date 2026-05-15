@@ -95,6 +95,12 @@ function AdminPendaftar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, docs]);
 
+  const totals = useMemo(() => {
+    const prestasi = rows.filter((r) => r.kind === "prestasi").length;
+    const ekonomi = rows.filter((r) => r.kind === "ekonomi").length;
+    return { prestasi, ekonomi, total: rows.length };
+  }, [rows]);
+
   const filtered = useMemo(() => {
     return rows.filter((r) => {
       if (filterKind !== "all" && r.kind !== filterKind) return false;
