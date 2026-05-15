@@ -41,6 +41,7 @@ import { Route as AdminKeamananRouteImport } from './routes/admin.keamanan'
 import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminDonasiRouteImport } from './routes/admin.donasi'
+import { Route as AdminBrandingRouteImport } from './routes/admin.branding'
 import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
 import { Route as AdminBagikanPosterRouteImport } from './routes/admin.bagikan-poster'
 import { Route as AdminArtikelRouteImport } from './routes/admin.artikel'
@@ -221,6 +222,11 @@ const AdminDonasiRoute = AdminDonasiRouteImport.update({
   path: '/donasi',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBrandingRoute = AdminBrandingRouteImport.update({
+  id: '/branding',
+  path: '/branding',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBerkasRoute = AdminBerkasRouteImport.update({
   id: '/berkas',
   path: '/berkas',
@@ -336,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/admin/artikel': typeof AdminArtikelRoute
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
+  '/admin/branding': typeof AdminBrandingRoute
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kandidat': typeof AdminKandidatRoute
@@ -388,6 +395,7 @@ export interface FileRoutesByTo {
   '/admin/artikel': typeof AdminArtikelRoute
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
+  '/admin/branding': typeof AdminBrandingRoute
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kandidat': typeof AdminKandidatRoute
@@ -440,6 +448,7 @@ export interface FileRoutesById {
   '/admin/artikel': typeof AdminArtikelRoute
   '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
+  '/admin/branding': typeof AdminBrandingRoute
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kandidat': typeof AdminKandidatRoute
@@ -495,6 +504,7 @@ export interface FileRouteTypes {
     | '/admin/artikel'
     | '/admin/bagikan-poster'
     | '/admin/berkas'
+    | '/admin/branding'
     | '/admin/donasi'
     | '/admin/formulir'
     | '/admin/kandidat'
@@ -547,6 +557,7 @@ export interface FileRouteTypes {
     | '/admin/artikel'
     | '/admin/bagikan-poster'
     | '/admin/berkas'
+    | '/admin/branding'
     | '/admin/donasi'
     | '/admin/formulir'
     | '/admin/kandidat'
@@ -598,6 +609,7 @@ export interface FileRouteTypes {
     | '/admin/artikel'
     | '/admin/bagikan-poster'
     | '/admin/berkas'
+    | '/admin/branding'
     | '/admin/donasi'
     | '/admin/formulir'
     | '/admin/kandidat'
@@ -895,6 +907,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDonasiRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/branding': {
+      id: '/admin/branding'
+      path: '/branding'
+      fullPath: '/admin/branding'
+      preLoaderRoute: typeof AdminBrandingRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/berkas': {
       id: '/admin/berkas'
       path: '/berkas'
@@ -1038,6 +1057,7 @@ interface AdminRouteChildren {
   AdminArtikelRoute: typeof AdminArtikelRoute
   AdminBagikanPosterRoute: typeof AdminBagikanPosterRoute
   AdminBerkasRoute: typeof AdminBerkasRoute
+  AdminBrandingRoute: typeof AdminBrandingRoute
   AdminDonasiRoute: typeof AdminDonasiRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
   AdminKandidatRoute: typeof AdminKandidatRoute
@@ -1058,6 +1078,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminArtikelRoute: AdminArtikelRoute,
   AdminBagikanPosterRoute: AdminBagikanPosterRoute,
   AdminBerkasRoute: AdminBerkasRoute,
+  AdminBrandingRoute: AdminBrandingRoute,
   AdminDonasiRoute: AdminDonasiRoute,
   AdminFormulirRoute: AdminFormulirRoute,
   AdminKandidatRoute: AdminKandidatRoute,
