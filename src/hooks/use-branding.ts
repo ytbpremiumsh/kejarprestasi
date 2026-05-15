@@ -21,8 +21,8 @@ export function useBranding() {
       if (active && data?.value) setBranding(data.value as BrandingSettings);
     })();
 
-    const channel = supabase.channel("branding_settings");
-    channel
+    const channel = supabase
+      .channel(`branding_settings_${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes" as never,
         { event: "*", schema: "public", table: "site_settings", filter: "key=eq.branding" },
