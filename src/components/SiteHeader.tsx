@@ -31,7 +31,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/85 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center" aria-label="Kejar Prestasi x Atskolla">
-          <img src={logo} alt="Logo Kejar Prestasi x Atskolla" className="h-10 w-auto" />
+          <img src={headerLogo} alt="Logo Kejar Prestasi x Atskolla" className="h-10 w-auto" />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-7">
