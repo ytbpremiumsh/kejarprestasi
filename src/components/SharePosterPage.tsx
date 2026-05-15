@@ -122,8 +122,8 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 
         <ol className="mt-6 grid md:grid-cols-2 gap-4">
           {[
-            { t: "Unggah ke Instagram pribadi", d: "Posting poster + caption resmi ke akun Instagram kamu — wajib di Feed (Postingan) sekaligus Story." },
-            { t: "Sebar ke 5 grup chat", d: "Bagikan poster + caption ke minimal 5 grup pada salah satu platform: WhatsApp, Facebook, Line, atau Telegram." },
+            { t: "Follow Instagram @kejarprestasi_id dan @atskolla", d: "Pastikan kamu sudah mengikuti akun Instagram resmi @kejarprestasi_id dan @atskolla sebelum lanjut ke tahap berikutnya." },
+            { t: "Sebar ke 5 grup WA atau 1 Instagram Feed", d: "Pilih salah satu: bagikan poster + caption ke minimal 5 grup WhatsApp, atau posting poster + caption ke 1 Instagram Feed kamu." },
             { t: "Komentar & tag 3 teman", d: "Komentari unggahan resmi @ayopintar_ dan mention 3 sahabatmu. Contoh: \"Yuk ikut daftar beasiswa ini 🥳✨ @temanA @temanB @temanC\"." },
             { t: "Konfirmasi bukti via WhatsApp", d: "Kirim screenshot (Story, postingan, dan grup) melalui tombol konfirmasi di bawah agar tim verifikasi mencatat partisipasimu." },
           ].map((item, i) => (
