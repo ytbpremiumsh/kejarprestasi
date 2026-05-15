@@ -138,25 +138,6 @@ export function DonationCard({
     }
   };
 
-  // Poll donation status while modal is open; redirect when paid.
-  useEffect(() => {
-    if (!payUrl || !donationId) return;
-    let stopped = false;
-    const tick = async () => {
-      try {
-        const { data } = await supabase.functions.invoke("donation-status", {
-          body: { id: donationId },
-        });
-        const r = data as { ok?: boolean; status?: string } | null;
-        if (!stopped && r?.ok && (r.status === "paid" || r.status === "success")) {
-          goThankYou();
-        }
-      } catch { /* ignore */ }
-    };
-    const iv = setInterval(tick, 4000);
-    return () => { stopped = true; clearInterval(iv); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [payUrl, donationId]);
 
   const closeModal = () => {
     if (confirm("Batalkan proses donasi?")) {
