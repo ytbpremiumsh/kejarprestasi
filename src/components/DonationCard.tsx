@@ -74,6 +74,28 @@ export function DonationCard({
     return () => { document.body.style.overflow = prev; };
   }, [payUrl]);
 
+  // Poll donation status while modal is open; redirect when paid.
+  useEffect(() => {
+    if (!payUrl || !donationId) return;
+    let stopped = false;
+    const tick = async () => {
+      try {
+        const { data } = await supabase.functions.invoke("donation-status", {
+          body: { id: donationId },
+        });
+        const r = data as { ok?: boolean; status?: string } | null;
+        if (!stopped && r?.ok && (r.status === "paid" || r.status === "success")) {
+          setPayUrl(null);
+          setDonationId(null);
+          navigate({ to: "/donasi/terima-kasih" });
+        }
+      } catch { /* ignore */ }
+    };
+    const iv = setInterval(tick, 4000);
+    return () => { stopped = true; clearInterval(iv); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payUrl, donationId]);
+
   if (loading) return null;
   if (!cfg.enabled) return null;
 
