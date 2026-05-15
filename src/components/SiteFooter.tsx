@@ -53,14 +53,14 @@ export function SiteFooter() {
           <div className="flex items-center">
             <img
               src={footerLogo}
-              alt="Logo Kejar Prestasi x Atskolla"
+              alt="Logo Kejar Prestasi x ATSkolla"
               className="h-10 w-auto"
               loading="lazy"
             />
           </div>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
             <strong className="text-foreground">Kejar Prestasi</strong> adalah program beasiswa
-            nasional yang berkolaborasi dengan <strong className="text-foreground">Atskolla</strong>{" "}
+            nasional yang berkolaborasi dengan <strong className="text-foreground">ATSkolla</strong>{" "}
             untuk mendukung pelajar &amp; mahasiswa Indonesia dalam meraih pendidikan dan mewujudkan
             prestasi.
           </p>
@@ -224,7 +224,7 @@ export function SiteFooter() {
         <div className="container-page py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
           <div className="text-xs text-muted-foreground">
             © {year} <span className="text-foreground font-semibold">Kejar Prestasi</span> ×{" "}
-            <span className="text-foreground font-semibold">Atskolla</span>. Seluruh hak cipta dilindungi.
+            <span className="text-foreground font-semibold">ATSkolla</span>. Seluruh hak cipta dilindungi.
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
             <Link to="/" className="hover:text-primary transition">
