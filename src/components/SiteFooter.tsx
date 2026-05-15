@@ -12,7 +12,7 @@ import {
   Clock,
   HeartHandshake,
 } from "lucide-react";
-import logo from "@/assets/logo-kp.png";
+import { useBranding } from "@/hooks/use-branding";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
