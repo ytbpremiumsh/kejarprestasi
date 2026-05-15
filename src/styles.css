@@ -125,3 +125,11 @@ html[data-disable-ads="1"] .adsbygoogle,
 html[data-disable-ads="1"] [data-ad-slot] {
   display: none !important;
 }
+
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.animate-bounce-soft {
+  animation: bounce-soft 1.6s ease-in-out infinite;
+}

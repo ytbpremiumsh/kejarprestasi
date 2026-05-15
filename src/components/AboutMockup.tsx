@@ -1,4 +1,4 @@
-import { Award, BookOpen, Sparkles, Target, FileCheck2, Wallet } from "lucide-react";
+import { Award, BookOpen, Wallet } from "lucide-react";
 
 const features = [
   {
@@ -15,21 +15,6 @@ const features = [
     icon: Award,
     title: "Apresiasi Prestasi",
     desc: "Mengapresiasi pelajar berprestasi akademik maupun non-akademik tanpa minimal nilai.",
-  },
-  {
-    icon: FileCheck2,
-    title: "Proses Akuntabel",
-    desc: "Setiap tahapan seleksi terdokumentasi dan dapat dipertanggungjawabkan secara terbuka.",
-  },
-  {
-    icon: Target,
-    title: "Tepat Sasaran",
-    desc: "Seleksi transparan, verifikasi berlapis, dan bebas pungutan biaya apa pun.",
-  },
-  {
-    icon: Sparkles,
-    title: "Pembinaan & Mentoring",
-    desc: "Penerima mendapatkan pembinaan, sesi inspiratif, dan akses materi pengembangan diri.",
   },
 ];
 

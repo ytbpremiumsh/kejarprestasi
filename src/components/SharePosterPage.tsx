@@ -1,15 +1,24 @@
 import { Link } from "@tanstack/react-router";
 import { Download, Share2, Facebook, Instagram, ListChecks, MessageCircle, Info, CheckCircle2, Copy, Check } from "lucide-react";
-import { useState } from "react";
-import posterImg from "@/assets/poster-beasiswa.png";
+import { useEffect, useState } from "react";
+import defaultPoster from "@/assets/poster-beasiswa.png";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { supabase } from "@/integrations/supabase/client";
+
+type PosterCfg = {
+  image_url: string;
+  download_url: string;
+  caption: string;
+  wa_number: string;
+  wa_message: string;
+};
 
 export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const isGold = kind === "ekonomi";
   const label = isGold ? "Beasiswa Ekonomi" : "Beasiswa Prestasi";
   const url = typeof window !== "undefined" ? window.location.origin + (isGold ? "/beasiswa-ekonomi" : "/beasiswa-prestasi") : "https://kejarprestasi.id";
 
-  const caption = `🎓✨ BEASISWA PENDIDIKAN KEJAR PRESTASI — SECTION #3 ✨🎓
+  const defaultCaption = `🎓✨ BEASISWA PENDIDIKAN KEJAR PRESTASI — SECTION #3 ✨🎓
 
 Halo Sobat Pejuang Pendidikan! 👋
 Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
@@ -36,6 +45,38 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 ⚠️ Hati-hati terhadap penipuan yang mengatasnamakan Kejar Prestasi.
 
 #KejarPrestasi #BeasiswaPendidikan #BeasiswaIndonesia #BeasiswaPelajar #BeasiswaMahasiswa #KejarPrestasiSection3`;
+
+  const [cfg, setCfg] = useState<PosterCfg>({
+    image_url: defaultPoster,
+    download_url: defaultPoster,
+    caption: defaultCaption,
+    wa_number: "6281280010302",
+    wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Kejar Prestasi.",
+  });
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "share_poster")
+        .maybeSingle();
+      const v = data?.value as { prestasi?: Partial<PosterCfg>; ekonomi?: Partial<PosterCfg> } | undefined;
+      const k = v?.[kind];
+      if (k) {
+        setCfg((prev) => ({
+          image_url: k.image_url || prev.image_url,
+          download_url: k.download_url || k.image_url || prev.download_url,
+          caption: k.caption || prev.caption,
+          wa_number: k.wa_number || prev.wa_number,
+          wa_message: k.wa_message || prev.wa_message,
+        }));
+      }
+    })();
+  }, [kind]);
+
+  const caption = cfg.caption;
+
 
   const [copied, setCopied] = useState(false);
   const handleCopy = async () => {
@@ -103,7 +144,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <a
-            href={`https://wa.me/?text=${encodeURIComponent("Halo, saya ingin mengirim bukti bagikan poster Beasiswa Kejar Prestasi.")}`}
+            href={`https://wa.me/${cfg.wa_number.replace(/\D/g, "")}?text=${encodeURIComponent(cfg.wa_message)}`}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
@@ -129,22 +170,27 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
         <div className="rounded-3xl border border-border bg-card p-4 shadow-card">
           <div className="rounded-2xl overflow-hidden bg-muted">
             <img
-              src={posterImg}
+              src={cfg.image_url}
               alt={`Poster Beasiswa Kejar Prestasi ${label}`}
               className="w-full h-auto block"
               loading="lazy"
             />
           </div>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-5 flex justify-center">
             <a
-              href={posterImg}
-              download="poster-kejar-prestasi.png"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+              href={cfg.download_url || cfg.image_url}
+              download={`poster-kejar-prestasi-${kind}.png`}
+              target="_blank"
+              rel="noreferrer"
+              className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 px-7 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/40 active:scale-95 overflow-hidden"
             >
-              <Download size={16} /> Download Poster
+              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+              <Download size={18} className="relative animate-bounce-soft transition-transform group-hover:-translate-y-0.5" />
+              <span className="relative">Download Poster</span>
             </a>
           </div>
         </div>
+
 
         {/* Caption + share buttons */}
         <div className="space-y-6">

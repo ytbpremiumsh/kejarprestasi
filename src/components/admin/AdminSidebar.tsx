@@ -17,6 +17,7 @@ import {
   Server,
   Globe,
   BarChart3,
+  Share2,
 } from "lucide-react";
 import {
   Sidebar,
@@ -55,6 +56,7 @@ const groups: { label: string; items: Item[] }[] = [
     items: [
       { title: "Artikel", url: "/admin/artikel", icon: FileText },
       { title: "Formulir", url: "/admin/formulir", icon: FileEdit },
+      { title: "Bagikan Poster", url: "/admin/bagikan-poster", icon: Share2 },
     ],
   },
   {
