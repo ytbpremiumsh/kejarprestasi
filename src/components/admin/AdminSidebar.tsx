@@ -55,6 +55,7 @@ const groups: { label: string; items: Item[] }[] = [
     items: [
       { title: "Artikel", url: "/admin/artikel", icon: FileText },
       { title: "Formulir", url: "/admin/formulir", icon: FileEdit },
+      { title: "Bagikan Poster", url: "/admin/bagikan-poster", icon: Share2 },
     ],
   },
   {
