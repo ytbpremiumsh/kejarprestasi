@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -509,7 +509,7 @@ function DocLink({ type, url }: { type: string; url: string }) {
   );
 }
 
-function StatCard({ label, value, icon, gradient, iconBg }: { label: string; value: number; icon: React.ReactNode; gradient: string; iconBg: string }) {
+function StatCard({ label, value, icon, gradient, iconBg }: { label: string; value: number; icon: ReactNode; gradient: string; iconBg: string }) {
   return (
     <Card className={`rounded-2xl p-4 shadow-soft bg-gradient-to-br ${gradient} border-border/60`}>
       <div className="flex items-center gap-3">
