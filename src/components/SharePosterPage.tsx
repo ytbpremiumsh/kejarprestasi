@@ -144,7 +144,7 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <a
-            href={`https://wa.me/?text=${encodeURIComponent("Halo, saya ingin mengirim bukti bagikan poster Beasiswa Kejar Prestasi.")}`}
+            href={`https://wa.me/${cfg.wa_number.replace(/\D/g, "")}?text=${encodeURIComponent(cfg.wa_message)}`}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
@@ -170,22 +170,27 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
         <div className="rounded-3xl border border-border bg-card p-4 shadow-card">
           <div className="rounded-2xl overflow-hidden bg-muted">
             <img
-              src={posterImg}
+              src={cfg.image_url}
               alt={`Poster Beasiswa Kejar Prestasi ${label}`}
               className="w-full h-auto block"
               loading="lazy"
             />
           </div>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-5 flex justify-center">
             <a
-              href={posterImg}
-              download="poster-kejar-prestasi.png"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
+              href={cfg.download_url || cfg.image_url}
+              download={`poster-kejar-prestasi-${kind}.png`}
+              target="_blank"
+              rel="noreferrer"
+              className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 px-7 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/40 active:scale-95 overflow-hidden"
             >
-              <Download size={16} /> Download Poster
+              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+              <Download size={18} className="relative animate-bounce-soft transition-transform group-hover:-translate-y-0.5" />
+              <span className="relative">Download Poster</span>
             </a>
           </div>
         </div>
+
 
         {/* Caption + share buttons */}
         <div className="space-y-6">
