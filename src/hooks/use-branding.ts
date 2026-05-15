@@ -21,13 +21,13 @@ export function useBranding() {
       if (active && data?.value) setBranding(data.value as BrandingSettings);
     })();
 
-    const channel = supabase
-      .channel("branding_settings")
+    const channel = supabase.channel("branding_settings");
+    channel
       .on(
-        "postgres_changes",
+        "postgres_changes" as never,
         { event: "*", schema: "public", table: "site_settings", filter: "key=eq.branding" },
-        (payload) => {
-          const row = (payload.new ?? payload.old) as { value: BrandingSettings } | null;
+        (payload: { new?: { value: BrandingSettings }; old?: { value: BrandingSettings } }) => {
+          const row = payload.new ?? payload.old;
           if (row?.value) setBranding(row.value);
         },
       )
