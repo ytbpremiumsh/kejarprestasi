@@ -12,6 +12,7 @@ export function useBranding() {
 
   useEffect(() => {
     let active = true;
+
     (async () => {
       const { data } = await supabase
         .from("site_settings")
@@ -21,21 +22,8 @@ export function useBranding() {
       if (active && data?.value) setBranding(data.value as BrandingSettings);
     })();
 
-    const channel = supabase
-      .channel(`branding_settings_${Math.random().toString(36).slice(2)}`)
-      .on(
-        "postgres_changes" as never,
-        { event: "*", schema: "public", table: "site_settings", filter: "key=eq.branding" },
-        (payload: { new?: { value: BrandingSettings }; old?: { value: BrandingSettings } }) => {
-          const row = payload.new ?? payload.old;
-          if (row?.value) setBranding(row.value);
-        },
-      )
-      .subscribe();
-
     return () => {
       active = false;
-      supabase.removeChannel(channel);
     };
   }, []);
 
