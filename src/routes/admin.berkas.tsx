@@ -265,6 +265,15 @@ function AdminBerkas() {
     );
   };
 
+  const totals = useMemo(() => {
+    const all = Array.from(
+      new Map(docs.map((d) => [`${d.email.toLowerCase()}__${d.kind}`, d])).values(),
+    );
+    const prestasi = all.filter((d) => d.kind === "prestasi").length;
+    const ekonomi = all.filter((d) => d.kind === "ekonomi").length;
+    return { prestasi, ekonomi, total: all.length };
+  }, [docs]);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
