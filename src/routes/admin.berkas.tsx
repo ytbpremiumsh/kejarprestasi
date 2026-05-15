@@ -26,6 +26,9 @@ import {
   Check,
   X,
   Eye,
+  Users,
+  Award,
+  HeartHandshake,
 } from "lucide-react";
 import { toast } from "sonner";
 import { exportRowsToXlsx } from "@/lib/excel-export";
