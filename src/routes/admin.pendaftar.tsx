@@ -240,6 +240,37 @@ function AdminPendaftar() {
         </div>
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <StatCard
+          label="Total Pendaftar"
+          value={totals.total}
+          icon={<Users className="h-5 w-5" />}
+          gradient="from-primary/15 to-primary/5"
+          iconBg="bg-primary/15 text-primary"
+        />
+        <StatCard
+          label="Beasiswa Prestasi"
+          value={totals.prestasi}
+          icon={<Award className="h-5 w-5" />}
+          gradient="from-amber-500/15 to-amber-500/5"
+          iconBg="bg-amber-500/15 text-amber-600"
+        />
+        <StatCard
+          label="Beasiswa Ekonomi"
+          value={totals.ekonomi}
+          icon={<HeartHandshake className="h-5 w-5" />}
+          gradient="from-emerald-500/15 to-emerald-500/5"
+          iconBg="bg-emerald-500/15 text-emerald-600"
+        />
+        <StatCard
+          label="Sudah Kirim Berkas"
+          value={counts.submitted}
+          icon={<FileCheck className="h-5 w-5" />}
+          gradient="from-sky-500/15 to-sky-500/5"
+          iconBg="bg-sky-500/15 text-sky-600"
+        />
+      </div>
+
       <Card className="rounded-2xl p-4 shadow-soft">
         <div className="flex flex-wrap gap-2">
           <div className="relative flex-1 min-w-[220px]">
