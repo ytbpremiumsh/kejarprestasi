@@ -42,6 +42,7 @@ import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminDonasiRouteImport } from './routes/admin.donasi'
 import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
+import { Route as AdminBagikanPosterRouteImport } from './routes/admin.bagikan-poster'
 import { Route as AdminArtikelRouteImport } from './routes/admin.artikel'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminAiBalasanRouteImport } from './routes/admin.ai-balasan'
@@ -225,6 +226,11 @@ const AdminBerkasRoute = AdminBerkasRouteImport.update({
   path: '/berkas',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBagikanPosterRoute = AdminBagikanPosterRouteImport.update({
+  id: '/bagikan-poster',
+  path: '/bagikan-poster',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminArtikelRoute = AdminArtikelRouteImport.update({
   id: '/artikel',
   path: '/artikel',
@@ -328,6 +334,7 @@ export interface FileRoutesByFullPath {
   '/admin/ai-balasan': typeof AdminAiBalasanRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/artikel': typeof AdminArtikelRoute
+  '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/formulir': typeof AdminFormulirRoute
@@ -379,6 +386,7 @@ export interface FileRoutesByTo {
   '/admin/ai-balasan': typeof AdminAiBalasanRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/artikel': typeof AdminArtikelRoute
+  '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/formulir': typeof AdminFormulirRoute
@@ -430,6 +438,7 @@ export interface FileRoutesById {
   '/admin/ai-balasan': typeof AdminAiBalasanRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/artikel': typeof AdminArtikelRoute
+  '/admin/bagikan-poster': typeof AdminBagikanPosterRoute
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/formulir': typeof AdminFormulirRoute
@@ -484,6 +493,7 @@ export interface FileRouteTypes {
     | '/admin/ai-balasan'
     | '/admin/analytics'
     | '/admin/artikel'
+    | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/donasi'
     | '/admin/formulir'
@@ -535,6 +545,7 @@ export interface FileRouteTypes {
     | '/admin/ai-balasan'
     | '/admin/analytics'
     | '/admin/artikel'
+    | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/donasi'
     | '/admin/formulir'
@@ -585,6 +596,7 @@ export interface FileRouteTypes {
     | '/admin/ai-balasan'
     | '/admin/analytics'
     | '/admin/artikel'
+    | '/admin/bagikan-poster'
     | '/admin/berkas'
     | '/admin/donasi'
     | '/admin/formulir'
@@ -890,6 +902,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBerkasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/bagikan-poster': {
+      id: '/admin/bagikan-poster'
+      path: '/bagikan-poster'
+      fullPath: '/admin/bagikan-poster'
+      preLoaderRoute: typeof AdminBagikanPosterRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/artikel': {
       id: '/admin/artikel'
       path: '/artikel'
@@ -1017,6 +1036,7 @@ interface AdminRouteChildren {
   AdminAiBalasanRoute: typeof AdminAiBalasanRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminArtikelRoute: typeof AdminArtikelRoute
+  AdminBagikanPosterRoute: typeof AdminBagikanPosterRoute
   AdminBerkasRoute: typeof AdminBerkasRoute
   AdminDonasiRoute: typeof AdminDonasiRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
@@ -1036,6 +1056,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAiBalasanRoute: AdminAiBalasanRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminArtikelRoute: AdminArtikelRoute,
+  AdminBagikanPosterRoute: AdminBagikanPosterRoute,
   AdminBerkasRoute: AdminBerkasRoute,
   AdminDonasiRoute: AdminDonasiRoute,
   AdminFormulirRoute: AdminFormulirRoute,

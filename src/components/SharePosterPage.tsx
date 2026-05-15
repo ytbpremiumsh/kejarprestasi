@@ -1,15 +1,24 @@
 import { Link } from "@tanstack/react-router";
 import { Download, Share2, Facebook, Instagram, ListChecks, MessageCircle, Info, CheckCircle2, Copy, Check } from "lucide-react";
-import { useState } from "react";
-import posterImg from "@/assets/poster-beasiswa.png";
+import { useEffect, useState } from "react";
+import defaultPoster from "@/assets/poster-beasiswa.png";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { supabase } from "@/integrations/supabase/client";
+
+type PosterCfg = {
+  image_url: string;
+  download_url: string;
+  caption: string;
+  wa_number: string;
+  wa_message: string;
+};
 
 export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const isGold = kind === "ekonomi";
   const label = isGold ? "Beasiswa Ekonomi" : "Beasiswa Prestasi";
   const url = typeof window !== "undefined" ? window.location.origin + (isGold ? "/beasiswa-ekonomi" : "/beasiswa-prestasi") : "https://kejarprestasi.id";
 
-  const caption = `🎓✨ BEASISWA PENDIDIKAN KEJAR PRESTASI — SECTION #3 ✨🎓
+  const defaultCaption = `🎓✨ BEASISWA PENDIDIKAN KEJAR PRESTASI — SECTION #3 ✨🎓
 
 Halo Sobat Pejuang Pendidikan! 👋
 Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
@@ -36,6 +45,38 @@ Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 ⚠️ Hati-hati terhadap penipuan yang mengatasnamakan Kejar Prestasi.
 
 #KejarPrestasi #BeasiswaPendidikan #BeasiswaIndonesia #BeasiswaPelajar #BeasiswaMahasiswa #KejarPrestasiSection3`;
+
+  const [cfg, setCfg] = useState<PosterCfg>({
+    image_url: defaultPoster,
+    download_url: defaultPoster,
+    caption: defaultCaption,
+    wa_number: "6281280010302",
+    wa_message: "Halo, saya ingin mengirim bukti bagikan poster Beasiswa Kejar Prestasi.",
+  });
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "share_poster")
+        .maybeSingle();
+      const v = data?.value as { prestasi?: Partial<PosterCfg>; ekonomi?: Partial<PosterCfg> } | undefined;
+      const k = v?.[kind];
+      if (k) {
+        setCfg((prev) => ({
+          image_url: k.image_url || prev.image_url,
+          download_url: k.download_url || k.image_url || prev.download_url,
+          caption: k.caption || prev.caption,
+          wa_number: k.wa_number || prev.wa_number,
+          wa_message: k.wa_message || prev.wa_message,
+        }));
+      }
+    })();
+  }, [kind]);
+
+  const caption = cfg.caption;
+
 
   const [copied, setCopied] = useState(false);
   const handleCopy = async () => {
