@@ -16,6 +16,7 @@ import { useBranding } from "@/hooks/use-branding";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
+  const { footerLogo } = useBranding();
 
   return (
     <footer className="mt-24 border-t border-border bg-secondary/40">
