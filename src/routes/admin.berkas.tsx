@@ -26,6 +26,9 @@ import {
   Check,
   X,
   Eye,
+  Users,
+  Award,
+  HeartHandshake,
 } from "lucide-react";
 import { toast } from "sonner";
 import { exportRowsToXlsx } from "@/lib/excel-export";
@@ -262,6 +265,15 @@ function AdminBerkas() {
     );
   };
 
+  const totals = useMemo(() => {
+    const all = Array.from(
+      new Map(docs.map((d) => [`${d.email.toLowerCase()}__${d.kind}`, d])).values(),
+    );
+    const prestasi = all.filter((d) => d.kind === "prestasi").length;
+    const ekonomi = all.filter((d) => d.kind === "ekonomi").length;
+    return { prestasi, ekonomi, total: all.length };
+  }, [docs]);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -287,6 +299,30 @@ function AdminBerkas() {
             Export Excel
           </Button>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <StatCard
+          label="Total Pengirim Berkas"
+          value={totals.total}
+          icon={<Users className="h-5 w-5" />}
+          gradient="from-primary/15 to-primary/5"
+          iconBg="bg-primary/15 text-primary"
+        />
+        <StatCard
+          label="Berkas Prestasi"
+          value={totals.prestasi}
+          icon={<Award className="h-5 w-5" />}
+          gradient="from-amber-500/15 to-amber-500/5"
+          iconBg="bg-amber-500/15 text-amber-600"
+        />
+        <StatCard
+          label="Berkas Ekonomi"
+          value={totals.ekonomi}
+          icon={<HeartHandshake className="h-5 w-5" />}
+          gradient="from-emerald-500/15 to-emerald-500/5"
+          iconBg="bg-emerald-500/15 text-emerald-600"
+        />
       </div>
 
       <Card className="rounded-2xl p-4 shadow-soft">
@@ -531,5 +567,19 @@ function Info({ label, value, className }: { label: string; value: string; class
       <span className="text-muted-foreground">{label}: </span>
       <span className="text-foreground break-words">{value || "-"}</span>
     </div>
+  );
+}
+
+function StatCard({ label, value, icon, gradient, iconBg }: { label: string; value: number; icon: React.ReactNode; gradient: string; iconBg: string }) {
+  return (
+    <Card className={`rounded-2xl p-4 shadow-soft bg-gradient-to-br ${gradient} border-border/60`}>
+      <div className="flex items-center gap-3">
+        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${iconBg}`}>{icon}</div>
+        <div className="min-w-0">
+          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</div>
+          <div className="text-2xl font-bold text-foreground leading-tight">{value}</div>
+        </div>
+      </div>
+    </Card>
   );
 }

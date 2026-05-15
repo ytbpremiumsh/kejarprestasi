@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2 } from "lucide-react";
+import { Loader2, Search, Download, FileText, ExternalLink, RotateCcw, Trash2, Users, Award, HeartHandshake, FileCheck } from "lucide-react";
 import { toast } from "sonner";
 import { exportRowsToXlsx, exportRowsToCsv } from "@/lib/excel-export";
 import { TokenBadge } from "@/components/admin/TokenBadge";
@@ -94,6 +94,12 @@ function AdminPendaftar() {
     return { submitted, pending };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, docs]);
+
+  const totals = useMemo(() => {
+    const prestasi = rows.filter((r) => r.kind === "prestasi").length;
+    const ekonomi = rows.filter((r) => r.kind === "ekonomi").length;
+    return { prestasi, ekonomi, total: rows.length };
+  }, [rows]);
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -232,6 +238,37 @@ function AdminPendaftar() {
             Export Excel
           </Button>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <StatCard
+          label="Total Pendaftar"
+          value={totals.total}
+          icon={<Users className="h-5 w-5" />}
+          gradient="from-primary/15 to-primary/5"
+          iconBg="bg-primary/15 text-primary"
+        />
+        <StatCard
+          label="Beasiswa Prestasi"
+          value={totals.prestasi}
+          icon={<Award className="h-5 w-5" />}
+          gradient="from-amber-500/15 to-amber-500/5"
+          iconBg="bg-amber-500/15 text-amber-600"
+        />
+        <StatCard
+          label="Beasiswa Ekonomi"
+          value={totals.ekonomi}
+          icon={<HeartHandshake className="h-5 w-5" />}
+          gradient="from-emerald-500/15 to-emerald-500/5"
+          iconBg="bg-emerald-500/15 text-emerald-600"
+        />
+        <StatCard
+          label="Sudah Kirim Berkas"
+          value={counts.submitted}
+          icon={<FileCheck className="h-5 w-5" />}
+          gradient="from-sky-500/15 to-sky-500/5"
+          iconBg="bg-sky-500/15 text-sky-600"
+        />
       </div>
 
       <Card className="rounded-2xl p-4 shadow-soft">
@@ -469,5 +506,19 @@ function DocLink({ type, url }: { type: string; url: string }) {
       </div>
       <ExternalLink className="h-4 w-4 text-muted-foreground" />
     </a>
+  );
+}
+
+function StatCard({ label, value, icon, gradient, iconBg }: { label: string; value: number; icon: React.ReactNode; gradient: string; iconBg: string }) {
+  return (
+    <Card className={`rounded-2xl p-4 shadow-soft bg-gradient-to-br ${gradient} border-border/60`}>
+      <div className="flex items-center gap-3">
+        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${iconBg}`}>{icon}</div>
+        <div className="min-w-0">
+          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</div>
+          <div className="text-2xl font-bold text-foreground leading-tight">{value}</div>
+        </div>
+      </div>
+    </Card>
   );
 }
