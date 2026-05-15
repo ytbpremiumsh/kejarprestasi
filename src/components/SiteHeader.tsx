@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import logo from "@/assets/logo-kp.png";
+import { useBranding } from "@/hooks/use-branding";
 
 const nav = [
   { to: "/", label: "Beranda" },
