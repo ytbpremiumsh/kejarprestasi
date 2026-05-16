@@ -9,6 +9,7 @@ APP_DIR="${APP_DIR:-/var/www/kejarprestasi}"
 REPO_URL="${REPO_URL:-}"
 BRANCH="${BRANCH:-main}"
 PM2_NAME="${PM2_NAME:-kejarprestasi}"
+WEBROOT="${WEBROOT:-/www/wwwroot/kejarprestasi.id}"
 NODE_MIN=20
 DOMAIN="${DOMAIN:-kejarprestasi.id}"
 
@@ -70,7 +71,10 @@ npm run build:node
 [ -d dist/client/assets ]         || { err "dist/client/assets tidak ada — build gagal"; exit 1; }
 ok "Build artifacts OK"
 
-# 7. PM2
+# 7. Static fallback untuk webroot aaPanel/Nginx
+bash "$APP_DIR/deploy/stage-webroot.sh"
+
+# 8. PM2
 if pm2 describe "$PM2_NAME" >/dev/null 2>&1; then
   pm2 reload ecosystem.config.cjs
 else
@@ -80,7 +84,7 @@ pm2 save
 pm2 startup systemd -u "$(whoami)" --hp "$HOME" || true
 ok "PM2 jalan: $PM2_NAME"
 
-# 8. Nginx config contoh
+# 9. Nginx config contoh
 NGINX_CONF="/etc/nginx/conf.d/${DOMAIN}.conf"
 if [ ! -f "$NGINX_CONF" ] && [ -d /etc/nginx/conf.d ]; then
   cp "$APP_DIR/deploy/nginx-kejarprestasi.id.conf" "${NGINX_CONF}.example"
@@ -88,7 +92,7 @@ if [ ! -f "$NGINX_CONF" ] && [ -d /etc/nginx/conf.d ]; then
   warn "Review, rename ke .conf, lalu: nginx -t && systemctl reload nginx"
 fi
 
-# 9. Smoke test
+# 10. Smoke test
 sleep 2
 if curl -fsS -o /dev/null -w "%{http_code}" http://127.0.0.1:3000 | grep -qE "^(200|3..)$"; then
   ok "Node SSR merespon di http://127.0.0.1:3000"
