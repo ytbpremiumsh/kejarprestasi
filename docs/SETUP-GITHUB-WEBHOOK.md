@@ -13,7 +13,7 @@ Server verifikasi signature HMAC SHA-256
    ↓
 Cek flag auto_update_enabled di database
    ↓
-Spawn bash update.sh → git pull → build:node → restart PM2
+Spawn bash deploy/update.sh → git pull → build:node → stage webroot → restart PM2
    ↓
 Log hasil ke tabel system_updates (cek di admin dashboard)
 ```
@@ -46,14 +46,13 @@ ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now();
 
 Atau pakai admin UI di `/admin/sistem-update` kalau toggle-nya sudah ada.
 
-## 3. Pastikan `update.sh` Bisa Diakses dari Root Project
+## 3. Pastikan Script Deploy Tersedia
 
-Webhook spawn `${APP_DIR}/update.sh`, tapi file aslinya di `public/update.sh`. Buat symlink:
+Webhook menjalankan `${APP_DIR}/deploy/update.sh`. Pastikan repo ada di path standar:
 
 ```bash
-cd /var/www/kejar-prestasi
-ln -sf public/update.sh update.sh
-chmod +x public/update.sh update.sh
+cd /var/www/kejarprestasi
+chmod +x deploy/update.sh deploy/stage-webroot.sh update.sh
 ```
 
 ## 4. Tambah Webhook di GitHub
@@ -81,13 +80,13 @@ git push origin main
 
 Lalu cek:
 - GitHub → Webhook → Recent Deliveries → status 200 dengan body `{"ok":true,"triggered":true}`
-- VPS: `pm2 logs kejar-prestasi --lines 50` → ada output `update started`
+- VPS: `pm2 logs kejarprestasi --lines 50` → ada output `update started`
 - Admin dashboard `/admin/sistem-update` → tabel `system_updates` ada row baru dengan status `success`
 
 ## 6. Permission untuk User PM2
 
 Pastikan user yang menjalankan PM2/systemd punya:
-- Write akses ke `/var/www/kejar-prestasi` (untuk `git pull` & build)
+- Write akses ke `/var/www/kejarprestasi` (untuk `git pull`, build, dan stage webroot)
 - Akses jalankan `pm2` atau `systemctl restart` (untuk restart service)
 
 Kalau pakai PM2 sebagai user biasa (bukan root), PM2 restart otomatis tanpa sudo.
@@ -107,7 +106,7 @@ kejarprestasi ALL=(ALL) NOPASSWD: /bin/systemctl restart kejar-prestasi
 | `{"ok":true,"autoUpdate":false}` | Flag `auto_update_enabled` masih false | Update row jadi `{"enabled": true}` |
 | `501 Self-hosted Node.js required` | Webhook hit ke deployment Lovable (Worker) | Pastikan webhook URL pakai domain VPS, bukan `*.lovable.app` |
 | Build sukses tapi PM2 tidak restart | User PM2 beda dengan user webhook | Set env `PM2_NAME` & jalankan PM2 sebagai user yang sama |
-| `update.sh: No such file or directory` | Symlink belum dibuat | Step 3: `ln -sf public/update.sh update.sh` |
+| `deploy/update.sh: No such file or directory` | Repo bukan di path standar / file belum executable | Step 3: `chmod +x deploy/update.sh deploy/stage-webroot.sh update.sh` |
 
 ## Disable Auto-Update Sementara
 

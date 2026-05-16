@@ -31,7 +31,7 @@ function VpsInstallPage() {
                    └─ /*         → proxy_pass 127.0.0.1:3000  (Node SSR via PM2)
 
 App dir tunggal: /var/www/kejarprestasi
-Webroot /www/wwwroot/kejarprestasi.id HARUS KOSONG.`}
+Webroot /www/wwwroot/kejarprestasi.id hanya berisi static fallback: assets/, index.html, favicon.ico.`}
         />
       </Card>
 
@@ -40,18 +40,19 @@ Webroot /www/wwwroot/kejarprestasi.id HARUS KOSONG.`}
         <div className="flex gap-3 text-sm">
           <AlertTriangle className="h-5 w-5 shrink-0 text-red-600" />
           <div className="text-foreground space-y-2">
-            <p className="font-semibold">Migrasi dari instalasi lama (aaPanel / static)</p>
+            <p className="font-semibold">Perbaiki webroot yang berisi client/ dan server/</p>
             <p className="text-muted-foreground">
               Jika <code className="rounded bg-muted px-1">/www/wwwroot/kejarprestasi.id/</code> masih
-              berisi <code>client/</code>, <code>server/</code>, <code>assets/</code>, atau{" "}
-              <code>index.html</code> → itu sisa deploy lama yang tidak relevan untuk SSR. Bersihkan dengan:
+              berisi <code>client/</code> dan <code>server/</code> → berarti <code>dist/</code> tersalin mentah
+              ke webroot. Normalnya webroot harus berisi <code>assets/</code>, <code>index.html</code>, dan{" "}
+              <code>favicon.ico</code>. Perbaiki dengan:
             </p>
             <CodeBlock
               code={`sudo bash /var/www/kejarprestasi/deploy/migrate-from-static.sh`}
             />
             <p className="text-muted-foreground">
-              Script ini menghapus isi webroot lama, memasang Nginx config baru, menonaktifkan vhost aaPanel,
-              dan restart PM2. Aman dijalankan berkali-kali.
+              Script ini menyalin isi <code>dist/client</code> ke webroot, menghapus <code>client/</code> +{" "}
+              <code>server/</code> yang salah, memasang Nginx config, dan restart PM2.
             </p>
           </div>
         </div>
@@ -106,6 +107,7 @@ LOVABLE_API_KEY=...`}
               <li>Install Node 20 (via NodeSource) & PM2 global jika belum ada</li>
               <li><code className="rounded bg-muted px-1">npm ci</code> + <code className="rounded bg-muted px-1">npm run build:node</code></li>
               <li>Validasi keras: <code>dist/server/server.node.js</code> harus ada</li>
+              <li>Stage webroot: <code>/www/wwwroot/kejarprestasi.id</code> → <code>assets/</code>, <code>index.html</code>, <code>favicon.ico</code></li>
               <li><code>pm2 start ecosystem.config.cjs</code> + <code>pm2 save</code> + autostart on boot</li>
               <li>Salin contoh Nginx config ke <code>/etc/nginx/conf.d/kejarprestasi.id.conf.example</code></li>
               <li>Smoke test <code>curl http://127.0.0.1:3000</code></li>
@@ -145,7 +147,7 @@ curl -I http://127.0.0.1:3000
 # 4. Domain respond + HTML (bukan 403)?
 curl -I https://kejarprestasi.id
 
-# 5. Webroot lama HARUS kosong (ini fitur, bukan bug!)
+# 5. Webroot normal hanya static fallback
 ls -lah /www/wwwroot/kejarprestasi.id`}
             />
             <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 text-xs text-foreground">
@@ -158,10 +160,9 @@ ls -lah /www/wwwroot/kejarprestasi.id`}
                     <li><code>pm2 status</code> → <code>kejarprestasi · online · cluster</code></li>
                     <li><code>curl -I https://kejarprestasi.id</code> → <code>HTTP/2 200</code> +{" "}
                       <code>content-type: text/html</code></li>
-                    <li><code>/www/wwwroot/kejarprestasi.id/</code> <strong>KOSONG</strong> —
-                      SSR berarti HTML dirender Node, bukan disajikan dari disk. Tidak ada{" "}
-                      <code>index.html</code>, tidak ada <code>client/</code>, tidak ada{" "}
-                      <code>server/</code> di sini.</li>
+                    <li><code>/www/wwwroot/kejarprestasi.id/</code> berisi <code>assets/</code>,{" "}
+                      <code>index.html</code>, <code>favicon.ico</code>. Tidak boleh ada{" "}
+                      <code>client/</code> atau <code>server/</code>.</li>
                   </ul>
                 </div>
               </div>
@@ -176,7 +177,7 @@ sudo bash deploy/update.sh`}
             <p className="text-xs text-muted-foreground">
               Script: <code>git pull</code> → <code>npm ci</code> → <code>npm run build:node</code> →
               validasi → <code>pm2 reload</code> (zero-downtime). Auto-rollback jika build gagal.
-              Membersihkan sisa <code>/www/wwwroot/kejarprestasi.id/</code> legacy otomatis.
+              Webroot di-stage ulang otomatis agar berisi <code>assets/</code>, <code>index.html</code>, dan <code>favicon.ico</code>.
             </p>
           </Step>
         </div>
@@ -202,7 +203,7 @@ sudo bash deploy/update.sh`}
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4">Webroot berisi <code>client/</code> + <code>server/</code></td>
-                <td className="py-2 pr-4">Build di-copy ke webroot oleh script lama</td>
+                <td className="py-2 pr-4"><code>dist/</code> tersalin mentah ke webroot</td>
                 <td className="py-2"><code>bash deploy/migrate-from-static.sh</code></td>
               </tr>
               <tr className="border-b">

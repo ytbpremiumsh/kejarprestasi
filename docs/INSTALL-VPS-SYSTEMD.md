@@ -16,21 +16,21 @@ sudo usermod -aG www-data kejarprestasi
 ```bash
 sudo -iu kejarprestasi
 cd /var/www
-git clone https://github.com/USERNAME/REPO.git kejar-prestasi
-cd kejar-prestasi
+git clone https://github.com/USERNAME/REPO.git kejarprestasi
+cd kejarprestasi
 npm ci
 nano .env   # isi konfigurasi
 mkdir -p logs
 npm run build:node
-ln -sf public/update.sh update.sh
-chmod +x public/update.sh update.sh
+bash deploy/stage-webroot.sh
+chmod +x deploy/update.sh deploy/stage-webroot.sh update.sh
 exit  # balik ke user normal
 ```
 
 ## 3. Install Systemd Service
 
 ```bash
-sudo cp /var/www/kejar-prestasi/deploy/kejar-prestasi.service /etc/systemd/system/
+sudo cp /var/www/kejarprestasi/deploy/kejar-prestasi.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable kejar-prestasi
 sudo systemctl start kejar-prestasi
@@ -51,8 +51,8 @@ Output harus `Active: active (running)`.
 sudo journalctl -u kejar-prestasi -f
 
 # Log file
-tail -f /var/www/kejar-prestasi/logs/app.log
-tail -f /var/www/kejar-prestasi/logs/app-err.log
+tail -f /var/www/kejarprestasi/logs/app.log
+tail -f /var/www/kejarprestasi/logs/app-err.log
 ```
 
 ## 5. Setup Sudoers untuk Auto-Restart dari update.sh
@@ -87,8 +87,8 @@ sudo journalctl -u kejar-prestasi --since "10 minutes ago"
 
 ```bash
 sudo -iu kejarprestasi
-cd /var/www/kejar-prestasi
-bash update.sh
+cd /var/www/kejarprestasi
+bash deploy/update.sh
 ```
 
 Atau via GitHub webhook (lihat `SETUP-GITHUB-WEBHOOK.md`).
