@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { insertRegistration } from "@/lib/registration.server";
+import { sendAppEmail } from "@/lib/email.functions";
 
 const emptyToNull = (value: unknown) => {
   if (value == null) return null;
@@ -51,5 +52,23 @@ export const submitRegistration = createServerFn({ method: "POST" })
     return parsed.data;
   })
   .handler(async ({ data }) => {
-    return insertRegistration(data);
+    const result = await insertRegistration(data);
+    try {
+      await sendAppEmail({
+        data: {
+          templateName: "registration-confirmation",
+          recipientEmail: data.email,
+          idempotencyKey: `reg-${result.token}`,
+          templateData: {
+            fullName: data.full_name,
+            token: result.token,
+            kind: data.kind,
+            whatsapp: data.whatsapp,
+          },
+        },
+      });
+    } catch (e) {
+      console.error("[registration] sendAppEmail failed", e);
+    }
+    return result;
   });
