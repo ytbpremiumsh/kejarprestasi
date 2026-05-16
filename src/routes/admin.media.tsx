@@ -14,8 +14,19 @@ import {
   Search,
   HardDrive,
   Download,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
+import { compressImage, isCompressibleImage } from "@/lib/image-compress";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/admin/media")({
   component: AdminMedia,
