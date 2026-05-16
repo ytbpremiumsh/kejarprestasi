@@ -135,12 +135,12 @@ async function renderEmail(templateName: string, props: Record<string, any>) {
   }
   const entry = TEMPLATES[templateName];
   if (!entry) throw new Error(`Unknown template: ${templateName}`);
-  const html = await render(React.createElement(entry.component, props));
-  const text = await render(React.createElement(entry.component, props), {
+  const html = await render(React.createElement(entry.component, propsWithLogo));
+  const text = await render(React.createElement(entry.component, propsWithLogo), {
     plainText: true,
   });
   const subject =
-    typeof entry.subject === "function" ? entry.subject(props) : entry.subject;
+    typeof entry.subject === "function" ? entry.subject(propsWithLogo) : entry.subject;
   return { html, subject, text };
 }
 
