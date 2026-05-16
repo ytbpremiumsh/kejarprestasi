@@ -19,6 +19,7 @@ import {
   BarChart3,
   Share2,
   Image as ImageIcon,
+  Mail,
 } from "lucide-react";
 import {
   Sidebar,

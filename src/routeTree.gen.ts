@@ -40,6 +40,7 @@ import { Route as AdminKodeKustomRouteImport } from './routes/admin.kode-kustom'
 import { Route as AdminKeamananRouteImport } from './routes/admin.keamanan'
 import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
+import { Route as AdminEmailTemplateRouteImport } from './routes/admin.email-template'
 import { Route as AdminDonasiRouteImport } from './routes/admin.donasi'
 import { Route as AdminBrandingRouteImport } from './routes/admin.branding'
 import { Route as AdminBerkasRouteImport } from './routes/admin.berkas'
@@ -217,6 +218,11 @@ const AdminFormulirRoute = AdminFormulirRouteImport.update({
   path: '/formulir',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminEmailTemplateRoute = AdminEmailTemplateRouteImport.update({
+  id: '/email-template',
+  path: '/email-template',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminDonasiRoute = AdminDonasiRouteImport.update({
   id: '/donasi',
   path: '/donasi',
@@ -344,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/donasi': typeof AdminDonasiRoute
+  '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
@@ -397,6 +404,7 @@ export interface FileRoutesByTo {
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/donasi': typeof AdminDonasiRoute
+  '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
@@ -450,6 +458,7 @@ export interface FileRoutesById {
   '/admin/berkas': typeof AdminBerkasRoute
   '/admin/branding': typeof AdminBrandingRoute
   '/admin/donasi': typeof AdminDonasiRoute
+  '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
@@ -506,6 +515,7 @@ export interface FileRouteTypes {
     | '/admin/berkas'
     | '/admin/branding'
     | '/admin/donasi'
+    | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/kandidat'
     | '/admin/keamanan'
@@ -559,6 +569,7 @@ export interface FileRouteTypes {
     | '/admin/berkas'
     | '/admin/branding'
     | '/admin/donasi'
+    | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/kandidat'
     | '/admin/keamanan'
@@ -611,6 +622,7 @@ export interface FileRouteTypes {
     | '/admin/berkas'
     | '/admin/branding'
     | '/admin/donasi'
+    | '/admin/email-template'
     | '/admin/formulir'
     | '/admin/kandidat'
     | '/admin/keamanan'
@@ -900,6 +912,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFormulirRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/email-template': {
+      id: '/admin/email-template'
+      path: '/email-template'
+      fullPath: '/admin/email-template'
+      preLoaderRoute: typeof AdminEmailTemplateRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/donasi': {
       id: '/admin/donasi'
       path: '/donasi'
@@ -1059,6 +1078,7 @@ interface AdminRouteChildren {
   AdminBerkasRoute: typeof AdminBerkasRoute
   AdminBrandingRoute: typeof AdminBrandingRoute
   AdminDonasiRoute: typeof AdminDonasiRoute
+  AdminEmailTemplateRoute: typeof AdminEmailTemplateRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
   AdminKandidatRoute: typeof AdminKandidatRoute
   AdminKeamananRoute: typeof AdminKeamananRoute
@@ -1080,6 +1100,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBerkasRoute: AdminBerkasRoute,
   AdminBrandingRoute: AdminBrandingRoute,
   AdminDonasiRoute: AdminDonasiRoute,
+  AdminEmailTemplateRoute: AdminEmailTemplateRoute,
   AdminFormulirRoute: AdminFormulirRoute,
   AdminKandidatRoute: AdminKandidatRoute,
   AdminKeamananRoute: AdminKeamananRoute,
