@@ -75,9 +75,9 @@ export function CategoryPage({
       </section>
 
       {/* INFO */}
-      <section className="container-page py-16 grid lg:grid-cols-2 gap-8">
+      <section className="container-page py-16 grid lg:grid-cols-2 gap-8 items-start">
         {/* Persyaratan */}
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-card">
+        <div className="rounded-3xl border border-border bg-card p-8 shadow-card flex flex-col">
           <h2 className="text-2xl font-bold text-foreground">Persyaratan</h2>
           <p className="mt-1 text-sm text-muted-foreground">Pastikan kamu memenuhi seluruh persyaratan berikut.</p>
           <ul className="mt-6 space-y-3">
@@ -87,6 +87,50 @@ export function CategoryPage({
               </li>
             ))}
           </ul>
+
+          {/* Info tambahan agar kolom tidak kosong */}
+          <div className="mt-8 grid sm:grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-border bg-secondary/40 p-5">
+              <div className="flex items-center gap-2 text-primary">
+                <Trophy size={18} />
+                <span className="text-xs font-semibold uppercase tracking-wider">Gratis</span>
+              </div>
+              <h3 className="mt-2 font-semibold text-foreground">Tanpa Biaya Pendaftaran</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Seluruh proses pendaftaran beasiswa 100% gratis tanpa pungutan apapun.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border bg-secondary/40 p-5">
+              <div className="flex items-center gap-2 text-primary">
+                <HeartHandshake size={18} />
+                <span className="text-xs font-semibold uppercase tracking-wider">Terbuka</span>
+              </div>
+              <h3 className="mt-2 font-semibold text-foreground">Seluruh Indonesia</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Pelajar & mahasiswa dari Sabang sampai Merauke berhak mendaftar.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-2xl p-5 text-primary-foreground shadow-soft" style={{ background: "var(--gradient-primary)" }}>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider opacity-90">
+              <CheckCircle2 size={16} /> Tips Persiapan
+            </div>
+            <p className="mt-2 text-sm leading-relaxed opacity-95">
+              Siapkan dokumen pendukung seperti rapor/transkrip, KTP/Kartu Pelajar, dan
+              bukti prestasi atau kondisi ekonomi sebelum mengisi formulir agar prosesnya lebih cepat.
+            </p>
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-dashed border-primary/30 bg-primary-soft/50 p-5">
+            <p className="text-sm text-foreground/90">
+              Punya pertanyaan seputar persyaratan?{" "}
+              <Link to={shareTo} className="font-semibold text-primary hover:underline">
+                Bagikan poster
+              </Link>{" "}
+              ke teman atau hubungi admin via WhatsApp.
+            </p>
+          </div>
         </div>
 
         {/* Benefit */}
