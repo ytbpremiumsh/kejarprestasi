@@ -82,7 +82,9 @@ if [ "$BUILD_EXIT" -ne 0 ] || [ ! -f dist/server/server.node.js ]; then
   err "Build gagal atau dist/server/server.node.js tidak ditemukan — rollback"
   git reset --hard "$LOCAL_BEFORE" || true
   npm install --no-audit --no-fund || true
-  npm run "$BUILD_CMD" || true
+  if npm run "$BUILD_CMD"; then
+    bash "$APP_DIR/deploy/stage-webroot.sh" || true
+  fi
   END=$(date +%s%3N 2>/dev/null || echo "0")
   emit_json "failed" "${LOCAL_BEFORE:0:7}" "$((END-START_TS))" "build failed, rolled back"
   exit 1
