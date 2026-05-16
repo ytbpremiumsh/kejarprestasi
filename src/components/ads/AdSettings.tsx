@@ -17,7 +17,9 @@ export type AdPosition =
   | "after_each_paragraph"
   | "between_sections"
   | "before_timeline_button"
-  | "before_each_button";
+  | "before_each_button"
+  | "before_each_nav_link"
+  | "after_each_nav_link";
 
 export type AdSlotConfig = {
   id: string;
