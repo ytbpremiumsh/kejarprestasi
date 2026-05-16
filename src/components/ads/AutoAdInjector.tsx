@@ -40,6 +40,11 @@ function selectorFor(position: AdPosition): string | null {
       return "p";
     case "between_sections":
       return "section";
+    case "before_timeline_button":
+      // Buttons (Link rendered as <a>) inside the public Timeline section
+      return "#timeline a[class*='rounded-full'], #timeline button";
+    case "before_each_button":
+      return "button, a[role='button'], a[class*='rounded-full']";
     default:
       return null;
   }
