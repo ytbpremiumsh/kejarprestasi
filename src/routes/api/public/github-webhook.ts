@@ -46,7 +46,7 @@ async function runUpdate(triggeredHash: string | null, commitMessage: string | n
   const updateId = row?.id as string | undefined;
 
   const started = Date.now();
-  const script = `${APP_DIR}/update.sh`;
+  const script = `${APP_DIR}/deploy/update.sh`;
   const child = spawn("bash", [script], { cwd: APP_DIR, env: process.env });
   let log = "";
   child.stdout.on("data", (d) => (log += d.toString()));

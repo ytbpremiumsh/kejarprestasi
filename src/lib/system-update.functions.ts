@@ -176,7 +176,7 @@ export const triggerUpdate = createServerFn({ method: "POST" })
 
     const updateId = row?.id as string | undefined;
 
-    const script = `${APP_DIR}/update.sh`;
+    const script = `${APP_DIR}/deploy/update.sh`;
     const r = await runCmd("bash", [script], APP_DIR, 10 * 60 * 1000);
     const log = (r.stdout + "\n" + r.stderr).slice(-20000);
     const afterHash = await gitOutput(["rev-parse", "--short", "HEAD"]).catch(() => "");
@@ -250,12 +250,17 @@ export const rollbackUpdate = createServerFn({ method: "POST" })
       code = install.code;
     }
     if (code === 0) {
-      const build = await runCmd("bash", ["-lc", "npm run build"], APP_DIR, 10 * 60 * 1000);
+      const build = await runCmd("bash", ["-lc", "npm run build:node"], APP_DIR, 10 * 60 * 1000);
       log += "\n" + build.stdout + build.stderr;
       code = build.code;
     }
     if (code === 0) {
-      const restart = await runCmd("bash", ["-lc", "pm2 restart all --update-env || sudo systemctl restart kejar-prestasi || true"], APP_DIR, 60_000);
+      const stage = await runCmd("bash", ["deploy/stage-webroot.sh"], APP_DIR, 60_000);
+      log += "\n" + stage.stdout + stage.stderr;
+      code = stage.code;
+    }
+    if (code === 0) {
+      const restart = await runCmd("bash", ["-lc", "pm2 reload kejarprestasi --update-env || sudo systemctl restart kejar-prestasi || true"], APP_DIR, 60_000);
       log += "\n" + restart.stdout + restart.stderr;
     }
 
