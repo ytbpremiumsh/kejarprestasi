@@ -132,6 +132,7 @@ function RootComponent() {
       <AdSettingsProvider>
         <AdsenseLoader />
         <AutoAdInjector />
+        <CustomAdInjector />
         <CustomCodeInjector />
         <AnalyticsInjector />
         <ForceReloadNavigation />
