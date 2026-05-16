@@ -16,6 +16,7 @@
     "preview": "vite preview",
     "start": "node dist/server/server.node.js",
     "start:node": "node dist/server/server.node.js",
+    "stage:webroot": "bash deploy/stage-webroot.sh",
     "deploy:vps": "bash deploy/update.sh",
     "lint": "eslint .",
     "format": "prettier --write ."
