@@ -131,14 +131,18 @@ Auto-renew sudah aktif via systemd timer.
 
 ## 9. Auto-Update via GitHub Webhook (Opsional)
 
-Script `public/update.sh` sudah siap pakai. Trigger lewat tombol "Update Sekarang" di admin dashboard, atau webhook:
+Setiap push ke `main` di GitHub bisa otomatis trigger update di VPS. Setup lengkapnya ada di **[`SETUP-GITHUB-WEBHOOK.md`](./SETUP-GITHUB-WEBHOOK.md)**.
 
+Ringkasan: generate secret → simpan ke `site_settings` → tambah webhook di GitHub repo → push commit.
+
+Test manual tanpa webhook:
 ```bash
-# Test manual
-bash public/update.sh
+bash update.sh
 ```
 
-Script ini akan: pull → install → `build:node` → restart PM2, dengan auto-rollback jika build gagal.
+Script ini akan: pull → install → `build:node` → restart PM2/systemd, dengan auto-rollback jika build gagal.
+
+> **Alternatif systemd** (tanpa PM2): lihat [`INSTALL-VPS-SYSTEMD.md`](./INSTALL-VPS-SYSTEMD.md).
 
 ---
 
