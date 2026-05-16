@@ -236,7 +236,7 @@ export const sendTestEmail = createServerFn({ method: "POST" })
       recipient,
       templateName: `${data.templateName}-test`,
       idempotencyKey: `test-${data.templateName}-${Date.now()}`,
-      subject: `[TEST] ${subject}`,
+      subject,
       html,
       text,
     });
