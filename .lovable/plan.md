@@ -1,80 +1,133 @@
-# Rencana: GitHub Webhook Auto-Update + Systemd Alternative
+# Rombak Deployment VPS → Node SSR
 
-## Status Saat Ini
+## Keputusan
 
-Webhook endpoint sudah **ada dan lengkap** di `src/routes/api/public/github-webhook.ts`:
-- ✅ Verifikasi signature HMAC SHA-256 (header `x-hub-signature-256`)
-- ✅ Cek event `push` ke branch `main`/`master`
-- ✅ Cek flag `auto_update_enabled` di `site_settings`
-- ✅ Spawn `update.sh` + log ke tabel `system_updates`
-- ✅ Baca secret dari `site_settings.github_webhook_secret`
+- **Process manager**: PM2
+- **App path**: `/var/www/kejarprestasi`
+- **Nginx**: reverse proxy ke `127.0.0.1:3000`, dengan static fallback untuk `/assets` dari disk
+- **Domain**: `kejarprestasi.id`, port `3000`
 
-Jadi **tidak perlu kode baru** — cukup setup di sisi VPS + GitHub + docs.
+## Akar Masalah
 
-Satu issue kecil: webhook melakukan `spawn("bash", ["${APP_DIR}/update.sh"])` tapi file aslinya ada di `public/update.sh`. Saat build, `public/` di-copy ke output, tapi VPS perlu `update.sh` di root `APP_DIR`. Solusinya: symlink saat install.
+1. `public/update.sh` ikut ter-publish ke `dist/client/` karena Vite copy semua `public/*` → akhirnya ter-copy ke `/www/wwwroot/kejarprestasi.id/` dan tampil sebagai "deployment". Itu kenapa Nginx root cuma berisi `assets/` + `update.sh`, tanpa `index.html` → 403.
+2. Script install lama menyalin `dist/client/*` ke web root aaPanel seolah-olah SPA statis. Padahal app ini **SSR** — `index.html` tidak ada, harus dirender Node.
+3. Path tidak konsisten: `/var/www/kejarprestasi` vs `/var/www/kejar-prestasi` vs `/www/wwwroot/kejarprestasi.id`.
 
----
+## Target Akhir
 
-## Yang Akan Dibuat
-
-### 1. `docs/SETUP-GITHUB-WEBHOOK.md`
-Step-by-step:
-- Generate webhook secret random
-- Insert ke `site_settings` via SQL (atau via admin UI kalau ada)
-- Tambah webhook di GitHub repo (URL, content-type, secret, event=push)
-- Test dengan event "ping"
-- Enable `auto_update_enabled` toggle
-- Troubleshoot: cek log `pm2 logs`, cek tabel `system_updates`
-
-### 2. `deploy/kejar-prestasi.service` (systemd unit)
-Alternative untuk user yang tidak mau PM2:
 ```text
-[Unit]
-Description=Kejar Prestasi (Node SSR)
-After=network.target
+/var/www/kejarprestasi/          ← app dir (git clone, build, run)
+├── dist/server/server.node.js   ← entry Node SSR (PM2 jalankan ini)
+├── dist/client/assets/          ← hashed assets (Nginx serve langsung)
+├── package.json, node_modules/
+├── .env                         ← server secrets
+├── ecosystem.config.cjs
+└── logs/
 
-[Service]
-Type=simple
-User=www-data
-WorkingDirectory=/var/www/kejar-prestasi
-ExecStart=/usr/bin/node dist/server/server.node.js
-Restart=on-failure
-Environment=NODE_ENV=production PORT=3000 HOST=0.0.0.0
-EnvironmentFile=/var/www/kejar-prestasi/.env
-
-[Install]
-WantedBy=multi-user.target
+/www/wwwroot/kejarprestasi.id/   ← Nginx docroot (KOSONG, hanya untuk /assets alias)
 ```
 
-### 3. `docs/INSTALL-VPS-SYSTEMD.md`
-Panduan setup dengan systemd (alternatif PM2):
-- Install service file
-- `systemctl enable/start`
-- Cek log via `journalctl -u kejar-prestasi -f`
-- Catatan: `update.sh` di-detect otomatis (sudah ada branch `systemctl restart kejar-prestasi`)
+Nginx:
+- `location /assets/` → `alias /var/www/kejarprestasi/dist/client/assets/;` (cache 1y, immutable)
+- `location /` → `proxy_pass http://127.0.0.1:3000;` (semua HTML + API + SSR)
 
-### 4. Update `docs/INSTALL-VPS.md`
-Tambah section "Setup update.sh location":
+## Perubahan File
+
+### 1. Pindahkan `public/update.sh` → `deploy/update.sh`
+Supaya tidak ter-bundle ke `dist/client/` dan tidak public-accessible. Update semua referensi di docs.
+
+### 2. Tulis ulang `deploy/install-vps.sh` (baru, deterministik)
+- Cek Node ≥ 20, install via NodeSource jika kurang
+- `git clone` / `git pull` ke `/var/www/kejarprestasi`
+- `npm ci && npm run build:node`
+- **Validasi keras**: file `dist/server/server.node.js` harus ada, kalau tidak → exit 1
+- Setup `.env` (prompt jika belum ada)
+- `pm2 start ecosystem.config.cjs && pm2 save && pm2 startup`
+- **Tidak** menyalin apapun ke `/www/wwwroot/`
+- Tulis file Nginx config contoh ke `/etc/nginx/conf.d/kejarprestasi.id.conf.example`
+
+### 3. Tulis ulang `deploy/update.sh`
+- `cd /var/www/kejarprestasi && git pull`
+- `npm ci --production=false && npm run build:node`
+- Validasi `dist/server/server.node.js` ada
+- `pm2 reload kejarprestasi` (zero-downtime)
+- **Tolak** dan hapus `/www/wwwroot/kejarprestasi.id/update.sh` jika ditemukan
+
+### 4. Tulis ulang `ecosystem.config.cjs`
+```js
+module.exports = {
+  apps: [{
+    name: 'kejarprestasi',
+    script: 'dist/server/server.node.js',
+    cwd: '/var/www/kejarprestasi',
+    instances: 'max', exec_mode: 'cluster',
+    env: { NODE_ENV: 'production', PORT: 3000, HOST: '127.0.0.1' },
+    error_file: 'logs/err.log', out_file: 'logs/out.log',
+  }],
+};
+```
+
+### 5. Tulis ulang `docs/INSTALL-VPS.md`
+- Hapus semua jejak aaPanel static-root pattern
+- Sertakan contoh Nginx config (lihat di bawah)
+- Migrasi: untuk server lama yang sudah punya `/www/wwwroot/kejarprestasi.id/{assets,update.sh}`, jalankan `deploy/migrate-from-static.sh` yang membersihkan folder itu dan re-point Nginx
+
+### 6. `deploy/nginx-kejarprestasi.id.conf` (baru, contoh)
+```nginx
+server {
+  listen 80;
+  server_name kejarprestasi.id www.kejarprestasi.id;
+
+  # Static assets — Nginx langsung dari disk
+  location /assets/ {
+    alias /var/www/kejarprestasi/dist/client/assets/;
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    access_log off;
+  }
+
+  # SSR + API + segalanya → Node
+  location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+  }
+}
+```
+
+### 7. `deploy/migrate-from-static.sh` (baru)
+Untuk server existing:
 ```bash
-# Pastikan update.sh ada di root project (bukan di public/)
-ln -sf public/update.sh update.sh
-chmod +x update.sh
+systemctl stop nginx
+rm -rf /www/wwwroot/kejarprestasi.id/{assets,update.sh,index.html}
+# arahkan ke config baru
+cp /var/www/kejarprestasi/deploy/nginx-kejarprestasi.id.conf /etc/nginx/conf.d/
+nginx -t && systemctl start nginx
+pm2 reload kejarprestasi || pm2 start /var/www/kejarprestasi/ecosystem.config.cjs
 ```
 
-### 5. Update endpoint URL reference
-Webhook URL untuk GitHub:
-- VPS user: `https://domain-anda.com/api/public/github-webhook`
+### 8. Hapus / arsipkan
+- `docs/INSTALL-VPS-SYSTEMD.md` → tandai sebagai opsional, bukan path utama
+- `deploy/kejar-prestasi.service` → tetap di repo sebagai referensi, tapi PM2 jadi default
 
----
+## Verifikasi Setelah Install
 
-## Tidak Ada Perubahan Kode Aplikasi
+```bash
+ls /var/www/kejarprestasi/dist/server/server.node.js   # harus ada
+pm2 status                                              # kejarprestasi: online
+curl -I http://127.0.0.1:3000                           # 200
+curl -I https://kejarprestasi.id                        # 200 + Content-Type: text/html
+curl -I https://kejarprestasi.id/assets/<hash>.js       # 200 + Cache-Control immutable
+ls /www/wwwroot/kejarprestasi.id/                       # kosong / tidak relevan
+```
 
-Webhook handler, tabel `system_updates`, dan logic admin UI sudah berfungsi. Murni dokumentasi + 1 systemd unit file.
+## Catatan: Worker tetap untuk Lovable Publish
 
----
-
-## Pertanyaan Konfirmasi
-
-1. **Saya lanjut bikin semua 4 file di atas** (docs webhook + systemd unit + docs systemd + update INSTALL-VPS.md)?
-2. **Symlink atau copy** untuk `update.sh`? Symlink lebih bersih (otomatis ikut git pull), saya rekomendasi symlink.
-3. **User systemd**: pakai `www-data` (default Nginx user) atau bikin user khusus `kejarprestasi`? Saya rekomendasi user khusus untuk isolasi permission, tapi `www-data` lebih simpel kalau Anda sudah nyaman.
+Build Lovable (`lovable.app`) tetap pakai Cloudflare Worker (config default). Yang dirombak hanya jalur self-host VPS via `build:node`. Dua dunia tetap koeksistensi:
+- `npm run build` → Worker (Lovable publish)
+- `npm run build:node` → Node SSR (VPS)
