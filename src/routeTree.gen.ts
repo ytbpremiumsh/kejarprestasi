@@ -57,6 +57,7 @@ import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/em
 import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
 import { Route as ApiPublicWaWebhookRouteImport } from './routes/api/public/wa-webhook'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as ApiPublicGithubWebhookRouteImport } from './routes/api/public/github-webhook'
 import { Route as AdminInstalasiVpsRouteImport } from './routes/admin.instalasi.vps'
 import { Route as AdminInstalasiHostingRouteImport } from './routes/admin.instalasi.hosting'
@@ -306,6 +307,11 @@ const ApiPublicWaWebhookRoute = ApiPublicWaWebhookRouteImport.update({
   path: '/api/public/wa-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicGithubWebhookRoute = ApiPublicGithubWebhookRouteImport.update({
   id: '/api/public/github-webhook',
   path: '/api/public/github-webhook',
@@ -396,6 +402,7 @@ export interface FileRoutesByFullPath {
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
   '/api/public/github-webhook': typeof ApiPublicGithubWebhookRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -451,6 +458,7 @@ export interface FileRoutesByTo {
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
   '/api/public/github-webhook': typeof ApiPublicGithubWebhookRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -510,6 +518,7 @@ export interface FileRoutesById {
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
   '/api/public/github-webhook': typeof ApiPublicGithubWebhookRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -570,6 +579,7 @@ export interface FileRouteTypes {
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
     | '/api/public/github-webhook'
+    | '/api/public/health'
     | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -625,6 +635,7 @@ export interface FileRouteTypes {
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
     | '/api/public/github-webhook'
+    | '/api/public/health'
     | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -683,6 +694,7 @@ export interface FileRouteTypes {
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
     | '/api/public/github-webhook'
+    | '/api/public/health'
     | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -721,6 +733,7 @@ export interface RootRouteChildren {
   BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
   BerkasIndexRoute: typeof BerkasIndexRoute
   ApiPublicGithubWebhookRoute: typeof ApiPublicGithubWebhookRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicWaWebhookRoute: typeof ApiPublicWaWebhookRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -1068,6 +1081,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWaWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/github-webhook': {
       id: '/api/public/github-webhook'
       path: '/api/public/github-webhook'
@@ -1230,6 +1250,7 @@ const rootRouteChildren: RootRouteChildren = {
   BagikanPosterIndexRoute: BagikanPosterIndexRoute,
   BerkasIndexRoute: BerkasIndexRoute,
   ApiPublicGithubWebhookRoute: ApiPublicGithubWebhookRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicWaWebhookRoute: ApiPublicWaWebhookRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
@@ -1241,3 +1262,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
