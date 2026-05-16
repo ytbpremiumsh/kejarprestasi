@@ -133,6 +133,7 @@ function RootComponent() {
         <AutoAdInjector />
         <CustomCodeInjector />
         <AnalyticsInjector />
+        <ForceReloadNavigation />
         {isBareLayout ? (
           <Outlet />
         ) : (
