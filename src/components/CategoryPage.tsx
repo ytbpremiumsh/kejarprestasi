@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, FileText, Gift, PlayCircle, Share2, Trophy, HeartHandshake } from "lucide-react";
+import { ArrowRight, CheckCircle2, FileText, PlayCircle, Share2, Trophy, HeartHandshake } from "lucide-react";
 import type { ReactNode } from "react";
 import { AdSlot } from "@/components/ads/AdSlot";
 
@@ -14,17 +14,13 @@ const persyaratan = [
   "Mengikuti seluruh persyaratan yang ditetapkan",
 ];
 
-const merchandise = ["Plakat Beasiswa", "Kaos", "Block Note", "Goodie Bag", "Sertifikat Beasiswa"];
+
 
 const BENEFIT_IMAGE_URL =
   "https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/1778936443603-Benefit-Kejar-Prestasi--3.png";
 
 const benefitList = [
   { strong: "Dana Pendidikan Beasiswa", rest: "" },
-  {
-    strong: "Video motivasi",
-    rest: ' berjudul "Menghadapi Tantangan dan Meraih Keberhasilan dalam Studi".',
-  },
   { strong: "Merchandise menarik", rest: " dari Kejar Prestasi." },
   { strong: "Sertifikat Beasiswa", rest: " by Kejar Prestasi." },
   {
@@ -137,18 +133,6 @@ export function CategoryPage({
             ))}
           </ul>
 
-          <div className="mt-6">
-            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Gift size={16} className="text-primary" /> Merchandise Menarik
-            </div>
-            <ul className="mt-3 grid sm:grid-cols-2 gap-2.5">
-              {merchandise.map((m) => (
-                <li key={m} className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground/90">
-                  <span className={`inline-block h-2 w-2 rounded-full ${isGold ? "bg-[oklch(0.78_0.18_80)]" : "bg-primary"}`} /> {m}
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </section>
 
