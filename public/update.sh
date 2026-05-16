@@ -9,6 +9,7 @@ set -e
 APP_DIR="${APP_DIR:-$(pwd)}"
 BRANCH="${BRANCH:-main}"
 PM2_NAME="${PM2_NAME:-kejar-prestasi}"
+BUILD_CMD="${BUILD_CMD:-build:node}"   # build Node (VPS), bukan Worker
 NODE_MIN=20
 LOG_FILE="${APP_DIR}/update.log"
 
@@ -71,9 +72,9 @@ else npm install --no-audit --no-fund
 fi
 
 # 5. Build dengan auto-rollback
-info "Build production..."
+info "Build production (target: Node / VPS)..."
 set +e
-if command -v bun >/dev/null; then bun run build; else npm run build; fi
+if command -v bun >/dev/null; then bun run "$BUILD_CMD"; else npm run "$BUILD_CMD"; fi
 BUILD_EXIT=$?
 set -e
 
@@ -81,7 +82,7 @@ if [ "$BUILD_EXIT" -ne 0 ]; then
   err "Build gagal — auto-rollback ke $LOCAL_BEFORE"
   git reset --hard "$LOCAL_BEFORE" || true
   if command -v bun >/dev/null; then bun install || true; else npm install --no-audit --no-fund || true; fi
-  if command -v bun >/dev/null; then bun run build || true; else npm run build || true; fi
+  if command -v bun >/dev/null; then bun run "$BUILD_CMD" || true; else npm run "$BUILD_CMD" || true; fi
   END=$(date +%s%3N 2>/dev/null || echo "0")
   emit_json "failed" "${LOCAL_BEFORE:0:7}" "$((END-START_TS))" "build failed, rolled back"
   exit 1
