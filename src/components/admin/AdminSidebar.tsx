@@ -20,6 +20,7 @@ import {
   Share2,
   Image as ImageIcon,
   Mail,
+  HardDrive,
 } from "lucide-react";
 import {
   Sidebar,
