@@ -419,7 +419,7 @@ function FieldRenderer({
             rows={3}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder={field.placeholder}
+            placeholder={ph}
             className={cls}
           />
         ) : field.type === "select" ? (
@@ -446,7 +446,7 @@ function FieldRenderer({
             }
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder={field.placeholder}
+            placeholder={ph}
             className={cls}
           />
         )}
