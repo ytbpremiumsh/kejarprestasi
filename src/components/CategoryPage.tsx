@@ -16,6 +16,29 @@ const persyaratan = [
 
 const merchandise = ["Plakat Beasiswa", "Kaos", "Block Note", "Goodie Bag", "Sertifikat Beasiswa"];
 
+const BENEFIT_IMAGE_URL =
+  "https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/1778936443603-Benefit-Kejar-Prestasi--3.png";
+
+const benefitList = [
+  { strong: "Dana Pendidikan Beasiswa", rest: "" },
+  {
+    strong: "Video motivasi",
+    rest: ' berjudul "Menghadapi Tantangan dan Meraih Keberhasilan dalam Studi".',
+  },
+  { strong: "Merchandise menarik", rest: " dari Kejar Prestasi." },
+  { strong: "Sertifikat Beasiswa", rest: " by Kejar Prestasi." },
+  {
+    prefix: "Peluang Menjadi ",
+    strong: "Kontingen Ambassador",
+    rest: " Program Kejar Prestasi.",
+  },
+  {
+    prefix: "Dapatkan ",
+    strong: "Akses Magang",
+    rest: " di Kejar Prestasi Indonesia dan Partner.",
+  },
+];
+
 export function CategoryPage({
   kind,
   title,
@@ -75,6 +98,18 @@ export function CategoryPage({
           <h2 className="text-2xl font-bold text-foreground">Benefit Beasiswa</h2>
           <p className="mt-1 text-sm text-muted-foreground">Total beasiswa Rp23.000.000/semester serta benefit pendukung.</p>
 
+          <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-secondary/30">
+            <img
+              src={BENEFIT_IMAGE_URL}
+              alt="Benefit Beasiswa Kejar Prestasi"
+              loading="lazy"
+              decoding="async"
+              width={1200}
+              height={800}
+              className="w-full h-auto object-cover"
+            />
+          </div>
+
           <div className="mt-6 rounded-2xl p-5 text-primary-foreground shadow-soft" style={{ background: "var(--gradient-primary)" }}>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider opacity-90">
               <PlayCircle size={16} /> Video Motivasi
@@ -83,6 +118,24 @@ export function CategoryPage({
               "Menghadapi Tantangan dan Meraih Keberhasilan dalam Studi"
             </p>
           </div>
+
+          <ul className="mt-6 space-y-2.5">
+            {benefitList.map((b, i) => (
+              <li
+                key={i}
+                className="flex items-start gap-2.5 rounded-xl bg-secondary/40 px-3.5 py-2.5 text-sm text-foreground/90"
+              >
+                <span
+                  className={`mt-1.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full ${isGold ? "bg-[oklch(0.78_0.18_80)]" : "bg-primary"}`}
+                />
+                <span>
+                  {b.prefix}
+                  <strong className="font-semibold text-foreground">{b.strong}</strong>
+                  {b.rest}
+                </span>
+              </li>
+            ))}
+          </ul>
 
           <div className="mt-6">
             <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
