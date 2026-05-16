@@ -5,6 +5,7 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Preview,
   Section,
   Text,
@@ -19,6 +20,7 @@ interface RegistrationConfirmationProps {
   token?: string;
   kind?: "prestasi" | "ekonomi" | string;
   whatsapp?: string;
+  logoUrl?: string;
 }
 
 const kindLabel = (k?: string) =>
@@ -33,6 +35,7 @@ const RegistrationConfirmationEmail = ({
   token,
   kind,
   whatsapp,
+  logoUrl,
 }: RegistrationConfirmationProps) => (
   <Html lang="id" dir="ltr">
     <Head />
@@ -42,6 +45,9 @@ const RegistrationConfirmationEmail = ({
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
+          {logoUrl ? (
+            <Img src={logoUrl} alt={SITE_NAME} width="72" height="72" style={logo} />
+          ) : null}
           <Heading style={brand}>{SITE_NAME}</Heading>
           <Text style={brandSub}>{SITE_TAGLINE}</Text>
         </Section>
@@ -124,6 +130,12 @@ const container = {
 const header = {
   textAlign: "center" as const,
   paddingBottom: "24px",
+};
+const logo = {
+  display: "block",
+  margin: "0 auto 12px",
+  borderRadius: "50%",
+  objectFit: "cover" as const,
 };
 const brand = {
   fontSize: "26px",

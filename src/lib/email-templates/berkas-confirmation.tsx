@@ -5,6 +5,7 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Preview,
   Section,
   Text,
@@ -19,6 +20,7 @@ interface BerkasConfirmationProps {
   token?: string;
   kind?: "prestasi" | "ekonomi" | string;
   count?: number;
+  logoUrl?: string;
 }
 
 const kindLabel = (k?: string) =>
@@ -33,6 +35,7 @@ const BerkasConfirmationEmail = ({
   token,
   kind,
   count,
+  logoUrl,
 }: BerkasConfirmationProps) => (
   <Html lang="id" dir="ltr">
     <Head />
@@ -40,6 +43,9 @@ const BerkasConfirmationEmail = ({
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
+          {logoUrl ? (
+            <Img src={logoUrl} alt={SITE_NAME} width="72" height="72" style={logo} />
+          ) : null}
           <Heading style={brand}>{SITE_NAME}</Heading>
           <Text style={brandSub}>{SITE_TAGLINE}</Text>
         </Section>
@@ -125,6 +131,12 @@ const container = {
 const header = {
   textAlign: "center" as const,
   paddingBottom: "24px",
+};
+const logo = {
+  display: "block",
+  margin: "0 auto 12px",
+  borderRadius: "50%",
+  objectFit: "cover" as const,
 };
 const brand = {
   fontSize: "26px",
