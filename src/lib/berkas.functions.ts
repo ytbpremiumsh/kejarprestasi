@@ -34,7 +34,7 @@ export const submitBerkasDocuments = createServerFn({ method: "POST" })
 
     const { data: registrant, error: regError } = await supabaseAdmin
       .from("registrations")
-      .select("id, email")
+      .select("id, email, full_name")
       .eq("token", data.token)
       .eq("kind", data.kind)
       .maybeSingle();
@@ -59,5 +59,24 @@ export const submitBerkasDocuments = createServerFn({ method: "POST" })
       .upsert(rows, { onConflict: "email_key,kind,doc_key" });
 
     if (error) throw new Error(error.message);
+
+    try {
+      await sendAppEmail({
+        data: {
+          templateName: "berkas-confirmation",
+          recipientEmail: registrant.email,
+          idempotencyKey: `berkas-${data.token}-${submittedAt}`,
+          templateData: {
+            fullName: (registrant as any).full_name ?? "",
+            token: data.token,
+            kind: data.kind,
+            count: rows.length,
+          },
+        },
+      });
+    } catch (e) {
+      console.error("[berkas] sendAppEmail failed", e);
+    }
+
     return { count: rows.length };
   });
