@@ -8,6 +8,125 @@ import { TEMPLATES } from "./email-templates/registry";
 const SENDER_DOMAIN = "notify.kejarprestasi.id";
 const FROM_EMAIL = "Kejar Prestasi <noreply@notify.kejarprestasi.id>";
 
+const CUSTOMIZABLE: Record<string, string> = {
+  "registration-confirmation": "email_template_registration",
+  "berkas-confirmation": "email_template_berkas",
+};
+
+function escapeHtml(s: string) {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function kindLabel(k?: string) {
+  return k === "prestasi"
+    ? "Beasiswa Prestasi"
+    : k === "ekonomi"
+      ? "Beasiswa Ekonomi"
+      : "Beasiswa";
+}
+
+function buildPlaceholders(props: Record<string, any>) {
+  return {
+    full_name: String(props.fullName ?? props.full_name ?? ""),
+    token: String(props.token ?? ""),
+    kind: String(props.kind ?? ""),
+    kind_label: kindLabel(props.kind),
+    whatsapp: String(props.whatsapp ?? ""),
+    count: String(props.count ?? ""),
+    year: String(new Date().getFullYear()),
+    site_name: "Kejar Prestasi",
+  };
+}
+
+function applyPlaceholders(tpl: string, props: Record<string, any>) {
+  const values = buildPlaceholders(props);
+  return tpl.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key) => {
+    const v = values[key as keyof typeof values];
+    return v == null ? "" : escapeHtml(v);
+  });
+}
+
+function htmlToText(html: string) {
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+async function loadCustomTemplate(templateName: string) {
+  const key = CUSTOMIZABLE[templateName];
+  if (!key) return null;
+  const { data } = await (supabaseAdmin as any)
+    .from("site_settings")
+    .select("value")
+    .eq("key", key)
+    .maybeSingle();
+  const v = data?.value as { enabled?: boolean; subject?: string; html?: string } | null;
+  if (!v || !v.enabled || !v.html || !v.subject) return null;
+  return { subject: v.subject, html: v.html };
+}
+
+async function renderEmail(templateName: string, props: Record<string, any>) {
+  const custom = await loadCustomTemplate(templateName);
+  if (custom) {
+    const html = applyPlaceholders(custom.html, props);
+    const subject = applyPlaceholders(custom.subject, props);
+    const text = htmlToText(html);
+    return { html, subject, text };
+  }
+  const entry = TEMPLATES[templateName];
+  if (!entry) throw new Error(`Unknown template: ${templateName}`);
+  const html = await render(React.createElement(entry.component, props));
+  const text = await render(React.createElement(entry.component, props), {
+    plainText: true,
+  });
+  const subject =
+    typeof entry.subject === "function" ? entry.subject(props) : entry.subject;
+  return { html, subject, text };
+}
+
+async function enqueue(args: {
+  recipient: string;
+  templateName: string;
+  idempotencyKey: string;
+  subject: string;
+  html: string;
+  text: string;
+}) {
+  const messageId = crypto.randomUUID();
+  const { error } = await (supabaseAdmin as any).rpc("enqueue_email", {
+    queue_name: "transactional_emails",
+    payload: {
+      to: args.recipient,
+      from: FROM_EMAIL,
+      sender_domain: SENDER_DOMAIN,
+      subject: args.subject,
+      html: args.html,
+      text: args.text,
+      purpose: "transactional",
+      label: args.templateName,
+      idempotency_key: args.idempotencyKey,
+      message_id: messageId,
+    },
+  });
+  if (error) throw new Error(error.message);
+  return messageId;
+}
+
 export const sendAppEmail = createServerFn({ method: "POST" })
   .inputValidator((input) =>
     z
@@ -20,13 +139,9 @@ export const sendAppEmail = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data }) => {
-    const entry = TEMPLATES[data.templateName];
-    if (!entry) throw new Error(`Unknown template: ${data.templateName}`);
-
-    const recipient = (entry.to ?? data.recipientEmail).toLowerCase();
+    const recipient = data.recipientEmail.toLowerCase();
     const props = data.templateData ?? {};
 
-    // Skip suppressed addresses
     const { data: suppressed } = await (supabaseAdmin as any)
       .from("suppressed_emails")
       .select("email")
@@ -34,31 +149,48 @@ export const sendAppEmail = createServerFn({ method: "POST" })
       .maybeSingle();
     if (suppressed) return { ok: true, skipped: "suppressed" as const };
 
-    const html = await render(React.createElement(entry.component, props));
-    const text = await render(React.createElement(entry.component, props), {
-      plainText: true,
+    const { html, subject, text } = await renderEmail(data.templateName, props);
+    const messageId = await enqueue({
+      recipient,
+      templateName: data.templateName,
+      idempotencyKey: data.idempotencyKey,
+      subject,
+      html,
+      text,
     });
-    const subject =
-      typeof entry.subject === "function" ? entry.subject(props) : entry.subject;
+    return { ok: true, messageId };
+  });
 
-    const messageId = crypto.randomUUID();
-
-    const { error } = await (supabaseAdmin as any).rpc("enqueue_email", {
-      queue_name: "transactional_emails",
-      payload: {
-        to: recipient,
-        from: FROM_EMAIL,
-        sender_domain: SENDER_DOMAIN,
-        subject,
-        html,
-        text,
-        purpose: "transactional",
-        label: data.templateName,
-        idempotency_key: data.idempotencyKey,
-        message_id: messageId,
-      },
+export const sendTestEmail = createServerFn({ method: "POST" })
+  .inputValidator((input) =>
+    z
+      .object({
+        templateName: z.enum(["registration-confirmation", "berkas-confirmation"]),
+        recipientEmail: z.string().email(),
+        subject: z.string().min(1).max(300),
+        html: z.string().min(1).max(200000),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data }) => {
+    const recipient = data.recipientEmail.toLowerCase();
+    const sampleProps: Record<string, any> = {
+      fullName: "Andi Pratama",
+      token: data.templateName === "berkas-confirmation" ? "KP-PRE-A1B2C3" : "KP-PRE-A1B2C3",
+      kind: "prestasi",
+      whatsapp: "08123456789",
+      count: 5,
+    };
+    const html = applyPlaceholders(data.html, sampleProps);
+    const subject = applyPlaceholders(data.subject, sampleProps);
+    const text = htmlToText(html);
+    const messageId = await enqueue({
+      recipient,
+      templateName: `${data.templateName}-test`,
+      idempotencyKey: `test-${data.templateName}-${Date.now()}`,
+      subject: `[TEST] ${subject}`,
+      html,
+      text,
     });
-    if (error) throw new Error(error.message);
-
     return { ok: true, messageId };
   });
