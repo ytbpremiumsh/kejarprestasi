@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # =============================================================
-#  Kejar Prestasi - Auto Update Script
-#  Output JSON ringkas di akhir + auto-rollback jika build gagal.
+#  Kejar Prestasi — Update Script (Node SSR / VPS)
+#  Pull → build:node → validate → pm2 reload (zero-downtime)
 # =============================================================
-
 set -e
 
-APP_DIR="${APP_DIR:-$(pwd)}"
+APP_DIR="${APP_DIR:-/var/www/kejarprestasi}"
 BRANCH="${BRANCH:-main}"
-PM2_NAME="${PM2_NAME:-kejar-prestasi}"
-BUILD_CMD="${BUILD_CMD:-build:node}"   # build Node (VPS), bukan Worker
+PM2_NAME="${PM2_NAME:-kejarprestasi}"
+BUILD_CMD="${BUILD_CMD:-build:node}"
 NODE_MIN=20
-LOG_FILE="${APP_DIR}/update.log"
+LOG_FILE="${APP_DIR}/logs/update.log"
+LEGACY_WEBROOT="/www/wwwroot/kejarprestasi.id"
 
 color() { printf "\033[%sm%s\033[0m\n" "$1" "$2"; }
 info()  { color "1;34" "==> $1"; }
@@ -21,39 +21,43 @@ err()   { color "1;31" "✖  $1"; }
 stamp() { date '+%Y-%m-%d %H:%M:%S'; }
 
 emit_json() {
-  local status="$1"; local commit="$2"; local duration="$3"; local message="$4"
+  local status="$1" commit="$2" duration="$3" message="$4"
   echo "---UPDATE-RESULT---"
   printf '{"status":"%s","commit":"%s","duration_ms":%s,"message":"%s"}\n' \
     "$status" "$commit" "$duration" "$message"
 }
 
 START_TS=$(date +%s%3N 2>/dev/null || echo "0")
+mkdir -p "$APP_DIR/logs"
 cd "$APP_DIR"
 echo "[$(stamp)] update started" >> "$LOG_FILE"
 
 LOCAL_BEFORE=$(git rev-parse HEAD 2>/dev/null || echo "")
-
 trap 'err "Update gagal."; END=$(date +%s%3N 2>/dev/null || echo "0"); emit_json "failed" "${LOCAL_BEFORE:0:7}" "$((END-START_TS))" "script error"' ERR
 
 # 1. Prasyarat
 command -v git  >/dev/null || { err "git tidak ditemukan"; exit 1; }
 command -v node >/dev/null || { err "Node.js tidak ditemukan (butuh v${NODE_MIN}+)"; exit 1; }
 NODE_VER=$(node -v | sed 's/v//' | cut -d. -f1)
-[ "$NODE_VER" -ge "$NODE_MIN" ] || { err "Node terlalu lama (v$NODE_VER)"; exit 1; }
+[ "$NODE_VER" -ge "$NODE_MIN" ] || { err "Node terlalu lama (v$NODE_VER, butuh ≥$NODE_MIN)"; exit 1; }
 
-# 2. Backup .env
-if [ -f .env ]; then
-  cp .env ".env.backup.$(date +%Y%m%d-%H%M%S)"
-  ok ".env dibackup"
+# 2. Bersihkan jejak deployment statis lama (anti aaPanel static-root)
+if [ -d "$LEGACY_WEBROOT" ]; then
+  warn "Membersihkan jejak deployment statis lama di $LEGACY_WEBROOT"
+  rm -f "$LEGACY_WEBROOT/update.sh" "$LEGACY_WEBROOT/index.html" 2>/dev/null || true
+  rm -rf "$LEGACY_WEBROOT/assets" 2>/dev/null || true
 fi
 
-# 3. Pull
+# 3. Backup .env
+[ -f .env ] && cp .env ".env.backup.$(date +%Y%m%d-%H%M%S)" && ok ".env dibackup"
+
+# 4. Pull
 info "Fetch dari $BRANCH..."
 git fetch --all --prune
 LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse "origin/$BRANCH")
 
-if [ "$LOCAL" = "$REMOTE" ]; then
+if [ "$LOCAL" = "$REMOTE" ] && [ -f dist/server/server.node.js ]; then
   ok "Sudah versi terbaru."
   END=$(date +%s%3N 2>/dev/null || echo "0")
   emit_json "success" "${LOCAL:0:7}" "$((END-START_TS))" "already up to date"
@@ -64,45 +68,41 @@ git reset --hard "origin/$BRANCH"
 NEW_COMMIT=$(git rev-parse --short HEAD)
 ok "Source diperbarui → $NEW_COMMIT"
 
-# 4. Install
+# 5. Install
 info "Install dependensi..."
-if command -v bun >/dev/null; then bun install
-elif command -v pnpm >/dev/null; then pnpm install --frozen-lockfile
+if [ -f package-lock.json ]; then npm ci --no-audit --no-fund
 else npm install --no-audit --no-fund
 fi
 
-# 5. Build dengan auto-rollback
+# 6. Build Node SSR + auto-rollback
 info "Build production (target: Node / VPS)..."
 set +e
-if command -v bun >/dev/null; then bun run "$BUILD_CMD"; else npm run "$BUILD_CMD"; fi
+npm run "$BUILD_CMD"
 BUILD_EXIT=$?
 set -e
 
-if [ "$BUILD_EXIT" -ne 0 ]; then
-  err "Build gagal — auto-rollback ke $LOCAL_BEFORE"
+if [ "$BUILD_EXIT" -ne 0 ] || [ ! -f dist/server/server.node.js ]; then
+  err "Build gagal atau dist/server/server.node.js tidak ditemukan — rollback"
   git reset --hard "$LOCAL_BEFORE" || true
-  if command -v bun >/dev/null; then bun install || true; else npm install --no-audit --no-fund || true; fi
-  if command -v bun >/dev/null; then bun run "$BUILD_CMD" || true; else npm run "$BUILD_CMD" || true; fi
+  npm install --no-audit --no-fund || true
+  npm run "$BUILD_CMD" || true
   END=$(date +%s%3N 2>/dev/null || echo "0")
   emit_json "failed" "${LOCAL_BEFORE:0:7}" "$((END-START_TS))" "build failed, rolled back"
   exit 1
 fi
-ok "Build selesai"
+ok "Build OK — dist/server/server.node.js ada"
 
-# 6. Restart
+# 7. PM2 reload (zero-downtime)
 if command -v pm2 >/dev/null; then
   if pm2 describe "$PM2_NAME" >/dev/null 2>&1; then
-    pm2 restart "$PM2_NAME" --update-env
+    pm2 reload "$PM2_NAME" --update-env
   else
-    pm2 start "npm run start" --name "$PM2_NAME"
+    pm2 start "$APP_DIR/ecosystem.config.cjs"
   fi
   pm2 save
-  ok "PM2 restart: $PM2_NAME"
-elif command -v systemctl >/dev/null && systemctl list-unit-files | grep -q "kejar-prestasi"; then
-  sudo systemctl restart kejar-prestasi
-  ok "systemd restart"
+  ok "PM2 reload: $PM2_NAME"
 else
-  warn "PM2/systemd tidak terdeteksi. Restart manual."
+  warn "PM2 tidak ditemukan. Install: npm i -g pm2"
 fi
 
 END=$(date +%s%3N 2>/dev/null || echo "0")
