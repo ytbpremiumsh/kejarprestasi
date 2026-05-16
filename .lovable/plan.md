@@ -1,133 +1,77 @@
-# Rombak Deployment VPS → Node SSR
-
-## Keputusan
-
-- **Process manager**: PM2
-- **App path**: `/var/www/kejarprestasi`
-- **Nginx**: reverse proxy ke `127.0.0.1:3000`, dengan static fallback untuk `/assets` dari disk
-- **Domain**: `kejarprestasi.id`, port `3000`
-
 ## Akar Masalah
 
-1. `public/update.sh` ikut ter-publish ke `dist/client/` karena Vite copy semua `public/*` → akhirnya ter-copy ke `/www/wwwroot/kejarprestasi.id/` dan tampil sebagai "deployment". Itu kenapa Nginx root cuma berisi `assets/` + `update.sh`, tanpa `index.html` → 403.
-2. Script install lama menyalin `dist/client/*` ke web root aaPanel seolah-olah SPA statis. Padahal app ini **SSR** — `index.html` tidak ada, harus dirender Node.
-3. Path tidak konsisten: `/var/www/kejarprestasi` vs `/var/www/kejar-prestasi` vs `/www/wwwroot/kejarprestasi.id`.
+Folder `/www/wwwroot/kejarprestasi.id/` masih terisi karena **halaman dokumentasi admin (`/admin/instalasi/vps` dan `/admin/instalasi/hosting`) belum diperbarui** — masih mengajarkan pola aaPanel lama: clone repo ke `/www/wwwroot/kejarprestasi.id`, build di sana, `bun run build` (Worker), lalu PM2 `npm run start`.
 
-## Target Akhir
+Itu sebabnya:
+- `client/` & `server/` muncul langsung di `/www/wwwroot/kejarprestasi.id/` → hasil build TanStack lama dipindah ke webroot.
+- Screenshot Anda yang menunjukkan `assets/ index.html favicon.ico` di docs juga **salah** untuk SSR — `index.html` memang tidak pernah ada di SSR.
 
-```text
-/var/www/kejarprestasi/          ← app dir (git clone, build, run)
-├── dist/server/server.node.js   ← entry Node SSR (PM2 jalankan ini)
-├── dist/client/assets/          ← hashed assets (Nginx serve langsung)
-├── package.json, node_modules/
-├── .env                         ← server secrets
-├── ecosystem.config.cjs
-└── logs/
+Backend (`deploy/*.sh`, `ecosystem.config.cjs`, `docs/INSTALL-VPS.md`) sudah betul untuk Node SSR di `/var/www/kejarprestasi`. Yang belum sinkron hanyalah UI dokumentasi di dalam aplikasi.
 
-/www/wwwroot/kejarprestasi.id/   ← Nginx docroot (KOSONG, hanya untuk /assets alias)
+## Yang Akan Diperbaiki
+
+### 1. `src/routes/admin.instalasi.vps.tsx` — tulis ulang total
+Hapus seluruh alur aaPanel + `/www/wwwroot/...` + `bun run build` + `npm run start`. Ganti jadi alur **Node SSR + PM2 + Nginx reverse proxy** yang sesuai dengan `deploy/install-vps.sh`:
+
+Langkah baru (ringkas):
+1. Siapkan VPS Ubuntu/Debian, install Node 20+, Nginx, Git, PM2 (installer otomatis)
+2. `sudo mkdir -p /var/www && cd /var/www && git clone <REPO> kejarprestasi`
+3. Isi `/var/www/kejarprestasi/.env` (Supabase keys + secret server)
+4. `sudo REPO_URL=<...> bash deploy/install-vps.sh` → installer otomatis: `npm ci` → `npm run build:node` → validasi `dist/server/server.node.js` → `pm2 start ecosystem.config.cjs`
+5. Salin `deploy/nginx-kejarprestasi.id.conf` ke `/etc/nginx/conf.d/` → `nginx -t && systemctl reload nginx`
+6. `certbot --nginx -d kejarprestasi.id -d www.kejarprestasi.id` untuk HTTPS
+7. **Verifikasi yang benar** (ganti screenshot lama):
+   ```
+   ls /var/www/kejarprestasi/dist/server/server.node.js   # harus ada
+   pm2 status                                              # online
+   curl -I http://127.0.0.1:3000                           # 200
+   ls /www/wwwroot/kejarprestasi.id                        # KOSONG — itu yang benar
+   ```
+8. Update: `cd /var/www/kejarprestasi && sudo bash deploy/update.sh`
+
+Tambah callout merah di atas: **"Migrasi dari instalasi lama"** — jika `/www/wwwroot/kejarprestasi.id/` masih berisi `client/`, `server/`, `assets/`, atau `index.html`, jalankan `sudo bash /var/www/kejarprestasi/deploy/migrate-from-static.sh` untuk membersihkannya dan re-point Nginx.
+
+Hapus referensi: aaPanel, `bun run build`, `npm run start`, port `7800`, "Setup Node.js App", `Application startup file: .output/server/index.mjs`.
+
+### 2. `src/routes/admin.instalasi.hosting.tsx` — tandai TIDAK didukung
+Shared hosting cPanel **tidak cocok** untuk TanStack Start SSR build ini (tidak ada `.output/server/index.mjs`, build target adalah `dist/server/server.node.js` via `build:node` dengan dependensi cluster PM2 & Nginx reverse proxy). Ganti seluruh isi jadi halaman peringatan singkat:
+
+> "Shared hosting cPanel tidak didukung resmi untuk versi ini. Gunakan VPS (lihat tab VPS). Alasan: aplikasi memerlukan Node 20+, akses sudo untuk PM2 + Nginx reverse proxy, dan tidak menghasilkan file static `.output/...` yang biasa diharapkan cPanel Node App."
+
+Plus link ke tab VPS.
+
+### 3. `src/components/admin/InstallDocs.tsx` — perbaiki path konsisten
+Baris 158: `/var/www/kejar-prestasi` (dengan strip) → `/var/www/kejarprestasi` (tanpa strip), agar konsisten dengan seluruh deploy script. Juga ubah daftar "Yang dilakukan script" supaya akurat (validasi build, auto-rollback, bersihkan webroot legacy).
+
+### 4. (Opsional, tidak wajib untuk request ini) `docs/INSTALL-VPS.md`
+Sudah betul, tidak diubah.
+
+## Hasil Akhir yang Diharapkan di User
+
+Setelah dokumentasi dirombak + user menjalankan `migrate-from-static.sh`:
+
+```
+$ ls -lah /www/wwwroot/kejarprestasi.id
+total 8K
+drwxr-xr-x  2 www www 4.0K ... .
+drwxr-xr-x 23 www www 4.0K ... ..
+# kosong — itu memang yang benar, Nginx tidak melayani dari sini lagi
+
+$ ls /var/www/kejarprestasi/dist/server/server.node.js
+/var/www/kejarprestasi/dist/server/server.node.js   # ← ada
+
+$ pm2 status
+│ kejarprestasi │ online │ cluster │ ...
+
+$ curl -I https://kejarprestasi.id
+HTTP/2 200
+content-type: text/html; charset=utf-8
 ```
 
-Nginx:
-- `location /assets/` → `alias /var/www/kejarprestasi/dist/client/assets/;` (cache 1y, immutable)
-- `location /` → `proxy_pass http://127.0.0.1:3000;` (semua HTML + API + SSR)
+Tidak ada `client/`, `server/`, atau `index.html` di webroot — itu **fitur**, bukan bug. SSR berarti HTML dirender Node, bukan disajikan dari disk.
 
-## Perubahan File
+## File yang Diubah
 
-### 1. Pindahkan `public/update.sh` → `deploy/update.sh`
-Supaya tidak ter-bundle ke `dist/client/` dan tidak public-accessible. Update semua referensi di docs.
-
-### 2. Tulis ulang `deploy/install-vps.sh` (baru, deterministik)
-- Cek Node ≥ 20, install via NodeSource jika kurang
-- `git clone` / `git pull` ke `/var/www/kejarprestasi`
-- `npm ci && npm run build:node`
-- **Validasi keras**: file `dist/server/server.node.js` harus ada, kalau tidak → exit 1
-- Setup `.env` (prompt jika belum ada)
-- `pm2 start ecosystem.config.cjs && pm2 save && pm2 startup`
-- **Tidak** menyalin apapun ke `/www/wwwroot/`
-- Tulis file Nginx config contoh ke `/etc/nginx/conf.d/kejarprestasi.id.conf.example`
-
-### 3. Tulis ulang `deploy/update.sh`
-- `cd /var/www/kejarprestasi && git pull`
-- `npm ci --production=false && npm run build:node`
-- Validasi `dist/server/server.node.js` ada
-- `pm2 reload kejarprestasi` (zero-downtime)
-- **Tolak** dan hapus `/www/wwwroot/kejarprestasi.id/update.sh` jika ditemukan
-
-### 4. Tulis ulang `ecosystem.config.cjs`
-```js
-module.exports = {
-  apps: [{
-    name: 'kejarprestasi',
-    script: 'dist/server/server.node.js',
-    cwd: '/var/www/kejarprestasi',
-    instances: 'max', exec_mode: 'cluster',
-    env: { NODE_ENV: 'production', PORT: 3000, HOST: '127.0.0.1' },
-    error_file: 'logs/err.log', out_file: 'logs/out.log',
-  }],
-};
-```
-
-### 5. Tulis ulang `docs/INSTALL-VPS.md`
-- Hapus semua jejak aaPanel static-root pattern
-- Sertakan contoh Nginx config (lihat di bawah)
-- Migrasi: untuk server lama yang sudah punya `/www/wwwroot/kejarprestasi.id/{assets,update.sh}`, jalankan `deploy/migrate-from-static.sh` yang membersihkan folder itu dan re-point Nginx
-
-### 6. `deploy/nginx-kejarprestasi.id.conf` (baru, contoh)
-```nginx
-server {
-  listen 80;
-  server_name kejarprestasi.id www.kejarprestasi.id;
-
-  # Static assets — Nginx langsung dari disk
-  location /assets/ {
-    alias /var/www/kejarprestasi/dist/client/assets/;
-    expires 1y;
-    add_header Cache-Control "public, immutable";
-    access_log off;
-  }
-
-  # SSR + API + segalanya → Node
-  location / {
-    proxy_pass http://127.0.0.1:3000;
-    proxy_http_version 1.1;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-  }
-}
-```
-
-### 7. `deploy/migrate-from-static.sh` (baru)
-Untuk server existing:
-```bash
-systemctl stop nginx
-rm -rf /www/wwwroot/kejarprestasi.id/{assets,update.sh,index.html}
-# arahkan ke config baru
-cp /var/www/kejarprestasi/deploy/nginx-kejarprestasi.id.conf /etc/nginx/conf.d/
-nginx -t && systemctl start nginx
-pm2 reload kejarprestasi || pm2 start /var/www/kejarprestasi/ecosystem.config.cjs
-```
-
-### 8. Hapus / arsipkan
-- `docs/INSTALL-VPS-SYSTEMD.md` → tandai sebagai opsional, bukan path utama
-- `deploy/kejar-prestasi.service` → tetap di repo sebagai referensi, tapi PM2 jadi default
-
-## Verifikasi Setelah Install
-
-```bash
-ls /var/www/kejarprestasi/dist/server/server.node.js   # harus ada
-pm2 status                                              # kejarprestasi: online
-curl -I http://127.0.0.1:3000                           # 200
-curl -I https://kejarprestasi.id                        # 200 + Content-Type: text/html
-curl -I https://kejarprestasi.id/assets/<hash>.js       # 200 + Cache-Control immutable
-ls /www/wwwroot/kejarprestasi.id/                       # kosong / tidak relevan
-```
-
-## Catatan: Worker tetap untuk Lovable Publish
-
-Build Lovable (`lovable.app`) tetap pakai Cloudflare Worker (config default). Yang dirombak hanya jalur self-host VPS via `build:node`. Dua dunia tetap koeksistensi:
-- `npm run build` → Worker (Lovable publish)
-- `npm run build:node` → Node SSR (VPS)
+1. `src/routes/admin.instalasi.vps.tsx` — tulis ulang (≈180 baris)
+2. `src/routes/admin.instalasi.hosting.tsx` — sederhanakan jadi halaman "tidak didukung" (≈40 baris)
+3. `src/components/admin/InstallDocs.tsx` — fix path + update daftar fitur script
