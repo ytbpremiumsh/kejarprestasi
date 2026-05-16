@@ -80,6 +80,7 @@ const groups: { label: string; items: Item[] }[] = [
       { title: "Template Email", url: "/admin/email-template", icon: Mail },
       { title: "Keamanan (2FA)", url: "/admin/keamanan", icon: ShieldCheck },
       { title: "AdSense", url: "/admin/adsense", icon: Megaphone },
+      { title: "Iklan Kustom", url: "/admin/iklan-kustom", icon: Megaphone },
       { title: "Kode & Performa", url: "/admin/kode-kustom", icon: Code2 },
     ],
   },
