@@ -126,13 +126,18 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isBareLayout = pathname.startsWith("/admin") || pathname.startsWith("/login");
+  const isPublic = !isBareLayout;
 
   return (
     <QueryClientProvider client={queryClient}>
       <AdSettingsProvider>
-        <AdsenseLoader />
-        <AutoAdInjector />
-        <CustomAdInjector />
+        {isPublic && (
+          <>
+            <AdsenseLoader />
+            <AutoAdInjector />
+            <CustomAdInjector />
+          </>
+        )}
         <CustomCodeInjector />
         <AnalyticsInjector />
         <ForceReloadNavigation />
