@@ -11,7 +11,7 @@ PM2_NAME="${PM2_NAME:-kejarprestasi}"
 BUILD_CMD="${BUILD_CMD:-build:node}"
 NODE_MIN=20
 LOG_FILE="${APP_DIR}/logs/update.log"
-LEGACY_WEBROOT="/www/wwwroot/kejarprestasi.id"
+WEBROOT="${WEBROOT:-/www/wwwroot/kejarprestasi.id}"
 
 color() { printf "\033[%sm%s\033[0m\n" "$1" "$2"; }
 info()  { color "1;34" "==> $1"; }
@@ -41,12 +41,8 @@ command -v node >/dev/null || { err "Node.js tidak ditemukan (butuh v${NODE_MIN}
 NODE_VER=$(node -v | sed 's/v//' | cut -d. -f1)
 [ "$NODE_VER" -ge "$NODE_MIN" ] || { err "Node terlalu lama (v$NODE_VER, butuh ≥$NODE_MIN)"; exit 1; }
 
-# 2. Bersihkan jejak deployment statis lama (anti aaPanel static-root)
-if [ -d "$LEGACY_WEBROOT" ]; then
-  warn "Membersihkan jejak deployment statis lama di $LEGACY_WEBROOT"
-  rm -f "$LEGACY_WEBROOT/update.sh" "$LEGACY_WEBROOT/index.html" 2>/dev/null || true
-  rm -rf "$LEGACY_WEBROOT/assets" 2>/dev/null || true
-fi
+# 2. Pastikan webroot ada, tapi JANGAN pernah salin dist/ mentah ke sini.
+mkdir -p "$WEBROOT"
 
 # 3. Backup .env
 [ -f .env ] && cp .env ".env.backup.$(date +%Y%m%d-%H%M%S)" && ok ".env dibackup"
@@ -92,7 +88,11 @@ if [ "$BUILD_EXIT" -ne 0 ] || [ ! -f dist/server/server.node.js ]; then
 fi
 ok "Build OK — dist/server/server.node.js ada"
 
-# 7. PM2 reload (zero-downtime)
+# 7. Stage static fallback untuk aaPanel/Nginx webroot.
+# Hasil normal: assets/, index.html, favicon.ico — bukan client/ dan server/.
+bash "$APP_DIR/deploy/stage-webroot.sh"
+
+# 8. PM2 reload (zero-downtime)
 if command -v pm2 >/dev/null; then
   if pm2 describe "$PM2_NAME" >/dev/null 2>&1; then
     pm2 reload "$PM2_NAME" --update-env
