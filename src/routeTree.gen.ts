@@ -34,6 +34,7 @@ import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-post
 import { Route as BagikanPosterEkonomiRouteImport } from './routes/bagikan-poster.ekonomi'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
+import { Route as AdminSistemUpdateRouteImport } from './routes/admin.sistem-update'
 import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
@@ -56,6 +57,7 @@ import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/em
 import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
 import { Route as ApiPublicWaWebhookRouteImport } from './routes/api/public/wa-webhook'
+import { Route as ApiPublicGithubWebhookRouteImport } from './routes/api/public/github-webhook'
 import { Route as AdminInstalasiVpsRouteImport } from './routes/admin.instalasi.vps'
 import { Route as AdminInstalasiHostingRouteImport } from './routes/admin.instalasi.hosting'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -189,6 +191,11 @@ const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
   path: '/whatsapp',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSistemUpdateRoute = AdminSistemUpdateRouteImport.update({
+  id: '/sistem-update',
+  path: '/sistem-update',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPengaturanRoute = AdminPengaturanRouteImport.update({
   id: '/pengaturan',
   path: '/pengaturan',
@@ -299,6 +306,11 @@ const ApiPublicWaWebhookRoute = ApiPublicWaWebhookRouteImport.update({
   path: '/api/public/wa-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicGithubWebhookRoute = ApiPublicGithubWebhookRouteImport.update({
+  id: '/api/public/github-webhook',
+  path: '/api/public/github-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminInstalasiVpsRoute = AdminInstalasiVpsRouteImport.update({
   id: '/instalasi/vps',
   path: '/instalasi/vps',
@@ -364,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/admin/media': typeof AdminMediaRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -382,6 +395,7 @@ export interface FileRoutesByFullPath {
   '/berkas/': typeof BerkasIndexRoute
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
+  '/api/public/github-webhook': typeof ApiPublicGithubWebhookRoute
   '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -419,6 +433,7 @@ export interface FileRoutesByTo {
   '/admin/media': typeof AdminMediaRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -435,6 +450,7 @@ export interface FileRoutesByTo {
   '/berkas': typeof BerkasIndexRoute
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
+  '/api/public/github-webhook': typeof ApiPublicGithubWebhookRoute
   '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -474,6 +490,7 @@ export interface FileRoutesById {
   '/admin/media': typeof AdminMediaRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -492,6 +509,7 @@ export interface FileRoutesById {
   '/berkas/': typeof BerkasIndexRoute
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
+  '/api/public/github-webhook': typeof ApiPublicGithubWebhookRoute
   '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
@@ -532,6 +550,7 @@ export interface FileRouteTypes {
     | '/admin/media'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
+    | '/admin/sistem-update'
     | '/admin/whatsapp'
     | '/artikel/$slug'
     | '/bagikan-poster/ekonomi'
@@ -550,6 +569,7 @@ export interface FileRouteTypes {
     | '/berkas/'
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
+    | '/api/public/github-webhook'
     | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -587,6 +607,7 @@ export interface FileRouteTypes {
     | '/admin/media'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
+    | '/admin/sistem-update'
     | '/admin/whatsapp'
     | '/artikel/$slug'
     | '/bagikan-poster/ekonomi'
@@ -603,6 +624,7 @@ export interface FileRouteTypes {
     | '/berkas'
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
+    | '/api/public/github-webhook'
     | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -641,6 +663,7 @@ export interface FileRouteTypes {
     | '/admin/media'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
+    | '/admin/sistem-update'
     | '/admin/whatsapp'
     | '/artikel/$slug'
     | '/bagikan-poster/ekonomi'
@@ -659,6 +682,7 @@ export interface FileRouteTypes {
     | '/berkas/'
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
+    | '/api/public/github-webhook'
     | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
@@ -696,6 +720,7 @@ export interface RootRouteChildren {
   ArtikelIndexRoute: typeof ArtikelIndexRoute
   BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
   BerkasIndexRoute: typeof BerkasIndexRoute
+  ApiPublicGithubWebhookRoute: typeof ApiPublicGithubWebhookRoute
   ApiPublicWaWebhookRoute: typeof ApiPublicWaWebhookRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -882,6 +907,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWhatsappRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/sistem-update': {
+      id: '/admin/sistem-update'
+      path: '/sistem-update'
+      fullPath: '/admin/sistem-update'
+      preLoaderRoute: typeof AdminSistemUpdateRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/pengaturan': {
       id: '/admin/pengaturan'
       path: '/pengaturan'
@@ -1036,6 +1068,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWaWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/github-webhook': {
+      id: '/api/public/github-webhook'
+      path: '/api/public/github-webhook'
+      fullPath: '/api/public/github-webhook'
+      preLoaderRoute: typeof ApiPublicGithubWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/instalasi/vps': {
       id: '/admin/instalasi/vps'
       path: '/instalasi/vps'
@@ -1105,6 +1144,7 @@ interface AdminRouteChildren {
   AdminMediaRoute: typeof AdminMediaRoute
   AdminPendaftarRoute: typeof AdminPendaftarRoute
   AdminPengaturanRoute: typeof AdminPengaturanRoute
+  AdminSistemUpdateRoute: typeof AdminSistemUpdateRoute
   AdminWhatsappRoute: typeof AdminWhatsappRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminInstalasiHostingRoute: typeof AdminInstalasiHostingRoute
@@ -1128,6 +1168,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminMediaRoute: AdminMediaRoute,
   AdminPendaftarRoute: AdminPendaftarRoute,
   AdminPengaturanRoute: AdminPengaturanRoute,
+  AdminSistemUpdateRoute: AdminSistemUpdateRoute,
   AdminWhatsappRoute: AdminWhatsappRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminInstalasiHostingRoute: AdminInstalasiHostingRoute,
@@ -1188,6 +1229,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArtikelIndexRoute: ArtikelIndexRoute,
   BagikanPosterIndexRoute: BagikanPosterIndexRoute,
   BerkasIndexRoute: BerkasIndexRoute,
+  ApiPublicGithubWebhookRoute: ApiPublicGithubWebhookRoute,
   ApiPublicWaWebhookRoute: ApiPublicWaWebhookRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
