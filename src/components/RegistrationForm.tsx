@@ -325,6 +325,14 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       </section>
 
       <section className="container-page py-10 md:py-12">
+        <div className="mb-8 overflow-hidden rounded-3xl border border-border shadow-card">
+          <img
+            src="https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/1778938796974-Header-Kejar-Prestasi--3.jpg"
+            alt={title}
+            loading="lazy"
+            className="w-full h-auto object-cover"
+          />
+        </div>
         <AdSlot placement="form_top" />
 
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
