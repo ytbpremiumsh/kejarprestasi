@@ -120,22 +120,10 @@ export function UpdateSection() {
 
       <div className="space-y-4 text-sm">
         <div>
-          <p className="mb-2 font-medium text-foreground">Instalasi pertama (sekali saja):</p>
+          <p className="mb-2 font-medium text-foreground">Update ke versi terbaru:</p>
           <CodeBlock
-            code={`curl -fsSL https://<DOMAIN-ANDA>/update.sh -o update.sh
-chmod +x update.sh`}
-          />
-        </div>
-
-        <div>
-          <p className="mb-2 font-medium text-foreground">Update setiap ada pembaruan:</p>
-          <CodeBlock code={`./update.sh`} />
-        </div>
-
-        <div>
-          <p className="mb-2 font-medium text-foreground">Atau langsung tanpa download:</p>
-          <CodeBlock
-            code={`bash <(curl -fsSL https://<DOMAIN-ANDA>/update.sh)`}
+            code={`cd /var/www/kejarprestasi
+sudo bash deploy/update.sh`}
           />
         </div>
 
@@ -143,19 +131,21 @@ chmod +x update.sh`}
           <p className="font-medium">Yang dilakukan script:</p>
           <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted-foreground">
             <li>Backup otomatis file <code className="rounded bg-muted px-1">.env</code></li>
+            <li>Bersihkan sisa <code className="rounded bg-muted px-1">/www/wwwroot/kejarprestasi.id/</code> legacy</li>
             <li>Tarik commit terbaru dari Git (branch <code className="rounded bg-muted px-1">main</code>)</li>
-            <li>Install dependensi (bun / pnpm / npm)</li>
-            <li>Build production</li>
-            <li>Restart PM2 atau systemd service otomatis</li>
+            <li><code className="rounded bg-muted px-1">npm ci</code> + <code className="rounded bg-muted px-1">npm run build:node</code></li>
+            <li>Validasi keras: <code className="rounded bg-muted px-1">dist/server/server.node.js</code> harus ada</li>
+            <li><strong>Auto-rollback</strong> ke commit sebelumnya jika build gagal</li>
+            <li><code className="rounded bg-muted px-1">pm2 reload kejarprestasi --update-env</code> (zero-downtime)</li>
           </ul>
         </div>
 
         <div>
           <p className="mb-2 font-medium text-foreground">Opsional — jadwalkan auto-update tiap malam (cron):</p>
           <CodeBlock
-            code={`crontab -e
+            code={`sudo crontab -e
 # Tambahkan baris berikut:
-0 3 * * * cd /var/www/kejar-prestasi && ./update.sh >> update.log 2>&1`}
+0 3 * * * cd /var/www/kejarprestasi && bash deploy/update.sh >> logs/update.log 2>&1`}
           />
         </div>
       </div>
