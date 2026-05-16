@@ -58,7 +58,7 @@ NODE_ENV=production
 npm run build:node
 ```
 
-Output ada di `.output/server/index.mjs`.
+Output ada di `dist/server/server.node.js`.
 
 > **Catatan OOM:** kalau VPS 2GB dan build crash, jalankan dengan extra heap:
 > ```bash

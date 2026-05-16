@@ -4,7 +4,7 @@ module.exports = {
   apps: [
     {
       name: "kejar-prestasi",
-      script: ".output/server/index.mjs",
+      script: "dist/server/server.node.js",
       cwd: __dirname,
       instances: 1,
       exec_mode: "fork",
