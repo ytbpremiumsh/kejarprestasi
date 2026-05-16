@@ -14,7 +14,7 @@ const persyaratan = [
   "Mengikuti seluruh persyaratan yang ditetapkan",
 ];
 
-const merchandise = ["Plakat Beasiswa", "Kaos", "Block Note", "Goodie Bag", "Sertifikat Beasiswa"];
+
 
 const BENEFIT_IMAGE_URL =
   "https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/1778936443603-Benefit-Kejar-Prestasi--3.png";
