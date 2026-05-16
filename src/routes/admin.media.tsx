@@ -60,6 +60,9 @@ function AdminMedia() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [query, setQuery] = useState("");
+  const [compressEnabled, setCompressEnabled] = useState(true);
+  const [quality, setQuality] = useState<"high" | "medium" | "low">("medium");
+  const [format, setFormat] = useState<"image/jpeg" | "image/webp">("image/webp");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
