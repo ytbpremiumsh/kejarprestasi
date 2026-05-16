@@ -88,7 +88,7 @@ export const getSystemStatus = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
 
-    if (!isNodeRuntime()) {
+    if (!(await isNodeRuntime())) {
       return {
         nodeRuntime: false,
         appDir: APP_DIR,
@@ -153,7 +153,7 @@ export const triggerUpdate = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
 
-    if (!isNodeRuntime()) {
+    if (!(await isNodeRuntime())) {
       throw new Response(
         "Update hanya berfungsi di self-hosted Node.js (VPS/cPanel).",
         { status: 400 },
@@ -214,7 +214,7 @@ export const rollbackUpdate = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
 
-    if (!isNodeRuntime()) {
+    if (!(await isNodeRuntime())) {
       throw new Response("Rollback hanya tersedia di self-hosted Node.js.", {
         status: 400,
       });
