@@ -325,7 +325,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       </section>
 
       <section className="container-page py-10 md:py-12">
-        <div className="mb-8 overflow-hidden rounded-3xl border border-border shadow-card">
+        <div className="mb-8 overflow-hidden rounded-3xl border border-border shadow-card md:hidden">
           <img
             src="https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/1778938796974-Header-Kejar-Prestasi--3.jpg"
             alt={title}
