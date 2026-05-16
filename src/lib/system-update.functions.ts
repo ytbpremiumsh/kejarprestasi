@@ -20,12 +20,30 @@ async function assertAdmin(
   }
 }
 
-function isNodeRuntime(): boolean {
-  return (
-    typeof process !== "undefined" &&
-    !!(process as any).versions?.node &&
-    typeof (process as any).platform === "string"
-  );
+let _nodeRuntimeCache: boolean | null = null;
+async function isNodeRuntime(): Promise<boolean> {
+  if (_nodeRuntimeCache !== null) return _nodeRuntimeCache;
+  try {
+    const cp: any = await import("node:child_process");
+    if (typeof cp.spawn !== "function") {
+      _nodeRuntimeCache = false;
+      return false;
+    }
+    // Probe: Cloudflare unenv stub throws "[unenv] ... not implemented yet!"
+    await new Promise<void>((resolve, reject) => {
+      try {
+        const child = cp.spawn("node", ["-v"]);
+        child.on("error", (e: Error) => reject(e));
+        child.on("close", () => resolve());
+      } catch (e) {
+        reject(e as Error);
+      }
+    });
+    _nodeRuntimeCache = true;
+  } catch {
+    _nodeRuntimeCache = false;
+  }
+  return _nodeRuntimeCache;
 }
 
 async function runCmd(
@@ -70,7 +88,7 @@ export const getSystemStatus = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
 
-    if (!isNodeRuntime()) {
+    if (!(await isNodeRuntime())) {
       return {
         nodeRuntime: false,
         appDir: APP_DIR,
@@ -135,7 +153,7 @@ export const triggerUpdate = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
 
-    if (!isNodeRuntime()) {
+    if (!(await isNodeRuntime())) {
       throw new Response(
         "Update hanya berfungsi di self-hosted Node.js (VPS/cPanel).",
         { status: 400 },
@@ -196,7 +214,7 @@ export const rollbackUpdate = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
 
-    if (!isNodeRuntime()) {
+    if (!(await isNodeRuntime())) {
       throw new Response("Rollback hanya tersedia di self-hosted Node.js.", {
         status: 400,
       });
