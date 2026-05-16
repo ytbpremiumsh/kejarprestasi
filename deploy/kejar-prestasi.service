@@ -1,24 +1,24 @@
 [Unit]
 Description=Kejar Prestasi (Node SSR)
-Documentation=https://github.com/your-org/kejar-prestasi
+Documentation=https://github.com/your-org/kejarprestasi
 After=network.target
 
 [Service]
 Type=simple
 User=kejarprestasi
 Group=kejarprestasi
-WorkingDirectory=/var/www/kejar-prestasi
+WorkingDirectory=/var/www/kejarprestasi
 ExecStart=/usr/bin/node dist/server/server.node.js
 Restart=on-failure
 RestartSec=5
-StandardOutput=append:/var/www/kejar-prestasi/logs/app.log
-StandardError=append:/var/www/kejar-prestasi/logs/app-err.log
+StandardOutput=append:/var/www/kejarprestasi/logs/app.log
+StandardError=append:/var/www/kejarprestasi/logs/app-err.log
 
 # Environment
 Environment=NODE_ENV=production
 Environment=PORT=3000
 Environment=HOST=0.0.0.0
-EnvironmentFile=/var/www/kejar-prestasi/.env
+EnvironmentFile=/var/www/kejarprestasi/.env
 
 # Hardening (opsional, comment kalau bermasalah)
 NoNewPrivileges=true
