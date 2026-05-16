@@ -484,6 +484,48 @@ export type Database = {
         }
         Relationships: []
       }
+      system_updates: {
+        Row: {
+          branch: string
+          commit_hash: string | null
+          commit_message: string | null
+          created_at: string
+          duration_ms: number | null
+          id: string
+          log_output: string | null
+          status: Database["public"]["Enums"]["update_status"]
+          trigger_source: Database["public"]["Enums"]["update_trigger_source"]
+          triggered_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          branch?: string
+          commit_hash?: string | null
+          commit_message?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          log_output?: string | null
+          status?: Database["public"]["Enums"]["update_status"]
+          trigger_source: Database["public"]["Enums"]["update_trigger_source"]
+          triggered_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          branch?: string
+          commit_hash?: string | null
+          commit_message?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          log_output?: string | null
+          status?: Database["public"]["Enums"]["update_status"]
+          trigger_source?: Database["public"]["Enums"]["update_trigger_source"]
+          triggered_by?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -590,6 +632,8 @@ export type Database = {
       donation_status: "pending" | "paid" | "failed" | "expired"
       registration_status: "pending" | "verified" | "approved" | "rejected"
       scholarship_kind: "prestasi" | "ekonomi"
+      update_status: "running" | "success" | "failed"
+      update_trigger_source: "manual" | "webhook" | "rollback"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -723,6 +767,8 @@ export const Constants = {
       donation_status: ["pending", "paid", "failed", "expired"],
       registration_status: ["pending", "verified", "approved", "rejected"],
       scholarship_kind: ["prestasi", "ekonomi"],
+      update_status: ["running", "success", "failed"],
+      update_trigger_source: ["manual", "webhook", "rollback"],
     },
   },
 } as const
