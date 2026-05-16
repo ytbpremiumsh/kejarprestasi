@@ -99,15 +99,19 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const [files, setFiles] = useState<Record<string, File | null>>({});
 
   useEffect(() => {
-    supabase
-      .from("site_settings")
-      .select("value")
-      .eq("key", `form_pendaftaran_${kind}`)
-      .maybeSingle()
-      .then(({ data }) => {
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", `form_pendaftaran_${kind}`)
+          .maybeSingle();
+        if (cancelled) return;
+        if (error) console.error("load form schema error", error);
         if (data?.value && Array.isArray((data.value as FormSchema).fields)) {
           const raw = data.value as FormSchema;
-          // Hilangkan field NIK, Prestasi Utama, dan semua field upload berkas
           const filtered: FormSchema = {
             ...raw,
             fields: raw.fields.filter((f) => {
@@ -121,8 +125,15 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
           };
           setSchema(filtered);
         }
-        setLoading(false);
-      });
+      } catch (err) {
+        console.error("load form schema exception", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [kind]);
 
   const isPrestasi = kind === "prestasi";
