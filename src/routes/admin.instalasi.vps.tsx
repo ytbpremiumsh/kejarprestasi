@@ -203,7 +203,7 @@ sudo bash deploy/update.sh`}
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4">Webroot berisi <code>client/</code> + <code>server/</code></td>
-                <td className="py-2 pr-4">Build di-copy ke webroot oleh script lama</td>
+                <td className="py-2 pr-4"><code>dist/</code> tersalin mentah ke webroot</td>
                 <td className="py-2"><code>bash deploy/migrate-from-static.sh</code></td>
               </tr>
               <tr className="border-b">
