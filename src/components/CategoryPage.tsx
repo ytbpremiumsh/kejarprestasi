@@ -133,18 +133,6 @@ export function CategoryPage({
             ))}
           </ul>
 
-          <div className="mt-6">
-            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Gift size={16} className="text-primary" /> Merchandise Menarik
-            </div>
-            <ul className="mt-3 grid sm:grid-cols-2 gap-2.5">
-              {merchandise.map((m) => (
-                <li key={m} className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground/90">
-                  <span className={`inline-block h-2 w-2 rounded-full ${isGold ? "bg-[oklch(0.78_0.18_80)]" : "bg-primary"}`} /> {m}
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </section>
 
