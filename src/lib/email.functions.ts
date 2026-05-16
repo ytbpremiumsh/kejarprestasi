@@ -113,7 +113,19 @@ async function getOrCreateUnsubscribeToken(email: string) {
   return stored.token as string;
 }
 
+async function loadBrandingLogo(): Promise<string | undefined> {
+  const { data } = await (supabaseAdmin as any)
+    .from("site_settings")
+    .select("value")
+    .eq("key", "branding")
+    .maybeSingle();
+  const v = data?.value as { header_logo_url?: string; footer_logo_url?: string } | null;
+  return v?.header_logo_url || v?.footer_logo_url || undefined;
+}
+
 async function renderEmail(templateName: string, props: Record<string, any>) {
+  const logoUrl = await loadBrandingLogo();
+  const propsWithLogo = { ...props, logoUrl };
   const custom = await loadCustomTemplate(templateName);
   if (custom) {
     const html = applyPlaceholders(custom.html, props);
