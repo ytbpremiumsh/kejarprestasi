@@ -55,8 +55,9 @@ REMOTE=$(git rev-parse "origin/$BRANCH")
 
 if [ "$LOCAL" = "$REMOTE" ] && [ -f dist/server/server.node.js ]; then
   ok "Sudah versi terbaru."
+  bash "$APP_DIR/deploy/stage-webroot.sh"
   END=$(date +%s%3N 2>/dev/null || echo "0")
-  emit_json "success" "${LOCAL:0:7}" "$((END-START_TS))" "already up to date"
+  emit_json "success" "${LOCAL:0:7}" "$((END-START_TS))" "already up to date, webroot staged"
   exit 0
 fi
 
