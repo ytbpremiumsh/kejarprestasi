@@ -21,10 +21,6 @@ const BENEFIT_IMAGE_URL =
 
 const benefitList = [
   { strong: "Dana Pendidikan Beasiswa", rest: "" },
-  {
-    strong: "Video motivasi",
-    rest: ' berjudul "Menghadapi Tantangan dan Meraih Keberhasilan dalam Studi".',
-  },
   { strong: "Merchandise menarik", rest: " dari Kejar Prestasi." },
   { strong: "Sertifikat Beasiswa", rest: " by Kejar Prestasi." },
   {
