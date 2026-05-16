@@ -84,8 +84,20 @@ function AdminMedia() {
 
   const upload = async (list: FileList) => {
     setUploading(true);
+    const qMap = { high: 0.9, medium: 0.75, low: 0.55 } as const;
+    let savedBytes = 0;
     try {
-      for (const file of Array.from(list)) {
+      for (const original of Array.from(list)) {
+        let file = original;
+        if (compressEnabled && isCompressibleImage(original)) {
+          file = await compressImage(original, {
+            quality: qMap[quality],
+            mimeType: format,
+            maxWidth: 1920,
+            maxHeight: 1920,
+          });
+          savedBytes += Math.max(0, original.size - file.size);
+        }
         const ext = file.name.split(".").pop() || "bin";
         const base = file.name.replace(/\.[^.]+$/, "").replace(/[^a-zA-Z0-9-_]/g, "-");
         const path = `${Date.now()}-${base}.${ext}`;
@@ -94,7 +106,8 @@ function AdminMedia() {
           .upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
         if (error) throw error;
       }
-      toast.success(`${list.length} file berhasil diunggah`);
+      const savedMsg = savedBytes > 0 ? ` (hemat ${formatBytes(savedBytes)})` : "";
+      toast.success(`${list.length} file berhasil diunggah${savedMsg}`);
       await load();
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Gagal mengunggah");
