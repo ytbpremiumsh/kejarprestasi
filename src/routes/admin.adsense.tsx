@@ -33,6 +33,8 @@ const POSITIONS: { value: AdPosition; label: string }[] = [
   { value: "after_each_heading", label: "Sesudah setiap judul (H2/H3)" },
   { value: "after_each_paragraph", label: "Sesudah setiap paragraf" },
   { value: "between_sections", label: "Di antara setiap section" },
+  { value: "before_timeline_button", label: "Sebelum tombol Timeline (tertarget)" },
+  { value: "before_each_button", label: "Sebelum setiap tombol/CTA" },
 ];
 
 function newSlot(): AdSlotConfig {
