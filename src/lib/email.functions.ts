@@ -80,6 +80,39 @@ async function loadCustomTemplate(templateName: string) {
   return { subject: v.subject, html: v.html };
 }
 
+function generateUnsubscribeToken() {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+async function getOrCreateUnsubscribeToken(email: string) {
+  const normalizedEmail = email.toLowerCase();
+  const { data: existing, error: lookupError } = await (supabaseAdmin as any)
+    .from("email_unsubscribe_tokens")
+    .select("token, used_at")
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+  if (lookupError) throw new Error("Failed to prepare unsubscribe token");
+  if (existing?.token && !existing.used_at) return existing.token as string;
+
+  const token = generateUnsubscribeToken();
+  const { error: upsertError } = await (supabaseAdmin as any)
+    .from("email_unsubscribe_tokens")
+    .upsert({ token, email: normalizedEmail }, { onConflict: "email", ignoreDuplicates: true });
+  if (upsertError) throw new Error("Failed to create unsubscribe token");
+
+  const { data: stored, error: rereadError } = await (supabaseAdmin as any)
+    .from("email_unsubscribe_tokens")
+    .select("token")
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+  if (rereadError || !stored?.token) throw new Error("Failed to confirm unsubscribe token");
+  return stored.token as string;
+}
+
 async function renderEmail(templateName: string, props: Record<string, any>) {
   const custom = await loadCustomTemplate(templateName);
   if (custom) {
@@ -108,6 +141,7 @@ async function enqueue(args: {
   text: string;
 }) {
   const messageId = crypto.randomUUID();
+  const unsubscribeToken = await getOrCreateUnsubscribeToken(args.recipient);
   const { error } = await (supabaseAdmin as any).rpc("enqueue_email", {
     queue_name: "transactional_emails",
     payload: {
@@ -120,7 +154,9 @@ async function enqueue(args: {
       purpose: "transactional",
       label: args.templateName,
       idempotency_key: args.idempotencyKey,
+      unsubscribe_token: unsubscribeToken,
       message_id: messageId,
+      queued_at: new Date().toISOString(),
     },
   });
   if (error) throw new Error(error.message);
