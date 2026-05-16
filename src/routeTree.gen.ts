@@ -36,6 +36,7 @@ import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
 import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
+import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminKodeKustomRouteImport } from './routes/admin.kode-kustom'
 import { Route as AdminKeamananRouteImport } from './routes/admin.keamanan'
 import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
@@ -198,6 +199,11 @@ const AdminPendaftarRoute = AdminPendaftarRouteImport.update({
   path: '/pendaftar',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMediaRoute = AdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminKodeKustomRoute = AdminKodeKustomRouteImport.update({
   id: '/kode-kustom',
   path: '/kode-kustom',
@@ -355,6 +361,7 @@ export interface FileRoutesByFullPath {
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
@@ -409,6 +416,7 @@ export interface FileRoutesByTo {
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
@@ -463,6 +471,7 @@ export interface FileRoutesById {
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
@@ -520,6 +529,7 @@ export interface FileRouteTypes {
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
+    | '/admin/media'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
     | '/admin/whatsapp'
@@ -574,6 +584,7 @@ export interface FileRouteTypes {
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
+    | '/admin/media'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
     | '/admin/whatsapp'
@@ -627,6 +638,7 @@ export interface FileRouteTypes {
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
+    | '/admin/media'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
     | '/admin/whatsapp'
@@ -884,6 +896,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPendaftarRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/media': {
+      id: '/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AdminMediaRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/kode-kustom': {
       id: '/admin/kode-kustom'
       path: '/kode-kustom'
@@ -1083,6 +1102,7 @@ interface AdminRouteChildren {
   AdminKandidatRoute: typeof AdminKandidatRoute
   AdminKeamananRoute: typeof AdminKeamananRoute
   AdminKodeKustomRoute: typeof AdminKodeKustomRoute
+  AdminMediaRoute: typeof AdminMediaRoute
   AdminPendaftarRoute: typeof AdminPendaftarRoute
   AdminPengaturanRoute: typeof AdminPengaturanRoute
   AdminWhatsappRoute: typeof AdminWhatsappRoute
@@ -1105,6 +1125,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminKandidatRoute: AdminKandidatRoute,
   AdminKeamananRoute: AdminKeamananRoute,
   AdminKodeKustomRoute: AdminKodeKustomRoute,
+  AdminMediaRoute: AdminMediaRoute,
   AdminPendaftarRoute: AdminPendaftarRoute,
   AdminPengaturanRoute: AdminPengaturanRoute,
   AdminWhatsappRoute: AdminWhatsappRoute,
