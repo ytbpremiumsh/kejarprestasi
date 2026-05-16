@@ -53,7 +53,7 @@ git fetch --all --prune
 LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse "origin/$BRANCH")
 
-if [ "$LOCAL" = "$REMOTE" ] && [ -f dist/server/server.node.js ]; then
+if [ "$LOCAL" = "$REMOTE" ] && [ -f .node-server/server.node.js ]; then
   ok "Sudah versi terbaru."
   bash "$APP_DIR/deploy/stage-webroot.sh"
   END=$(date +%s%3N 2>/dev/null || echo "0")
@@ -78,8 +78,8 @@ npm run "$BUILD_CMD"
 BUILD_EXIT=$?
 set -e
 
-if [ "$BUILD_EXIT" -ne 0 ] || [ ! -f dist/server/server.node.js ]; then
-  err "Build gagal atau dist/server/server.node.js tidak ditemukan — rollback"
+if [ "$BUILD_EXIT" -ne 0 ] || [ ! -f .node-server/server.node.js ]; then
+  err "Build gagal atau .node-server/server.node.js tidak ditemukan — rollback"
   git reset --hard "$LOCAL_BEFORE" || true
   npm install --no-audit --no-fund || true
   if npm run "$BUILD_CMD"; then
@@ -89,7 +89,7 @@ if [ "$BUILD_EXIT" -ne 0 ] || [ ! -f dist/server/server.node.js ]; then
   emit_json "failed" "${LOCAL_BEFORE:0:7}" "$((END-START_TS))" "build failed, rolled back"
   exit 1
 fi
-ok "Build OK — dist/server/server.node.js ada"
+ok "Build OK — .node-server/server.node.js ada"
 
 # 7. Stage static fallback untuk aaPanel/Nginx webroot.
 # Hasil normal: assets/, index.html, favicon.ico — bukan client/ dan server/.
