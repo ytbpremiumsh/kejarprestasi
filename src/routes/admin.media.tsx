@@ -14,8 +14,19 @@ import {
   Search,
   HardDrive,
   Download,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
+import { compressImage, isCompressibleImage } from "@/lib/image-compress";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/admin/media")({
   component: AdminMedia,
@@ -49,6 +60,9 @@ function AdminMedia() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [query, setQuery] = useState("");
+  const [compressEnabled, setCompressEnabled] = useState(true);
+  const [quality, setQuality] = useState<"high" | "medium" | "low">("medium");
+  const [format, setFormat] = useState<"image/jpeg" | "image/webp">("image/webp");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
@@ -70,8 +84,20 @@ function AdminMedia() {
 
   const upload = async (list: FileList) => {
     setUploading(true);
+    const qMap = { high: 0.9, medium: 0.75, low: 0.55 } as const;
+    let savedBytes = 0;
     try {
-      for (const file of Array.from(list)) {
+      for (const original of Array.from(list)) {
+        let file = original;
+        if (compressEnabled && isCompressibleImage(original)) {
+          file = await compressImage(original, {
+            quality: qMap[quality],
+            mimeType: format,
+            maxWidth: 1920,
+            maxHeight: 1920,
+          });
+          savedBytes += Math.max(0, original.size - file.size);
+        }
         const ext = file.name.split(".").pop() || "bin";
         const base = file.name.replace(/\.[^.]+$/, "").replace(/[^a-zA-Z0-9-_]/g, "-");
         const path = `${Date.now()}-${base}.${ext}`;
@@ -80,7 +106,8 @@ function AdminMedia() {
           .upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
         if (error) throw error;
       }
-      toast.success(`${list.length} file berhasil diunggah`);
+      const savedMsg = savedBytes > 0 ? ` (hemat ${formatBytes(savedBytes)})` : "";
+      toast.success(`${list.length} file berhasil diunggah${savedMsg}`);
       await load();
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Gagal mengunggah");
@@ -140,6 +167,49 @@ function AdminMedia() {
           </Button>
         </div>
       </div>
+
+      <Card className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Zap className="h-4 w-4 text-primary" />
+          <Label htmlFor="compress-toggle" className="text-sm font-semibold cursor-pointer">
+            Kompres gambar saat upload
+          </Label>
+          <Switch
+            id="compress-toggle"
+            checked={compressEnabled}
+            onCheckedChange={setCompressEnabled}
+            className="ml-auto"
+          />
+        </div>
+        {compressEnabled && (
+          <div className="flex flex-wrap items-center gap-3 text-sm pl-6">
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Kualitas:</span>
+              <Select value={quality} onValueChange={(v) => setQuality(v as typeof quality)}>
+                <SelectTrigger className="w-36 h-8"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="high">Tinggi (90%)</SelectItem>
+                  <SelectItem value="medium">Sedang (75%)</SelectItem>
+                  <SelectItem value="low">Rendah (55%)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Format:</span>
+              <Select value={format} onValueChange={(v) => setFormat(v as typeof format)}>
+                <SelectTrigger className="w-36 h-8"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="image/webp">WebP (ringan)</SelectItem>
+                  <SelectItem value="image/jpeg">JPEG</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              Resize maksimum 1920px. File non-gambar diunggah apa adanya.
+            </span>
+          </div>
+        )}
+      </Card>
 
       <Card className="p-4 flex flex-wrap items-center gap-4 text-sm">
         <div>
