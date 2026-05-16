@@ -9,7 +9,12 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APP_DIR="${APP_DIR:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 WEBROOT="${WEBROOT:-/www/wwwroot/kejarprestasi.id}"
-CLIENT_DIR="${APP_DIR}/dist/client"
+DIST_DIR="${APP_DIR}/dist"
+if [ -d "${DIST_DIR}/assets" ]; then
+  CLIENT_DIR="$DIST_DIR"
+else
+  CLIENT_DIR="${DIST_DIR}/client"
+fi
 
 color() { printf "\033[%sm%s\033[0m\n" "$1" "$2"; }
 info()  { color "1;34" "==> $1"; }
@@ -22,7 +27,7 @@ case "$WEBROOT" in
 esac
 
 [ "$WEBROOT" != "$APP_DIR" ] || { err "WEBROOT tidak boleh sama dengan APP_DIR"; exit 1; }
-[ "$WEBROOT" != "$APP_DIR/dist" ] || { err "WEBROOT tidak boleh mengarah ke dist"; exit 1; }
+[ "$WEBROOT" != "$DIST_DIR" ] || { err "WEBROOT tidak boleh mengarah ke dist"; exit 1; }
 [ -d "$CLIENT_DIR" ] || { err "${CLIENT_DIR} tidak ada — jalankan npm run build:node dulu"; exit 1; }
 [ -d "$CLIENT_DIR/assets" ] || { err "${CLIENT_DIR}/assets tidak ada — build client gagal"; exit 1; }
 
