@@ -15,6 +15,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { AdSettingsProvider, AdsenseLoader } from "@/components/ads/AdSettings";
 import { AutoAdInjector } from "@/components/ads/AutoAdInjector";
+import { CustomAdInjector } from "@/components/ads/CustomAdInjector";
 import { CustomCodeInjector } from "@/components/CustomCodeInjector";
 import { AnalyticsInjector } from "@/components/AnalyticsInjector";
 import { ForceReloadNavigation } from "@/components/ForceReloadNavigation";
