@@ -1,40 +1,40 @@
-import { Wallet, Award, Gift, Trophy, BookOpen, PlaySquare } from "lucide-react";
+import { Wallet, Award, Gift, PlayCircle, Users, Briefcase } from "lucide-react";
 
 const benefits = [
   {
     icon: Wallet,
-    title: "Beasiswa Tunai",
-    desc: "Dana pendidikan hingga Rp23.000.000 per semester langsung ke penerima.",
+    title: "Dana Pendidikan Beasiswa",
+    desc: "Bantuan dana pendidikan hingga Rp23.000.000 per semester untuk penerima.",
     accent: "bg-primary text-primary-foreground",
   },
   {
-    icon: Award,
-    title: "Sertifikat Resmi",
-    desc: "Sertifikat penerima beasiswa resmi dari Kejar Prestasi.",
+    icon: PlayCircle,
+    title: "Video Motivasi",
+    desc: 'Video eksklusif "Menghadapi Tantangan dan Meraih Keberhasilan dalam Studi".',
     accent: "bg-[oklch(0.92_0.14_85)] text-gold-foreground",
   },
   {
-    icon: Trophy,
-    title: "Plakat Penghargaan",
-    desc: "Plakat penghargaan eksklusif sebagai bentuk apresiasi atas prestasi penerima.",
-    accent: "bg-primary-soft text-primary",
-  },
-  {
-    icon: BookOpen,
-    title: "E-Book Eksklusif",
-    desc: "Akses E-Book eksklusif berisi materi pengembangan diri dan akademik.",
-    accent: "bg-primary-soft text-primary",
-  },
-  {
-    icon: PlaySquare,
-    title: "Video Eksklusif",
-    desc: "Konten video eksklusif berupa kelas inspiratif dan materi pembinaan.",
-    accent: "bg-primary-soft text-primary",
-  },
-  {
     icon: Gift,
-    title: "Merchandise Eksklusif",
-    desc: "Kaos, block note, goodie bag, dan paket merchandise lainnya.",
+    title: "Merchandise Menarik",
+    desc: "Paket merchandise eksklusif dari Kejar Prestasi: kaos, block note, goodie bag, dan lainnya.",
+    accent: "bg-primary-soft text-primary",
+  },
+  {
+    icon: Award,
+    title: "Sertifikat Beasiswa",
+    desc: "Sertifikat resmi penerima beasiswa langsung dari Kejar Prestasi.",
+    accent: "bg-primary-soft text-primary",
+  },
+  {
+    icon: Users,
+    title: "Kontingen Ambassador",
+    desc: "Peluang menjadi Kontingen Ambassador Program Kejar Prestasi.",
+    accent: "bg-primary-soft text-primary",
+  },
+  {
+    icon: Briefcase,
+    title: "Akses Magang",
+    desc: "Kesempatan magang di Kejar Prestasi Indonesia dan jaringan partner.",
     accent: "bg-primary-soft text-primary",
   },
 ];
