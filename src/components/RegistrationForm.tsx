@@ -66,6 +66,27 @@ function validate(field: FormField, value: unknown): string | null {
   return null;
 }
 
+function defaultPlaceholder(field: FormField): string {
+  const n = (field.name || "").toLowerCase();
+  const l = (field.label || "").toLowerCase();
+  if (field.type === "email" || n.includes("email")) return "contoh: nama@email.com";
+  if (field.type === "tel" || n.includes("whatsapp") || n.includes("phone") || n.includes("hp"))
+    return "contoh: 0812xxxxxxxx";
+  if (field.type === "date") return "";
+  if (field.type === "number") return "Masukkan angka";
+  if (n === "nik") return "16 digit NIK";
+  if (n.includes("full_name") || l.includes("nama")) return "Masukkan nama lengkap";
+  if (n.includes("birth_place") || l.includes("tempat lahir")) return "contoh: Jakarta";
+  if (n.includes("address") || l.includes("alamat")) return "Tulis alamat lengkap…";
+  if (n.includes("school") || l.includes("sekolah") || l.includes("kampus"))
+    return "Nama sekolah / kampus";
+  if (n.includes("grade") || l.includes("kelas") || l.includes("semester"))
+    return "contoh: Kelas 10 / Semester 3";
+  if (field.type === "select") return "Pilih salah satu";
+  if (field.type === "textarea") return `Tulis ${field.label.toLowerCase()}…`;
+  return `Masukkan ${field.label.toLowerCase()}`;
+}
+
 export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
   const sendEmail = useServerFn(sendAppEmail);
