@@ -259,6 +259,11 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
             }
 
             try {
+              const unsubscribeToken =
+                payload.unsubscribe_token || payload.purpose === 'transactional'
+                  ? payload.unsubscribe_token || (await getOrCreateUnsubscribeToken(supabase, payload.to))
+                  : undefined
+
               await sendLovableEmail(
                 {
                   run_id: payload.run_id,
@@ -271,7 +276,7 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
                   purpose: payload.purpose,
                   label: payload.label,
                   idempotency_key: payload.idempotency_key,
-                  unsubscribe_token: payload.unsubscribe_token,
+                  unsubscribe_token: unsubscribeToken,
                   message_id: payload.message_id,
                 },
                 { apiKey, sendUrl: process.env.LOVABLE_SEND_URL }
