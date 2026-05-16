@@ -86,7 +86,7 @@ pm2 startup     # ikuti instruksi yang muncul
 Cek: `pm2 status` → harus online.
 Logs: `pm2 logs kejar-prestasi`
 
-## 6. Nginx Reverse Proxy
+## 7. Nginx Reverse Proxy
 
 ```bash
 sudo nano /etc/nginx/sites-available/kejar-prestasi
@@ -120,7 +120,7 @@ sudo ln -s /etc/nginx/sites-available/kejar-prestasi /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-## 7. SSL Certbot (HTTPS)
+## 8. SSL Certbot (HTTPS)
 
 ```bash
 sudo apt-get install -y certbot python3-certbot-nginx
@@ -129,7 +129,7 @@ sudo certbot --nginx -d domain-anda.com -d www.domain-anda.com
 
 Auto-renew sudah aktif via systemd timer.
 
-## 8. Auto-Update via GitHub Webhook (Opsional)
+## 9. Auto-Update via GitHub Webhook (Opsional)
 
 Script `public/update.sh` sudah siap pakai. Trigger lewat tombol "Update Sekarang" di admin dashboard, atau webhook:
 
