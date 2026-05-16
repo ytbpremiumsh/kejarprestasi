@@ -113,7 +113,19 @@ async function getOrCreateUnsubscribeToken(email: string) {
   return stored.token as string;
 }
 
+async function loadBrandingLogo(): Promise<string | undefined> {
+  const { data } = await (supabaseAdmin as any)
+    .from("site_settings")
+    .select("value")
+    .eq("key", "branding")
+    .maybeSingle();
+  const v = data?.value as { header_logo_url?: string; footer_logo_url?: string } | null;
+  return v?.header_logo_url || v?.footer_logo_url || undefined;
+}
+
 async function renderEmail(templateName: string, props: Record<string, any>) {
+  const logoUrl = await loadBrandingLogo();
+  const propsWithLogo = { ...props, logoUrl };
   const custom = await loadCustomTemplate(templateName);
   if (custom) {
     const html = applyPlaceholders(custom.html, props);
@@ -123,12 +135,12 @@ async function renderEmail(templateName: string, props: Record<string, any>) {
   }
   const entry = TEMPLATES[templateName];
   if (!entry) throw new Error(`Unknown template: ${templateName}`);
-  const html = await render(React.createElement(entry.component, props));
-  const text = await render(React.createElement(entry.component, props), {
+  const html = await render(React.createElement(entry.component, propsWithLogo));
+  const text = await render(React.createElement(entry.component, propsWithLogo), {
     plainText: true,
   });
   const subject =
-    typeof entry.subject === "function" ? entry.subject(props) : entry.subject;
+    typeof entry.subject === "function" ? entry.subject(propsWithLogo) : entry.subject;
   return { html, subject, text };
 }
 
