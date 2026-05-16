@@ -35,51 +35,14 @@ function getRetryAfterSeconds(error: unknown): number {
   return 60
 }
 
-function generateUnsubscribeToken(): string {
-  const bytes = new Uint8Array(32)
-  crypto.getRandomValues(bytes)
-  return Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
-async function getOrCreateUnsubscribeToken(supabase: any, email: string): Promise<string> {
-  const normalizedEmail = email.toLowerCase()
-  const { data: existingToken, error: tokenLookupError } = await supabase
-    .from('email_unsubscribe_tokens')
-    .select('token, used_at')
-    .eq('email', normalizedEmail)
-    .maybeSingle()
-
-  if (tokenLookupError) throw new Error('Failed to look up unsubscribe token')
-  if (existingToken?.token && !existingToken.used_at) return existingToken.token
-
-  const token = generateUnsubscribeToken()
-  const { error: tokenError } = await supabase
-    .from('email_unsubscribe_tokens')
-    .upsert(
-      { token, email: normalizedEmail },
-      { onConflict: 'email', ignoreDuplicates: true }
-    )
-  if (tokenError) throw new Error('Failed to create unsubscribe token')
-
-  const { data: storedToken, error: reReadError } = await supabase
-    .from('email_unsubscribe_tokens')
-    .select('token')
-    .eq('email', normalizedEmail)
-    .maybeSingle()
-  if (reReadError || !storedToken?.token) throw new Error('Failed to confirm unsubscribe token storage')
-  return storedToken.token
-}
-
 // Move a message to the dead letter queue and log the reason.
 async function moveToDlq(
-  supabase: any,
+  supabase: ReturnType<typeof createClient>,
   queue: string,
-  msg: { msg_id: number; message: any },
+  msg: { msg_id: number; message: Record<string, unknown> },
   reason: string
 ): Promise<void> {
-  const payload: any = msg.message
+  const payload = msg.message
   await supabase.from('email_send_log').insert({
     message_id: payload.message_id,
     template_name: (payload.label || queue) as string,
@@ -126,7 +89,7 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
           return Response.json({ error: 'Forbidden' }, { status: 403 })
         }
 
-        const supabase = createClient(supabaseUrl, supabaseServiceKey) as any
+        const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
         // 1. Check rate-limit cooldown and read queue config
         const { data: state } = await supabase
@@ -259,11 +222,6 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
             }
 
             try {
-              const unsubscribeToken =
-                payload.unsubscribe_token || payload.purpose === 'transactional'
-                  ? payload.unsubscribe_token || (await getOrCreateUnsubscribeToken(supabase, payload.to))
-                  : undefined
-
               await sendLovableEmail(
                 {
                   run_id: payload.run_id,
@@ -276,7 +234,7 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
                   purpose: payload.purpose,
                   label: payload.label,
                   idempotency_key: payload.idempotency_key,
-                  unsubscribe_token: unsubscribeToken,
+                  unsubscribe_token: payload.unsubscribe_token,
                   message_id: payload.message_id,
                 },
                 { apiKey, sendUrl: process.env.LOVABLE_SEND_URL }
