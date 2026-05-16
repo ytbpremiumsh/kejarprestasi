@@ -45,6 +45,10 @@ function selectorFor(position: AdPosition): string | null {
       return "#timeline a[class*='rounded-full'], #timeline button";
     case "before_each_button":
       return "button, a[role='button'], a[class*='rounded-full']";
+    case "before_each_nav_link":
+    case "after_each_nav_link":
+      // Any internal <a href="/..."> that leads to another page (excludes anchors, mail, tel, external)
+      return "a[href]:not([href^='#']):not([href^='mailto']):not([href^='tel']):not([href^='http']):not([href^='javascript'])";
     default:
       return null;
   }
