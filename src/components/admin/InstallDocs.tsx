@@ -131,10 +131,10 @@ sudo bash deploy/update.sh`}
           <p className="font-medium">Yang dilakukan script:</p>
           <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted-foreground">
             <li>Backup otomatis file <code className="rounded bg-muted px-1">.env</code></li>
-            <li>Bersihkan sisa <code className="rounded bg-muted px-1">/www/wwwroot/kejarprestasi.id/</code> legacy</li>
             <li>Tarik commit terbaru dari Git (branch <code className="rounded bg-muted px-1">main</code>)</li>
             <li><code className="rounded bg-muted px-1">npm ci</code> + <code className="rounded bg-muted px-1">npm run build:node</code></li>
             <li>Validasi keras: <code className="rounded bg-muted px-1">dist/server/server.node.js</code> harus ada</li>
+            <li>Stage <code className="rounded bg-muted px-1">dist/client</code> ke webroot: <code className="rounded bg-muted px-1">assets/</code>, <code className="rounded bg-muted px-1">index.html</code>, <code className="rounded bg-muted px-1">favicon.ico</code></li>
             <li><strong>Auto-rollback</strong> ke commit sebelumnya jika build gagal</li>
             <li><code className="rounded bg-muted px-1">pm2 reload kejarprestasi --update-env</code> (zero-downtime)</li>
           </ul>
