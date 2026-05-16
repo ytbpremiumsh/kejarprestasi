@@ -8,7 +8,7 @@ Browser ──HTTPS──▶ Nginx :443
                    └─ /*         → proxy_pass 127.0.0.1:3000 (Node SSR)
 ```
 
-App dir tunggal: `/var/www/kejarprestasi`. **Tidak ada** file yang disalin ke `/www/wwwroot/`.
+App Node SSR tetap di `/var/www/kejarprestasi`. Webroot aaPanel/Nginx `/www/wwwroot/kejarprestasi.id` hanya berisi static fallback: `assets/`, `index.html`, `favicon.ico`.
 
 ---
 
@@ -37,9 +37,10 @@ Installer akan:
 1. Install Node 20 + PM2 (jika belum)
 2. `npm ci && npm run build:node`
 3. Validasi `dist/server/server.node.js` ada
-4. `pm2 start ecosystem.config.cjs` + `pm2 save` + autostart on boot
-5. Salin contoh Nginx config ke `/etc/nginx/conf.d/kejarprestasi.id.conf.example`
-6. Smoke test `curl http://127.0.0.1:3000`
+4. Stage `dist/client` ke `/www/wwwroot/kejarprestasi.id` sehingga muncul `assets/`, `index.html`, `favicon.ico`
+5. `pm2 start ecosystem.config.cjs` + `pm2 save` + autostart on boot
+6. Salin contoh Nginx config ke `/etc/nginx/conf.d/kejarprestasi.id.conf.example`
+7. Smoke test `curl http://127.0.0.1:3000`
 
 ## 3. Nginx
 
@@ -63,17 +64,17 @@ cd /var/www/kejarprestasi
 sudo bash deploy/update.sh
 ```
 
-Script: `git pull` → `npm ci` → `npm run build:node` → validasi → `pm2 reload` (zero-downtime). Auto-rollback jika build gagal. Membersihkan `/www/wwwroot/kejarprestasi.id/` legacy jika masih ada.
+Script: `git pull` → `npm ci` → `npm run build:node` → stage webroot → validasi → `pm2 reload` (zero-downtime). Auto-rollback jika build gagal. Webroot otomatis menjadi `assets/`, `index.html`, `favicon.ico` — bukan `client/` + `server/`.
 
 ## 5. Migrasi dari instalasi aaPanel/static lama
 
-Jika sebelumnya pernah deploy ala SPA static (folder `/www/wwwroot/kejarprestasi.id/` berisi `assets/` + `update.sh` tanpa `index.html`):
+Jika `/www/wwwroot/kejarprestasi.id/` berisi `client/` + `server/`, berarti folder `dist/` tersalin mentah ke webroot. Jalankan:
 
 ```bash
 sudo bash /var/www/kejarprestasi/deploy/migrate-from-static.sh
 ```
 
-Script: hapus legacy webroot, install Nginx config baru, disable vhost aaPanel lama, restart PM2.
+Script: hapus `client/` + `server/`, salin isi `dist/client`, buat fallback `index.html`/`favicon.ico` bila belum ada, install Nginx config, disable vhost aaPanel lama, restart PM2.
 
 ## 6. Verifikasi
 
@@ -83,13 +84,14 @@ pm2 status                                              # kejarprestasi: online
 curl -I http://127.0.0.1:3000                           # 200
 curl -I https://kejarprestasi.id                        # 200 + text/html
 curl -I https://kejarprestasi.id/assets/<hash>.js       # 200 + Cache-Control: immutable
+ls -lah /www/wwwroot/kejarprestasi.id                   # assets/ index.html favicon.ico
 ```
 
 ## 7. Troubleshooting
 
 | Gejala | Penyebab | Fix |
 |---|---|---|
-| 403 di domain, folder root cuma berisi `assets/` | Sisa deployment static lama | `bash deploy/migrate-from-static.sh` |
+| Webroot berisi `client/` + `server/` | `dist/` tersalin mentah ke webroot | `bash deploy/migrate-from-static.sh` |
 | `dist/server/server.node.js` tidak ada setelah build | Build pakai config Worker, bukan Node | Pastikan jalankan `npm run build:node`, bukan `npm run build` |
 | PM2 restart loop | `.env` kurang / port 3000 sudah dipakai | `pm2 logs kejarprestasi` |
 | 502 Bad Gateway | Node mati | `pm2 status` lalu `pm2 restart kejarprestasi` |
