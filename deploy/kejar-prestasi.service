@@ -1,0 +1,29 @@
+[Unit]
+Description=Kejar Prestasi (Node SSR)
+Documentation=https://github.com/your-org/kejar-prestasi
+After=network.target
+
+[Service]
+Type=simple
+User=kejarprestasi
+Group=kejarprestasi
+WorkingDirectory=/var/www/kejar-prestasi
+ExecStart=/usr/bin/node dist/server/server.node.js
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/var/www/kejar-prestasi/logs/app.log
+StandardError=append:/var/www/kejar-prestasi/logs/app-err.log
+
+# Environment
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOST=0.0.0.0
+EnvironmentFile=/var/www/kejar-prestasi/.env
+
+# Hardening (opsional, comment kalau bermasalah)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
