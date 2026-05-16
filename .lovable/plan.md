@@ -1,90 +1,105 @@
-# Rencana: Opsi C — Sistem Auto-Update Kombinasi
+# Rencana: Install di VPS pakai Node, Lovable Preview Tetap Jalan
 
-## Alur
+## Konteks Singkat
 
-```text
-Lovable Editor ──auto push──▶ GitHub ──┬──▶ Webhook ──▶ VPS (auto-deploy)
-                                       └──▶ Tombol "Update" di Admin (manual)
-                                              └──▶ Rollback ke versi sebelumnya
-```
+Lovable preview (`*.lovable.app`) **wajib** pakai Cloudflare Worker — itu runtime bawaan template `@lovable.dev/vite-tanstack-config`. Kalau kita hapus total, preview Lovable rusak dan Anda kehilangan kemampuan edit + preview di Lovable.
 
-## Fitur
+Solusi paling aman: **Dual Build**. Satu codebase, dua output:
+- **Build Worker** → dipakai Lovable preview & publish (`kejarprestasi.lovable.app`)
+- **Build Node** → dipakai VPS Anda (no Cloudflare, no Worker, no OOM dari plugin Cloudflare)
 
-### 1. Halaman baru `/admin/sistem-update`
-- **Card status versi** — commit hash, tanggal, pesan commit, branch
-- **Badge "Update tersedia"** — muncul jika ada commit baru di `origin/main` (cek tiap 60 detik)
-- **Tombol "Update Sekarang"** — trigger `update.sh`, log realtime via streaming
-- **Toggle "Auto-update via webhook"** — ON/OFF, simpan di `site_settings`
-- **Card konfigurasi webhook** — URL + secret yang harus di-paste ke GitHub repo, dengan tombol copy
-- **Tabel riwayat 20 update terakhir** — waktu, commit, sumber (manual/webhook/rollback), status, durasi, tombol "Lihat log"
-- **Tombol "Rollback"** — kembali ke commit sukses sebelumnya
+Sistem Update (auto-update via GitHub webhook + tombol "Update Sekarang"), email worker, child_process — semua **berjalan di Node VPS**, karena VPS pakai entry Node yang berbeda.
 
-Menu baru di `AdminSidebar`: "Sistem Update".
+---
 
-### 2. Server functions — `src/lib/system-update.functions.ts`
-Semua dilindungi `requireSupabaseAuth` + cek role admin:
-- `getSystemStatus()` — baca git via `child_process` (commit lokal, commit remote, jumlah commit tertinggal)
-- `triggerUpdate()` — spawn `update.sh`, stream output, catat ke DB
-- `rollback()` — `git reset --hard <prev_commit>` + rebuild + restart
-- `getUpdateHistory()` — query tabel `system_updates`
-- `regenerateWebhookSecret()` — generate ulang secret webhook
+## Yang Akan Dibuat
 
-### 3. Webhook receiver — `src/routes/api/public/github-webhook.ts`
-- Verifikasi signature `x-hub-signature-256` (HMAC SHA256, timing-safe)
-- Hanya proses event `push` ke branch `main`
-- Cek toggle `auto_update_enabled` — kalau OFF, return 200 tapi skip
-- Trigger update async, catat hasil di `system_updates`
-
-### 4. Database — migrasi baru
-Tabel `system_updates`:
-- `commit_hash`, `commit_message`, `branch`
-- `trigger_source` (`manual` | `webhook` | `rollback`)
-- `status` (`running` | `success` | `failed`)
-- `log_output`, `duration_ms`, `triggered_by` (uuid, nullable)
-- RLS: hanya admin
-
-Tambah 2 key di `site_settings`:
-- `auto_update_enabled` (boolean, default `false`)
-- `github_webhook_secret` (text, auto-generated)
-
-### 5. Update `public/update.sh`
-- Output JSON di akhir: `{"status":"success","commit":"abc","duration":12345}`
-- Auto-rollback jika build gagal (`git reset --hard $LOCAL` + restart versi lama)
-- Tulis log dengan timestamp ke `update.log`
-
-### 6. Dokumentasi diperbarui
-Di `admin.instalasi.vps.tsx` & `admin.instalasi.hosting.tsx`:
-- Step "Setup auto-update": generate secret → copy URL webhook → paste ke GitHub Settings → Webhooks
-- Step `sudoers` agar PM2 bisa restart tanpa password
-
-## Batasan (jujur)
-
-1. **Hanya jalan di self-hosted Node.js** — `child_process` tidak tersedia di Cloudflare Worker (Lovable preview). Tombol akan disabled di preview dengan pesan informatif.
-2. **Webhook butuh domain publik HTTPS** — GitHub tidak bisa kirim ke localhost.
-3. **Auto-rollback hanya cover gagal build** — runtime crash pasca-deploy butuh monitoring terpisah.
-4. **Migrasi DB tidak ikut auto-deploy** — kalau commit baru perlu skema baru, harus dijalankan manual dari Lovable.
-
-## File yang akan disentuh
+### 1. Entry Node baru: `src/server.node.ts`
+Versi Node dari `src/server.ts`. Pakai `@hono/node-server` (~50KB, ringan, dipakai TanStack Start sendiri secara internal) untuk handle HTTP. Logic error-capture & branded error page sama persis dengan Worker entry.
 
 ```text
-BARU:
-- src/routes/admin.sistem-update.tsx
-- src/lib/system-update.functions.ts
-- src/routes/api/public/github-webhook.ts
-- migrasi: tabel system_updates + 2 site_settings keys
-
-DIEDIT:
-- src/components/admin/AdminSidebar.tsx
-- public/update.sh
-- src/routes/admin.instalasi.vps.tsx
-- src/routes/admin.instalasi.hosting.tsx
+src/server.node.ts
+  └─ import handler dari @tanstack/react-start/server-entry
+  └─ bungkus dengan serve() dari @hono/node-server
+  └─ listen di process.env.PORT || 3000
 ```
 
-## Langkah implementasi
-1. Migrasi DB (`system_updates` + settings keys)
-2. `system-update.functions.ts` (status, update streaming, rollback, history)
-3. Webhook endpoint dengan signature verification
-4. Halaman admin `/admin/sistem-update` + integrasi sidebar
-5. Update `update.sh` (JSON output + auto-rollback)
-6. Update dokumentasi VPS & hosting
-7. Test invoke webhook untuk verifikasi flow
+### 2. Vite config tambahan: `vite.config.node.ts`
+Config terpisah khusus build Node — **tidak load** `@cloudflare/vite-plugin`. Ini yang menyelesaikan OOM build karena plugin Cloudflare adalah penyumbang heap terbesar di SSR build.
+
+```text
+vite.config.node.ts
+  └─ pakai plugin tanstackStart + viteReact + tailwindcss + tsconfigPaths
+  └─ SSR target: node
+  └─ output: dist/node/
+  └─ TIDAK ada cloudflare plugin
+```
+
+### 3. Script baru di `package.json`
+```text
+"build:node": "vite build --config vite.config.node.ts"
+"start:node":  "node dist/node/server/index.mjs"
+```
+
+Script lama (`build`, `dev`, `preview`) **tidak diubah** — Lovable tetap pakai itu.
+
+### 4. Update `public/update.sh`
+Auto-update script di VPS jalan:
+```text
+git pull
+npm ci
+npm run build:node
+pm2 restart kejarprestasi
+```
+
+### 5. Dokumentasi VPS: `docs/INSTALL-VPS.md`
+Step-by-step install di VPS Ubuntu/Debian:
+- Install Node 22 + PM2
+- Clone repo, set `.env`
+- `npm ci && npm run build:node`
+- `pm2 start ecosystem.config.cjs`
+- Setup Nginx reverse proxy + SSL Certbot
+- Setup GitHub webhook → endpoint `/api/public/github-webhook` untuk auto-update
+
+### 6. File `ecosystem.config.cjs` untuk PM2
+Config PM2 dengan auto-restart, log rotation, dan environment variables.
+
+---
+
+## Yang TIDAK Diubah
+
+- `src/server.ts` (Worker entry) — tetap untuk Lovable
+- `wrangler.jsonc` — tetap untuk Lovable
+- `vite.config.ts` — tetap untuk Lovable
+- Semua kode aplikasi (`src/routes/`, `src/lib/`, server functions, dll) — 100% sama, jalan di kedua runtime
+
+---
+
+## Detail Teknis (untuk referensi)
+
+**Kenapa `@hono/node-server`?**
+- Library minimal, dipakai TanStack Start secara internal saat dev mode di Node
+- Compatible dengan handler `fetch(Request) => Response` (Web standard)
+- ~50KB, zero native deps
+- Alternatif `node:http` murni perlu adapter manual Web↔Node yang lebih ribet
+
+**Kenapa Dual Build, bukan migrasi total?**
+- Lovable preview pakai Worker secara hard-coded di template
+- Hapus Cloudflare plugin = preview Lovable mati = Anda gak bisa edit di Lovable lagi
+- Dual build = best of both worlds, cost-nya cuma 1 file entry + 1 config tambahan
+
+**Kenapa OOM build hilang di Node build?**
+- `@cloudflare/vite-plugin` melakukan extra SSR transform untuk Worker compatibility (unenv polyfills, module shimming, dll)
+- Build Node skip semua itu → heap usage turun ~40%
+- VPS 2GB RAM cukup untuk build (sebelumnya butuh 4GB+ untuk Worker build)
+
+**Fitur yang aman 100% di Node VPS:**
+Email worker, WhatsApp blast, registration, donations, auth Supabase, file upload, admin dashboard, edge functions Supabase, sistem update otomatis, child_process.spawn (untuk update.sh), fs.watch, semua native binaries.
+
+---
+
+## Pertanyaan Konfirmasi
+
+1. **Setuju pendekatan Dual Build** (Lovable tetap jalan, VPS dapat build Node terpisah)?
+2. **Process manager VPS**: PM2 (recommended, auto-restart, log management) atau systemd?
+3. **Saya buat sekalian `docs/INSTALL-VPS.md`** lengkap dengan Nginx config + Certbot, atau cukup script-nya saja dulu?
