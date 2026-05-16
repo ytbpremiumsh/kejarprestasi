@@ -292,21 +292,29 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
   }
 
   return (
-    <section className="container-page py-12 md:py-16">
-      <Link to="/" className="text-xs font-semibold text-primary hover:underline">
-        ← Kembali ke Beranda
-      </Link>
-      <div className="mt-4 max-w-3xl">
-        <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-          {isPrestasi ? "Beasiswa Prestasi" : "Beasiswa Ekonomi"}
-        </span>
-        <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">{title}</h1>
-        <p className="mt-2 text-muted-foreground">
-          Lengkapi formulir di bawah ini. Pastikan seluruh data benar sebelum dikirim.
-        </p>
-      </div>
+    <>
+      <section
+        className="relative overflow-hidden"
+        style={{ background: "var(--gradient-hero)" }}
+      >
+        <div className="container-page py-12 md:py-16">
+          <Link to="/" className="text-xs font-semibold text-primary hover:underline">
+            ← Kembali ke Beranda
+          </Link>
+          <div className="mt-4 max-w-3xl">
+            <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
+              {isPrestasi ? "Beasiswa Prestasi" : "Beasiswa Ekonomi"}
+            </span>
+            <h1 className="mt-3 text-3xl md:text-4xl font-extrabold text-foreground">{title}</h1>
+            <p className="mt-2 text-muted-foreground">
+              Lengkapi formulir di bawah ini. Pastikan seluruh data benar sebelum dikirim.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <AdSlot placement="form_top" />
+      <section className="container-page py-10 md:py-12">
+        <AdSlot placement="form_top" />
 
       <form onSubmit={handleSubmit} className="mt-10 grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
