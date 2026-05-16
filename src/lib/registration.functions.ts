@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { insertRegistration } from "@/lib/registration.server";
+import { sendAppEmail } from "@/lib/email.functions";
 
 const emptyToNull = (value: unknown) => {
   if (value == null) return null;
