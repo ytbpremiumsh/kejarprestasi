@@ -90,8 +90,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Beasiswa Pendidikan Kejar Prestasi Section #3" },
       { name: "twitter:description", content: "Program beasiswa nasional untuk pelajar dan mahasiswa Indonesia dengan total beasiswa Rp23.000.000 per semester. Tidak dipungut biaya." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2cc649be-7e4b-4aec-a966-a40e589b740f/id-preview-b6051ba4--9c225128-d4b9-467e-9636-c0f33f20ecb8.lovable.app-1778510212725.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2cc649be-7e4b-4aec-a966-a40e589b740f/id-preview-b6051ba4--9c225128-d4b9-467e-9636-c0f33f20ecb8.lovable.app-1778510212725.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/957b997d-0c39-40b2-86e1-5cccaba42847" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/957b997d-0c39-40b2-86e1-5cccaba42847" },
     ],
     links: [
       {
