@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # =============================================================
-#  Stage static client files ke webroot aaPanel/Nginx.
-#  Hanya isi dist/client yang boleh masuk webroot — dist/server tetap
-#  dipakai PM2 dari APP_DIR.
+#  FORCE stage static client files ke webroot aaPanel/Nginx.
+#  Output akhir webroot WAJIB: assets/, index.html, favicon.ico
+#  dan TIDAK BOLEH ada client/ atau server/.
 # =============================================================
-set -e
+set -Eeuo pipefail
 
 APP_DIR="${APP_DIR:-/var/www/kejarprestasi}"
 WEBROOT="${WEBROOT:-/www/wwwroot/kejarprestasi.id}"
@@ -13,12 +13,19 @@ CLIENT_DIR="${APP_DIR}/dist/client"
 color() { printf "\033[%sm%s\033[0m\n" "$1" "$2"; }
 info()  { color "1;34" "==> $1"; }
 ok()    { color "1;32" "✔  $1"; }
+warn()  { color "1;33" "!  $1"; }
 err()   { color "1;31" "✖  $1"; }
 
+case "$WEBROOT" in
+  ""|"/"|"/www"|"/www/wwwroot") err "WEBROOT tidak aman: $WEBROOT"; exit 1 ;;
+esac
+
+[ "$WEBROOT" != "$APP_DIR" ] || { err "WEBROOT tidak boleh sama dengan APP_DIR"; exit 1; }
+[ "$WEBROOT" != "$APP_DIR/dist" ] || { err "WEBROOT tidak boleh mengarah ke dist"; exit 1; }
 [ -d "$CLIENT_DIR" ] || { err "${CLIENT_DIR} tidak ada — jalankan npm run build:node dulu"; exit 1; }
 [ -d "$CLIENT_DIR/assets" ] || { err "${CLIENT_DIR}/assets tidak ada — build client gagal"; exit 1; }
 
-info "Menyiapkan webroot static fallback: ${WEBROOT}"
+info "Force reset webroot static fallback: ${WEBROOT}"
 mkdir -p "$WEBROOT"
 
 WEBROOT_OWNER="${WEBROOT_OWNER:-}"
@@ -26,24 +33,14 @@ if [ -z "$WEBROOT_OWNER" ]; then
   WEBROOT_OWNER="$(stat -c '%u:%g' "$WEBROOT" 2>/dev/null || true)"
 fi
 
-# Hapus output yang salah/legacy. Penyebab folder client/ dan server/ muncul
-# biasanya karena dist/* disalin mentah ke webroot.
-rm -rf \
-  "$WEBROOT/client" \
-  "$WEBROOT/server" \
-  "$WEBROOT/assets" \
-  "$WEBROOT/index.html" \
-  "$WEBROOT/favicon.ico" \
-  "$WEBROOT/robots.txt" \
-  "$WEBROOT/manifest.webmanifest" \
-  "$WEBROOT/site.webmanifest"
+TMP_DIR="$(mktemp -d)"
+trap 'rm -rf "$TMP_DIR"' EXIT
 
-cp -a "$CLIENT_DIR"/. "$WEBROOT"/
+cp -a "$CLIENT_DIR"/. "$TMP_DIR"/
+rm -rf "$TMP_DIR/client" "$TMP_DIR/server"
 
-# TanStack Start SSR tidak selalu menghasilkan index.html di client build.
-# Untuk kebutuhan static fallback/aaPanel file-list, buat fallback eksplisit.
-if [ ! -f "$WEBROOT/index.html" ]; then
-  cat > "$WEBROOT/index.html" <<'EOF'
+if [ ! -f "$TMP_DIR/index.html" ]; then
+  cat > "$TMP_DIR/index.html" <<'EOF'
 <!doctype html>
 <html lang="id">
   <head>
@@ -59,9 +56,12 @@ if [ ! -f "$WEBROOT/index.html" ]; then
 EOF
 fi
 
-# Buat favicon.ico valid bila build tidak menyediakannya.
-if [ ! -f "$WEBROOT/favicon.ico" ]; then
-  node - "$WEBROOT/favicon.ico" <<'NODE'
+if [ ! -f "$TMP_DIR/robots.txt" ]; then
+  printf 'User-agent: *\nAllow: /\n' > "$TMP_DIR/robots.txt"
+fi
+
+if [ ! -f "$TMP_DIR/favicon.ico" ]; then
+  node - "$TMP_DIR/favicon.ico" <<'NODE'
 const fs = require('fs');
 const output = process.argv[2];
 const width = 16;
@@ -100,9 +100,32 @@ fs.writeFileSync(output, Buffer.concat([header, dir, dib]));
 NODE
 fi
 
+if [ "$(id -u)" = "0" ] && command -v chattr >/dev/null 2>&1; then
+  chattr -R -i "$WEBROOT/client" "$WEBROOT/server" 2>/dev/null || true
+fi
+
+shopt -s dotglob nullglob
+for item in "$WEBROOT"/* "$WEBROOT"/.[!.]* "$WEBROOT"/..?*; do
+  base="$(basename "$item")"
+  case "$base" in
+    .|..|.user.ini|.htaccess) continue ;;
+  esac
+  rm -rf -- "$item"
+done
+shopt -u dotglob nullglob
+
+cp -a "$TMP_DIR"/. "$WEBROOT"/
+rm -rf "$WEBROOT/client" "$WEBROOT/server"
+
 if [ -n "$WEBROOT_OWNER" ] && [ "$(id -u)" = "0" ]; then
   chown -R "$WEBROOT_OWNER" "$WEBROOT"
 fi
 
-ok "Webroot OK: assets/, index.html, favicon.ico"
-ls -lah "$WEBROOT" | sed -n '1,40p'
+[ -d "$WEBROOT/assets" ] || { err "Validasi gagal: assets/ tidak ada di webroot"; exit 1; }
+[ -f "$WEBROOT/index.html" ] || { err "Validasi gagal: index.html tidak ada di webroot"; exit 1; }
+[ -f "$WEBROOT/favicon.ico" ] || { err "Validasi gagal: favicon.ico tidak ada di webroot"; exit 1; }
+[ ! -e "$WEBROOT/client" ] || { err "Validasi gagal: client/ masih ada di webroot"; exit 1; }
+[ ! -e "$WEBROOT/server" ] || { err "Validasi gagal: server/ masih ada di webroot"; exit 1; }
+
+ok "Webroot bersih: assets/, index.html, favicon.ico — client/ dan server/ sudah dihapus total"
+ls -lah "$WEBROOT" | sed -n '1,60p'
