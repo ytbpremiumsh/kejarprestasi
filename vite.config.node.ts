@@ -6,6 +6,22 @@ export default defineConfig({
   // Matikan Cloudflare plugin → build SSR jadi target Node murni,
   // heap usage turun signifikan (anti-OOM di VPS).
   cloudflare: false,
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+  },
+  environments: {
+    client: {
+      build: {
+        outDir: "dist",
+      },
+    },
+    server: {
+      build: {
+        outDir: ".node-server",
+      },
+    },
+  },
   tanstackStart: {
     // Pakai entry Node yang membungkus handler dengan @hono/node-server
     // dan listen ke process.env.PORT.

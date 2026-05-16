@@ -4,7 +4,7 @@ module.exports = {
   apps: [
     {
       name: "kejarprestasi",
-      script: "dist/server/server.node.js",
+      script: ".node-server/server.node.js",
       cwd: "/var/www/kejarprestasi",
       instances: "max",
       exec_mode: "cluster",

@@ -67,8 +67,8 @@ info "Build Node SSR..."
 npm run build:node
 
 # 6. Validasi keras
-[ -f dist/server/server.node.js ] || { err "dist/server/server.node.js tidak ada — build gagal"; exit 1; }
-[ -d dist/client/assets ]         || { err "dist/client/assets tidak ada — build gagal"; exit 1; }
+[ -f .node-server/server.node.js ] || { err ".node-server/server.node.js tidak ada — build gagal"; exit 1; }
+[ -d dist/assets ]                 || { err "dist/assets tidak ada — build client gagal"; exit 1; }
 ok "Build artifacts OK"
 
 # 7. Static fallback untuk webroot aaPanel/Nginx
