@@ -5,8 +5,8 @@ import { render } from "@react-email/components";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { TEMPLATES } from "./email-templates/registry";
 
-const SENDER_DOMAIN = "notify.kejarprestasi.id";
-const FROM_EMAIL = "Kejar Prestasi <noreply@notify.kejarprestasi.id>";
+const SENDER_DOMAIN = "notify.mail.kejarprestasi.id";
+const FROM_EMAIL = "Kejar Prestasi <noreply@notify.mail.kejarprestasi.id>";
 
 const CUSTOMIZABLE: Record<string, string> = {
   "registration-confirmation": "email_template_registration",
