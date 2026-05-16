@@ -65,7 +65,16 @@ Output ada di `dist/server/server.node.js`.
 > NODE_OPTIONS="--max-old-space-size=3072" npm run build:node
 > ```
 
-## 5. Start dengan PM2
+## 5. Setup `update.sh` (untuk auto-update)
+
+Webhook auto-update spawn `${APP_DIR}/update.sh`, sementara file aslinya di `public/update.sh`. Buat symlink + permission executable:
+
+```bash
+ln -sf public/update.sh update.sh
+chmod +x public/update.sh update.sh
+```
+
+## 6. Start dengan PM2
 
 ```bash
 mkdir -p logs
