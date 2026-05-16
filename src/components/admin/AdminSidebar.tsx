@@ -74,6 +74,7 @@ const groups: { label: string; items: Item[] }[] = [
     items: [
       { title: "Pengaturan Situs", url: "/admin/pengaturan", icon: Settings },
       { title: "Logo Situs", url: "/admin/branding", icon: ImageIcon },
+      { title: "Template Email", url: "/admin/email-template", icon: Mail },
       { title: "Keamanan (2FA)", url: "/admin/keamanan", icon: ShieldCheck },
       { title: "AdSense", url: "/admin/adsense", icon: Megaphone },
       { title: "Kode & Performa", url: "/admin/kode-kustom", icon: Code2 },
