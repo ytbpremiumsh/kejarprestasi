@@ -168,6 +168,49 @@ function AdminMedia() {
         </div>
       </div>
 
+      <Card className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Zap className="h-4 w-4 text-primary" />
+          <Label htmlFor="compress-toggle" className="text-sm font-semibold cursor-pointer">
+            Kompres gambar saat upload
+          </Label>
+          <Switch
+            id="compress-toggle"
+            checked={compressEnabled}
+            onCheckedChange={setCompressEnabled}
+            className="ml-auto"
+          />
+        </div>
+        {compressEnabled && (
+          <div className="flex flex-wrap items-center gap-3 text-sm pl-6">
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Kualitas:</span>
+              <Select value={quality} onValueChange={(v) => setQuality(v as typeof quality)}>
+                <SelectTrigger className="w-36 h-8"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="high">Tinggi (90%)</SelectItem>
+                  <SelectItem value="medium">Sedang (75%)</SelectItem>
+                  <SelectItem value="low">Rendah (55%)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Format:</span>
+              <Select value={format} onValueChange={(v) => setFormat(v as typeof format)}>
+                <SelectTrigger className="w-36 h-8"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="image/webp">WebP (ringan)</SelectItem>
+                  <SelectItem value="image/jpeg">JPEG</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              Resize maksimum 1920px. File non-gambar diunggah apa adanya.
+            </span>
+          </div>
+        )}
+      </Card>
+
       <Card className="p-4 flex flex-wrap items-center gap-4 text-sm">
         <div>
           <span className="text-muted-foreground">Total file: </span>
