@@ -41,6 +41,7 @@ import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminKodeKustomRouteImport } from './routes/admin.kode-kustom'
 import { Route as AdminKeamananRouteImport } from './routes/admin.keamanan'
 import { Route as AdminKandidatRouteImport } from './routes/admin.kandidat'
+import { Route as AdminIklanKustomRouteImport } from './routes/admin.iklan-kustom'
 import { Route as AdminFormulirRouteImport } from './routes/admin.formulir'
 import { Route as AdminEmailTemplateRouteImport } from './routes/admin.email-template'
 import { Route as AdminDonasiRouteImport } from './routes/admin.donasi'
@@ -227,6 +228,11 @@ const AdminKandidatRoute = AdminKandidatRouteImport.update({
   path: '/kandidat',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminIklanKustomRoute = AdminIklanKustomRouteImport.update({
+  id: '/iklan-kustom',
+  path: '/iklan-kustom',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminFormulirRoute = AdminFormulirRouteImport.update({
   id: '/formulir',
   path: '/formulir',
@@ -376,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
+  '/admin/iklan-kustom': typeof AdminIklanKustomRoute
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
@@ -434,6 +441,7 @@ export interface FileRoutesByTo {
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
+  '/admin/iklan-kustom': typeof AdminIklanKustomRoute
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
@@ -492,6 +500,7 @@ export interface FileRoutesById {
   '/admin/donasi': typeof AdminDonasiRoute
   '/admin/email-template': typeof AdminEmailTemplateRoute
   '/admin/formulir': typeof AdminFormulirRoute
+  '/admin/iklan-kustom': typeof AdminIklanKustomRoute
   '/admin/kandidat': typeof AdminKandidatRoute
   '/admin/keamanan': typeof AdminKeamananRoute
   '/admin/kode-kustom': typeof AdminKodeKustomRoute
@@ -553,6 +562,7 @@ export interface FileRouteTypes {
     | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
+    | '/admin/iklan-kustom'
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
@@ -611,6 +621,7 @@ export interface FileRouteTypes {
     | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
+    | '/admin/iklan-kustom'
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
@@ -668,6 +679,7 @@ export interface FileRouteTypes {
     | '/admin/donasi'
     | '/admin/email-template'
     | '/admin/formulir'
+    | '/admin/iklan-kustom'
     | '/admin/kandidat'
     | '/admin/keamanan'
     | '/admin/kode-kustom'
@@ -969,6 +981,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminKandidatRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/iklan-kustom': {
+      id: '/admin/iklan-kustom'
+      path: '/iklan-kustom'
+      fullPath: '/admin/iklan-kustom'
+      preLoaderRoute: typeof AdminIklanKustomRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/formulir': {
       id: '/admin/formulir'
       path: '/formulir'
@@ -1158,6 +1177,7 @@ interface AdminRouteChildren {
   AdminDonasiRoute: typeof AdminDonasiRoute
   AdminEmailTemplateRoute: typeof AdminEmailTemplateRoute
   AdminFormulirRoute: typeof AdminFormulirRoute
+  AdminIklanKustomRoute: typeof AdminIklanKustomRoute
   AdminKandidatRoute: typeof AdminKandidatRoute
   AdminKeamananRoute: typeof AdminKeamananRoute
   AdminKodeKustomRoute: typeof AdminKodeKustomRoute
@@ -1182,6 +1202,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminDonasiRoute: AdminDonasiRoute,
   AdminEmailTemplateRoute: AdminEmailTemplateRoute,
   AdminFormulirRoute: AdminFormulirRoute,
+  AdminIklanKustomRoute: AdminIklanKustomRoute,
   AdminKandidatRoute: AdminKandidatRoute,
   AdminKeamananRoute: AdminKeamananRoute,
   AdminKodeKustomRoute: AdminKodeKustomRoute,
