@@ -34,6 +34,7 @@ import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-post
 import { Route as BagikanPosterEkonomiRouteImport } from './routes/bagikan-poster.ekonomi'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
+import { Route as AdminSistemUpdateRouteImport } from './routes/admin.sistem-update'
 import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
 import { Route as AdminPendaftarRouteImport } from './routes/admin.pendaftar'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
@@ -188,6 +189,11 @@ const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
 const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
   id: '/whatsapp',
   path: '/whatsapp',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSistemUpdateRoute = AdminSistemUpdateRouteImport.update({
+  id: '/sistem-update',
+  path: '/sistem-update',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPengaturanRoute = AdminPengaturanRouteImport.update({
@@ -370,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/admin/media': typeof AdminMediaRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -426,6 +433,7 @@ export interface FileRoutesByTo {
   '/admin/media': typeof AdminMediaRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -482,6 +490,7 @@ export interface FileRoutesById {
   '/admin/media': typeof AdminMediaRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/pengaturan': typeof AdminPengaturanRoute
+  '/admin/sistem-update': typeof AdminSistemUpdateRoute
   '/admin/whatsapp': typeof AdminWhatsappRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/bagikan-poster/ekonomi': typeof BagikanPosterEkonomiRoute
@@ -541,6 +550,7 @@ export interface FileRouteTypes {
     | '/admin/media'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
+    | '/admin/sistem-update'
     | '/admin/whatsapp'
     | '/artikel/$slug'
     | '/bagikan-poster/ekonomi'
@@ -597,6 +607,7 @@ export interface FileRouteTypes {
     | '/admin/media'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
+    | '/admin/sistem-update'
     | '/admin/whatsapp'
     | '/artikel/$slug'
     | '/bagikan-poster/ekonomi'
@@ -652,6 +663,7 @@ export interface FileRouteTypes {
     | '/admin/media'
     | '/admin/pendaftar'
     | '/admin/pengaturan'
+    | '/admin/sistem-update'
     | '/admin/whatsapp'
     | '/artikel/$slug'
     | '/bagikan-poster/ekonomi'
@@ -895,6 +907,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWhatsappRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/sistem-update': {
+      id: '/admin/sistem-update'
+      path: '/sistem-update'
+      fullPath: '/admin/sistem-update'
+      preLoaderRoute: typeof AdminSistemUpdateRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/pengaturan': {
       id: '/admin/pengaturan'
       path: '/pengaturan'
@@ -1125,6 +1144,7 @@ interface AdminRouteChildren {
   AdminMediaRoute: typeof AdminMediaRoute
   AdminPendaftarRoute: typeof AdminPendaftarRoute
   AdminPengaturanRoute: typeof AdminPengaturanRoute
+  AdminSistemUpdateRoute: typeof AdminSistemUpdateRoute
   AdminWhatsappRoute: typeof AdminWhatsappRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminInstalasiHostingRoute: typeof AdminInstalasiHostingRoute
@@ -1148,6 +1168,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminMediaRoute: AdminMediaRoute,
   AdminPendaftarRoute: AdminPendaftarRoute,
   AdminPengaturanRoute: AdminPengaturanRoute,
+  AdminSistemUpdateRoute: AdminSistemUpdateRoute,
   AdminWhatsappRoute: AdminWhatsappRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminInstalasiHostingRoute: AdminInstalasiHostingRoute,
