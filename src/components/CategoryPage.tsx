@@ -16,6 +16,29 @@ const persyaratan = [
 
 const merchandise = ["Plakat Beasiswa", "Kaos", "Block Note", "Goodie Bag", "Sertifikat Beasiswa"];
 
+const BENEFIT_IMAGE_URL =
+  "https://zmlwicrlcuqgxfaskxic.supabase.co/storage/v1/object/public/admin-media/1778936443603-Benefit-Kejar-Prestasi--3.png";
+
+const benefitList = [
+  { strong: "Dana Pendidikan Beasiswa", rest: "" },
+  {
+    strong: "Video motivasi",
+    rest: ' berjudul "Menghadapi Tantangan dan Meraih Keberhasilan dalam Studi".',
+  },
+  { strong: "Merchandise menarik", rest: " dari Kejar Prestasi." },
+  { strong: "Sertifikat Beasiswa", rest: " by Kejar Prestasi." },
+  {
+    prefix: "Peluang Menjadi ",
+    strong: "Kontingen Ambassador",
+    rest: " Program Kejar Prestasi.",
+  },
+  {
+    prefix: "Dapatkan ",
+    strong: "Akses Magang",
+    rest: " di Kejar Prestasi Indonesia dan Partner.",
+  },
+];
+
 export function CategoryPage({
   kind,
   title,
