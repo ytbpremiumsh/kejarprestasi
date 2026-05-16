@@ -60,6 +60,7 @@ const groups: { label: string; items: Item[] }[] = [
       { title: "Artikel", url: "/admin/artikel", icon: FileText },
       { title: "Formulir", url: "/admin/formulir", icon: FileEdit },
       { title: "Bagikan Poster", url: "/admin/bagikan-poster", icon: Share2 },
+      { title: "Media & File", url: "/admin/media", icon: HardDrive },
     ],
   },
   {
