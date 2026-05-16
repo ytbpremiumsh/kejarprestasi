@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Migrasi dari deployment statis aaPanel (/www/wwwroot/kejarprestasi.id) → Node SSR PM2.
+# Perbaiki deployment aaPanel lama/salah → Node SSR PM2 + webroot static fallback.
 # Aman dijalankan berkali-kali (idempotent).
 set -e
 
 APP_DIR="${APP_DIR:-/var/www/kejarprestasi}"
-LEGACY="/www/wwwroot/kejarprestasi.id"
+WEBROOT="${WEBROOT:-/www/wwwroot/kejarprestasi.id}"
 PM2_NAME="${PM2_NAME:-kejarprestasi}"
 DOMAIN="${DOMAIN:-kejarprestasi.id}"
 
@@ -13,13 +13,8 @@ info() { color "1;34" "==> $1"; }
 ok()   { color "1;32" "✔  $1"; }
 warn() { color "1;33" "!  $1"; }
 
-# 1. Bersihkan legacy static root
-if [ -d "$LEGACY" ]; then
-  info "Membersihkan $LEGACY (assets/, update.sh, index.html)"
-  rm -f  "$LEGACY/update.sh" "$LEGACY/index.html"
-  rm -rf "$LEGACY/assets"
-  ok "Legacy bersih"
-fi
+# 1. Stage webroot normal: assets/, index.html, favicon.ico — bukan client/ server/
+bash "$APP_DIR/deploy/stage-webroot.sh"
 
 # 2. Pastikan Nginx config baru terpasang
 NEW_CONF="/etc/nginx/conf.d/${DOMAIN}.conf"
