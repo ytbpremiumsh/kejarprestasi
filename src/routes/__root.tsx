@@ -17,6 +17,7 @@ import { AdSettingsProvider, AdsenseLoader } from "@/components/ads/AdSettings";
 import { AutoAdInjector } from "@/components/ads/AutoAdInjector";
 import { CustomCodeInjector } from "@/components/CustomCodeInjector";
 import { AnalyticsInjector } from "@/components/AnalyticsInjector";
+import { ForceReloadNavigation } from "@/components/ForceReloadNavigation";
 
 function NotFoundComponent() {
   return (
@@ -132,6 +133,7 @@ function RootComponent() {
         <AutoAdInjector />
         <CustomCodeInjector />
         <AnalyticsInjector />
+        <ForceReloadNavigation />
         {isBareLayout ? (
           <Outlet />
         ) : (
