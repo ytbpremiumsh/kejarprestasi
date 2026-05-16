@@ -387,6 +387,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       </form>
       <AdSlot placement="form_bottom" />
     </section>
+    </>
   );
 }
 
