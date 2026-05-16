@@ -6,7 +6,8 @@
 # =============================================================
 set -Eeuo pipefail
 
-APP_DIR="${APP_DIR:-/var/www/kejarprestasi}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APP_DIR="${APP_DIR:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 WEBROOT="${WEBROOT:-/www/wwwroot/kejarprestasi.id}"
 CLIENT_DIR="${APP_DIR}/dist/client"
 
