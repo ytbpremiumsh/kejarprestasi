@@ -83,7 +83,7 @@ function pushAdsbygoogle() {
   ins.forEach((el) => {
     el.style.display = "block";
     el.style.width = "100%";
-    el.style.minWidth = "250px";
+    el.style.maxWidth = "100%";
     if (el.offsetWidth < 1) return;
     try {
       el.setAttribute("data-ad-pushed", "1");
