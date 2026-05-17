@@ -136,7 +136,9 @@ function injectSlot(root: HTMLElement, slot: AdSlotConfig) {
   let injected = 0;
   candidates.forEach((el, idx) => {
     if (injected >= maxPer) return;
-    if ((idx + 1) % everyNth !== 0) return;
+    // Start from the first match (0, N, 2N, ...) so pages with few
+    // candidates still get at least one ad instead of being skipped.
+    if (idx % everyNth !== 0) return;
     const node = buildAdNode(slot);
     if (!node) return;
     if (slot.position.startsWith("before_")) el.parentNode?.insertBefore(node, el);

@@ -20,7 +20,7 @@ import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 
 const defaultDocs: Record<"prestasi" | "ekonomi", DocSlot[]> = {
   prestasi: [
-    { id: "identity", key: "identity", label: "Kartu Identitas", required: true },
+    { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     {
       id: "transcript",
       key: "transcript",
@@ -37,7 +37,7 @@ const defaultDocs: Record<"prestasi" | "ekonomi", DocSlot[]> = {
     { id: "supporting", key: "supporting", label: "Sertifikat Pendukung Lainnya", required: false },
   ],
   ekonomi: [
-    { id: "identity", key: "identity", label: "Kartu Identitas", required: true },
+    { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     { id: "sktm", key: "sktm", label: "Surat Keterangan Tidak Mampu (SKTM)", required: true },
     { id: "income", key: "income", label: "Keterangan Penghasilan Orang Tua", required: true },
     {
