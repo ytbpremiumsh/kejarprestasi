@@ -32,15 +32,14 @@ function statusOf(stages: Stage[], i: number) {
   const curStart = cur.startDate ? new Date(cur.startDate).getTime() : NaN;
   const curEnd = cur.date ? new Date(cur.date).getTime() : NaN;
 
-  const next = stages[i + 1];
-  const nextStart = next?.startDate ? new Date(next.startDate).getTime() : Infinity;
-
   // Fallback: kalau startDate tidak ada, pakai date sebagai tanggal mulai (behavior lama)
   const start = isNaN(curStart) ? curEnd : curStart;
+  // Akhir hari dari tanggal selesai (inklusif) — selama belum lewat, masih Berlangsung
+  const end = isNaN(curEnd) ? start : curEnd + 24 * 60 * 60 * 1000 - 1;
 
   if (isNaN(start)) return "Akan Datang";
   if (now < start) return "Akan Datang";
-  if (now >= start && now < nextStart) return "Berlangsung";
+  if (now <= end) return "Berlangsung";
   return "Selesai";
 }
 
