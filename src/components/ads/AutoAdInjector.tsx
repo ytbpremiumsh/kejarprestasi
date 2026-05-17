@@ -5,13 +5,48 @@ import { useAdSettings, type AdPosition, type AdSlotConfig } from "./AdSettings"
 const MARK_ATTR = "data-auto-ad-injected";
 const SLOT_ATTR = "data-auto-ad-slot";
 
+function extractPublisherId(html: string) {
+  return html.match(/(?:client=|data-ad-client=["'])(ca-pub-[0-9]+)/)?.[1] || "";
+}
+
+function ensureAdSenseScript(publisherId: string, htmlSnippets: string[] = []) {
+  if (typeof document === "undefined") return;
+  const client = publisherId || htmlSnippets.map(extractPublisherId).find(Boolean) || "";
+  if (!client) return;
+
+  const existing = document.querySelector<HTMLScriptElement>(
+    `script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]`,
+  );
+  if (existing) return;
+
+  const script = document.createElement("script");
+  script.id = "adsense-script";
+  script.async = true;
+  script.crossOrigin = "anonymous";
+  script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(client)}`;
+  document.head.appendChild(script);
+}
+
+function prepareAdSenseIns(root: HTMLElement, fallbackClient: string) {
+  root.querySelectorAll<HTMLElement>(`[${MARK_ATTR}] ins.adsbygoogle`).forEach((ins) => {
+    if (fallbackClient && !ins.getAttribute("data-ad-client")) {
+      ins.setAttribute("data-ad-client", fallbackClient);
+    }
+    ins.style.display = "block";
+    ins.style.width = "100%";
+    ins.style.minWidth = "250px";
+  });
+}
+
 function buildAdNode(slot: AdSlotConfig): HTMLElement | null {
   const tpl = document.createElement("template");
   tpl.innerHTML = (slot.code || "").trim();
   if (!tpl.content.childNodes.length) return null;
 
   const wrapper = document.createElement("div");
-  wrapper.className = "my-6 flex justify-center w-full";
+  wrapper.className = "my-6 w-full overflow-hidden text-center";
+  wrapper.style.width = "100%";
+  wrapper.style.minWidth = "250px";
   wrapper.setAttribute(MARK_ATTR, "1");
   wrapper.setAttribute(SLOT_ATTR, slot.id);
   wrapper.setAttribute("aria-label", "Iklan");
@@ -97,10 +132,12 @@ function pushAds(root: HTMLElement) {
   const w = window as any;
   w.adsbygoogle = w.adsbygoogle || [];
   insList.forEach((ins) => {
+    if (ins.offsetWidth < 1) return;
     try {
       ins.setAttribute("data-ad-pushed", "1");
       w.adsbygoogle.push({});
     } catch (e) {
+      ins.removeAttribute("data-ad-pushed");
       console.warn("[adsense] push failed", e);
     }
   });
@@ -117,6 +154,10 @@ export function AutoAdInjector() {
 
     const enabledSlots = slots.filter((s) => s.enabled && s.code?.trim());
     if (!enabledSlots.length) return;
+    ensureAdSenseScript(
+      adsense.publisher_id,
+      enabledSlots.map((s) => s.code),
+    );
 
     let cancelled = false;
     let attempts = 0;
@@ -138,6 +179,7 @@ export function AutoAdInjector() {
       enabledSlots.forEach((s) => {
         total += injectSlot(root, s);
       });
+      prepareAdSenseIns(root, adsense.publisher_id);
 
       // If content hasn't rendered yet (no candidates matched), retry.
       if (total === 0 && attempts < maxAttempts) {
@@ -147,6 +189,7 @@ export function AutoAdInjector() {
 
       // Trigger AdSense rendering (defer slightly to allow layout).
       window.setTimeout(() => pushAds(root), 50);
+      window.setTimeout(() => pushAds(root), 600);
     };
 
     const t = window.setTimeout(tryInject, 200);
