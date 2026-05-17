@@ -34,6 +34,15 @@ function ensureAdSenseScript(htmlSnippets: string[]) {
   document.head.appendChild(script);
 }
 
+function isManagedAdSenseScript(script: HTMLScriptElement) {
+  const src = script.getAttribute("src") || "";
+  const text = script.textContent || "";
+  return (
+    src.includes("pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") ||
+    /adsbygoogle\s*=|adsbygoogle\.push|\.push\s*\(\s*\{\s*\}\s*\)/.test(text)
+  );
+}
+
 function inject(target: HTMLElement, html: string, where: "prepend" | "append") {
   if (!html?.trim()) return;
   const wrapper = document.createElement("div");
@@ -46,6 +55,7 @@ function inject(target: HTMLElement, html: string, where: "prepend" | "append") 
   Array.from(tpl.content.childNodes).forEach((node) => {
     if (node.nodeType === 1 && (node as HTMLElement).tagName === "SCRIPT") {
       const orig = node as HTMLScriptElement;
+      if (isManagedAdSenseScript(orig)) return;
       const s = document.createElement("script");
       for (const a of Array.from(orig.attributes)) s.setAttribute(a.name, a.value);
       s.text = orig.textContent || "";
