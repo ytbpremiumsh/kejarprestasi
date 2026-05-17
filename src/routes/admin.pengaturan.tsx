@@ -149,20 +149,28 @@ function AdminSettings() {
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
               </div>
-              <div className="grid md:grid-cols-3 gap-3">
-                <div className="space-y-1.5 md:col-span-1">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="space-y-1.5">
                   <Label className="text-xs">Judul</Label>
                   <Input value={s.title} onChange={(e) => updateStage(i, { title: e.target.value })} />
                 </div>
-                <div className="space-y-1.5 md:col-span-1">
-                  <Label className="text-xs">Tanggal</Label>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Tanggal Mulai (Dibuka)</Label>
+                  <Input
+                    type="date"
+                    value={s.startDate || ""}
+                    onChange={(e) => updateStage(i, { startDate: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Tanggal Selesai / Batas</Label>
                   <Input
                     type="date"
                     value={s.date}
                     onChange={(e) => updateStage(i, { date: e.target.value })}
                   />
                 </div>
-                <div className="space-y-1.5 md:col-span-1">
+                <div className="space-y-1.5">
                   <Label className="text-xs">Deskripsi</Label>
                   <Input value={s.desc} onChange={(e) => updateStage(i, { desc: e.target.value })} />
                 </div>
