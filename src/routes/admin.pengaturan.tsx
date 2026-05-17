@@ -14,7 +14,7 @@ export const Route = createFileRoute("/admin/pengaturan")({
 });
 
 type CountdownSetting = { deadline: string; title: string; subtitle: string };
-type Stage = { title: string; desc: string; date: string };
+type Stage = { title: string; desc: string; date: string; startDate?: string };
 
 // Convert ISO/timestamp from DB into value compatible with <input type="datetime-local">
 function toLocalInput(iso: string) {
@@ -42,7 +42,7 @@ function AdminSettings() {
       const tl = data?.find((d) => d.key === "timeline")?.value as Stage[] | undefined;
       if (cd) setCountdown({ ...cd, deadline: toLocalInput(cd.deadline) });
       if (Array.isArray(tl))
-        setStages(tl.map((s) => ({ ...s, date: s.date ? s.date.slice(0, 10) : "" })));
+        setStages(tl.map((s) => ({ ...s, date: s.date ? s.date.slice(0, 10) : "", startDate: s.startDate ? s.startDate.slice(0, 10) : "" })));
       setLoading(false);
     };
     load();
