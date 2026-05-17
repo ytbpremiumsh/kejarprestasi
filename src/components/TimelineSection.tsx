@@ -103,9 +103,17 @@ export function TimelineSection() {
                     </span>
                   </div>
                   <p className="mt-1.5 text-sm text-muted-foreground">{t.desc}</p>
-                  <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-foreground/80">
-                    <Calendar size={14} className="text-primary" />
-                    {t.date ? (t.singleDay ? fmt(t.date) : `Hingga ${fmt(t.date)}`) : "—"}
+                  <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-foreground/80 flex-wrap">
+                    <Calendar size={14} className="text-primary shrink-0" />
+                    {t.startDate && t.startDate !== t.date ? (
+                      <>
+                        {fmt(t.startDate)} – {t.singleDay ? fmt(t.date) : `Hingga ${fmt(t.date)}`}
+                      </>
+                    ) : t.date ? (
+                      t.singleDay ? fmt(t.date) : `Hingga ${fmt(t.date)}`
+                    ) : (
+                      "—"
+                    )}
                   </div>
                   <StageActions title={t.title} />
                 </div>
