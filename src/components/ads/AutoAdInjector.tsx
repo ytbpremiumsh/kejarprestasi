@@ -154,6 +154,10 @@ export function AutoAdInjector() {
 
     const enabledSlots = slots.filter((s) => s.enabled && s.code?.trim());
     if (!enabledSlots.length) return;
+    ensureAdSenseScript(
+      adsense.publisher_id,
+      enabledSlots.map((s) => s.code),
+    );
 
     let cancelled = false;
     let attempts = 0;
@@ -175,6 +179,7 @@ export function AutoAdInjector() {
       enabledSlots.forEach((s) => {
         total += injectSlot(root, s);
       });
+      prepareAdSenseIns(root, adsense.publisher_id);
 
       // If content hasn't rendered yet (no candidates matched), retry.
       if (total === 0 && attempts < maxAttempts) {
@@ -184,6 +189,7 @@ export function AutoAdInjector() {
 
       // Trigger AdSense rendering (defer slightly to allow layout).
       window.setTimeout(() => pushAds(root), 50);
+      window.setTimeout(() => pushAds(root), 600);
     };
 
     const t = window.setTimeout(tryInject, 200);
