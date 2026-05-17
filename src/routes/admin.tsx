@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, LogOut } from "lucide-react";
+import { Loader2, LogOut, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
@@ -97,6 +97,11 @@ function AdminLayout() {
               <p className="text-sm font-semibold text-foreground">Admin Dashboard</p>
               <p className="text-xs text-muted-foreground truncate">{email}</p>
             </div>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/" target="_blank" rel="noopener noreferrer">
+                <Home className="h-4 w-4 mr-1" /> Lihat Situs
+              </Link>
+            </Button>
             <Button variant="ghost" size="sm" onClick={logout}>
               <LogOut className="h-4 w-4 mr-1" /> Keluar
             </Button>
