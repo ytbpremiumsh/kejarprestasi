@@ -49,7 +49,7 @@ function inject(target: HTMLElement, html: string, where: "prepend" | "append") 
   wrapper.setAttribute(MARK, "1");
   wrapper.className = "custom-ad-block my-4 w-full overflow-hidden text-center";
   wrapper.style.width = "100%";
-  wrapper.style.minWidth = "250px";
+  wrapper.style.maxWidth = "100%";
   const tpl = document.createElement("template");
   tpl.innerHTML = html;
   Array.from(tpl.content.childNodes).forEach((node) => {
