@@ -84,14 +84,21 @@ function pushAdsbygoogle() {
     el.style.display = "block";
     el.style.width = "100%";
     el.style.maxWidth = "100%";
-    if (el.offsetWidth < 1) return;
-    try {
-      el.setAttribute("data-ad-pushed", "1");
-      w.adsbygoogle.push({});
-    } catch (error) {
-      el.removeAttribute("data-ad-pushed");
-      console.warn("[custom-ads] push failed", error);
-    }
+    const tryPush = (attempt = 0) => {
+      if (el.getAttribute("data-ad-pushed") === "1") return;
+      if (el.offsetWidth < 1) {
+        if (attempt < 8) window.setTimeout(() => tryPush(attempt + 1), 250);
+        return;
+      }
+      try {
+        el.setAttribute("data-ad-pushed", "1");
+        w.adsbygoogle.push({});
+      } catch (error) {
+        el.removeAttribute("data-ad-pushed");
+        console.warn("[custom-ads] push failed", error);
+      }
+    };
+    tryPush();
   });
 }
 
