@@ -122,6 +122,10 @@
     max-width: 100% !important;
     overflow: hidden !important;
     box-sizing: border-box !important;
+    /* Survive being placed inside a grid/flex parent so the ad keeps full width */
+    grid-column: 1 / -1 !important;
+    flex: 1 1 100% !important;
+    min-width: 0 !important;
   }
   /* Card responsif — pastikan tidak terpotong di mobile */
   @media (max-width: 640px) {
