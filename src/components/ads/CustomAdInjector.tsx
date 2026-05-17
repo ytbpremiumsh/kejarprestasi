@@ -122,6 +122,7 @@ export function CustomAdInjector() {
     clearOld();
     if (!cfg?.enabled) return;
     if (pathname.startsWith("/admin") || pathname.startsWith("/login")) return;
+    ensureAdSenseScript([cfg.default_code, cfg.header_html, cfg.footer_html]);
 
     let attempts = 0;
     let cancelled = false;
@@ -143,6 +144,7 @@ export function CustomAdInjector() {
         inject(main, cfg.default_code, "append");
       }
       window.setTimeout(pushAdsbygoogle, 100);
+      window.setTimeout(pushAdsbygoogle, 700);
     };
     const t = window.setTimeout(run, 150);
     return () => {
