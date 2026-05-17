@@ -224,16 +224,19 @@ export function AutoAdInjector() {
         return;
       }
 
-      // First attempt: clear any leftover wrappers from previous route.
+      // First attempt: clear leftover unpushed wrappers from previous route.
       if (attempts === 1) {
-        root.querySelectorAll(`[${MARK_ATTR}]`).forEach((n) => n.remove());
+        root.querySelectorAll<HTMLElement>(`[${MARK_ATTR}]`).forEach((n) => {
+          const hasLiveAd = n.querySelector(
+            "ins.adsbygoogle[data-ad-pushed], ins.adsbygoogle[data-ad-status], ins.adsbygoogle iframe",
+          );
+          if (!hasLiveAd) n.remove();
+        });
         injectedPerSlot.clear();
       }
 
       runInjection();
 
-      // Keep retrying while any slot still has 0 injections (content
-      // may load asynchronously, e.g. timeline stages from Supabase).
       const anyMissing = enabledSlots.some(
         (s) => (injectedPerSlot.get(s.id) || 0) === 0,
       );
@@ -244,11 +247,21 @@ export function AutoAdInjector() {
 
     const t = window.setTimeout(tryInject, 200);
 
-    // Observe DOM mutations so newly-rendered targets (timeline buttons,
-    // lazy-loaded sections, route-internal content swaps) still get ads.
+    // Observe DOM mutations so newly-rendered targets get ads.
+    // Ignore mutations inside ad wrappers (AdSense injects iframes which
+    // would otherwise cause an infinite re-inject loop).
     const mainEl = document.querySelector("main");
     if (mainEl && typeof MutationObserver !== "undefined") {
-      observer = new MutationObserver(() => scheduleRun(150));
+      observer = new MutationObserver((mutations) => {
+        const relevant = mutations.some((m) => {
+          const tgt = m.target as HTMLElement | null;
+          if (!tgt) return false;
+          if (tgt.closest?.(`[${MARK_ATTR}]`)) return false;
+          if (tgt.closest?.("ins.adsbygoogle")) return false;
+          return true;
+        });
+        if (relevant) scheduleRun(250);
+      });
       observer.observe(mainEl, { childList: true, subtree: true });
     }
 
