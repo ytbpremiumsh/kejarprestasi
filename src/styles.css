@@ -129,10 +129,46 @@
     .rounded-2xl.bg-card,
     [class*="shadow-card"] {
       min-width: 0;
+      max-width: 100%;
     }
     .rounded-3xl.bg-card.p-8,
-    .rounded-2xl.bg-card.p-8 {
-      padding: 1.25rem;
+    .rounded-2xl.bg-card.p-8,
+    .rounded-3xl.bg-card.p-7,
+    .rounded-2xl.bg-card.p-7,
+    .rounded-3xl.bg-card.p-6,
+    .rounded-2xl.bg-card.p-6,
+    [class*="shadow-card"].p-8,
+    [class*="shadow-card"].p-7,
+    [class*="shadow-card"].p-6 {
+      padding: 1.1rem;
+    }
+    /* Form & berkas — cegah input/grid overflow di mobile */
+    form input,
+    form select,
+    form textarea,
+    form button {
+      max-width: 100%;
+      min-width: 0;
+    }
+    form .grid > * {
+      min-width: 0;
+    }
+    /* Grid 1fr_auto sering memaksa kolom 2 keluar — paksa 1 kolom di mobile */
+    .grid.sm\:grid-cols-\[1fr_auto\] {
+      grid-template-columns: 1fr !important;
+    }
+    /* Token input mono tracking lebar — kecilkan di mobile agar tidak overflow */
+    input[type="text"].font-mono.tracking-wider {
+      letter-spacing: 0.05em;
+      font-size: 0.85rem;
+    }
+    /* Aside CTA & sticky tidak boleh sticky di mobile (sering memotong) */
+    aside.lg\:sticky {
+      position: static !important;
+    }
+    /* Pastikan container tidak melebihi viewport */
+    .container-page {
+      padding-inline: 1rem;
     }
   }
   /* Timeline — iklan AdSense di mobile: full-width card & ad besar */
