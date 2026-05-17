@@ -468,7 +468,7 @@ function DetailDialog({
           <div className="space-y-2">
             {row.photo_url && <DocLink type="Foto" url={row.photo_url} />}
             {row.student_card_url && (
-              <DocLink type="Kartu Pelajar / KTP" url={row.student_card_url} />
+              <DocLink type="Kartu Pelajar / Kartu Mahasiswa" url={row.student_card_url} />
             )}
             {docs.map((d) => (
               <DocLink key={d.id} type={d.doc_type} url={d.file_url} />
