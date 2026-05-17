@@ -84,6 +84,10 @@ function selectorFor(position: AdPosition): string | null {
     case "after_each_nav_link":
       // Any internal <a href="/..."> that leads to another page (excludes anchors, mail, tel, external)
       return "a[href]:not([href^='#']):not([href^='mailto']):not([href^='tel']):not([href^='http']):not([href^='javascript'])";
+    case "before_each_card":
+    case "after_each_card":
+      // Card-like containers (rounded + bg-card or shadow-card)
+      return "div.rounded-3xl.bg-card, div.rounded-2xl.bg-card, div[class*='shadow-card']";
     default:
       return null;
   }
