@@ -64,17 +64,22 @@ export function TimelineSection() {
         </div>
 
         <ol className="mt-12 relative max-w-3xl mx-auto">
-          <span className="absolute left-4 md:left-5 top-0 bottom-0 w-px bg-border" aria-hidden />
+          <span className="hidden md:block absolute left-5 top-0 bottom-0 w-px bg-border" aria-hidden />
           {stages.map((t, i) => {
             const status = statusOf(stages, i);
             return (
-              <li key={i} className="relative pl-12 md:pl-16 pb-8 last:pb-0">
-                <span className="absolute left-0 top-0 flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold shadow-soft">
+              <li key={i} className="relative pl-0 md:pl-16 pb-8 last:pb-0">
+                <span className="hidden md:flex absolute left-0 top-0 h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold shadow-soft">
                   {i + 1}
                 </span>
-                <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
+                <div className="rounded-2xl border border-border bg-card p-5 shadow-card w-full">
                   <div className="flex items-start justify-between gap-3 flex-wrap">
-                    <h3 className="font-semibold text-foreground">{t.title}</h3>
+                    <h3 className="font-semibold text-foreground flex items-center gap-2">
+                      <span className="md:hidden inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                        {i + 1}
+                      </span>
+                      {t.title}
+                    </h3>
                     <span
                       className={`text-[11px] font-semibold rounded-full px-2.5 py-1 whitespace-nowrap ${
                         status === "Berlangsung"
