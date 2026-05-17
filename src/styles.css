@@ -123,6 +123,18 @@
     overflow: hidden !important;
     box-sizing: border-box !important;
   }
+  /* Card responsif — pastikan tidak terpotong di mobile */
+  @media (max-width: 640px) {
+    .rounded-3xl.bg-card,
+    .rounded-2xl.bg-card,
+    [class*="shadow-card"] {
+      min-width: 0;
+    }
+    .rounded-3xl.bg-card.p-8,
+    .rounded-2xl.bg-card.p-8 {
+      padding: 1.25rem;
+    }
+  }
 }
 
 @utility container-page {
