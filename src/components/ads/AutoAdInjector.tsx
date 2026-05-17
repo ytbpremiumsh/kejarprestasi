@@ -111,9 +111,28 @@ function injectSlot(root: HTMLElement, slot: AdSlotConfig) {
 
   const sel = selectorFor(slot.position);
   if (!sel) return 0;
-  const candidates = Array.from(root.querySelectorAll<HTMLElement>(sel)).filter(
-    (el) => !el.closest(`[${MARK_ATTR}]`),
-  );
+  const isCardPos = slot.position === "before_each_card" || slot.position === "after_each_card";
+  const candidates = Array.from(root.querySelectorAll<HTMLElement>(sel)).filter((el) => {
+    if (el.closest(`[${MARK_ATTR}]`)) return false;
+    if (isCardPos) {
+      // Skip nested cards / cards inside forms or asides — injecting here
+      // breaks form grids and creates messy spacing on mobile.
+      if (el.closest("form, aside")) return false;
+      // Skip cards-in-cards (nested mini cards inside another card)
+      const parentCard = el.parentElement?.closest(
+        "div.rounded-3xl.bg-card, div.rounded-2xl.bg-card, div[class*='shadow-card']",
+      );
+      if (parentCard && parentCard !== el) return false;
+      // Skip when the card is a child of a grid/flex container — inserting
+      // a sibling div there becomes a grid/flex item and corrupts layout.
+      const parent = el.parentElement;
+      if (parent) {
+        const cs = window.getComputedStyle(parent);
+        if (cs.display.includes("grid") || cs.display.includes("flex")) return false;
+      }
+    }
+    return true;
+  });
   let injected = 0;
   candidates.forEach((el, idx) => {
     if (injected >= maxPer) return;
