@@ -34,7 +34,7 @@ function prepareAdSenseIns(root: HTMLElement, fallbackClient: string) {
     }
     ins.style.display = "block";
     ins.style.width = "100%";
-    ins.style.minWidth = "250px";
+    ins.style.maxWidth = "100%";
   });
 }
 
