@@ -34,7 +34,7 @@ function prepareAdSenseIns(root: HTMLElement, fallbackClient: string) {
     }
     ins.style.display = "block";
     ins.style.width = "100%";
-    ins.style.minWidth = "250px";
+    ins.style.maxWidth = "100%";
   });
 }
 
@@ -46,7 +46,7 @@ function buildAdNode(slot: AdSlotConfig): HTMLElement | null {
   const wrapper = document.createElement("div");
   wrapper.className = "my-6 w-full overflow-hidden text-center";
   wrapper.style.width = "100%";
-  wrapper.style.minWidth = "250px";
+  wrapper.style.maxWidth = "100%";
   wrapper.setAttribute(MARK_ATTR, "1");
   wrapper.setAttribute(SLOT_ATTR, slot.id);
   wrapper.setAttribute("aria-label", "Iklan");
@@ -84,6 +84,10 @@ function selectorFor(position: AdPosition): string | null {
     case "after_each_nav_link":
       // Any internal <a href="/..."> that leads to another page (excludes anchors, mail, tel, external)
       return "a[href]:not([href^='#']):not([href^='mailto']):not([href^='tel']):not([href^='http']):not([href^='javascript'])";
+    case "before_each_card":
+    case "after_each_card":
+      // Card-like containers (rounded + bg-card or shadow-card)
+      return "div.rounded-3xl.bg-card, div.rounded-2xl.bg-card, div[class*='shadow-card']";
     default:
       return null;
   }

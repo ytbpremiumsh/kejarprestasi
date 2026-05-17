@@ -37,6 +37,8 @@ const POSITIONS: { value: AdPosition; label: string }[] = [
   { value: "before_each_button", label: "Sebelum setiap tombol/CTA" },
   { value: "before_each_nav_link", label: "Sebelum tombol navigasi (menuju halaman lain)" },
   { value: "after_each_nav_link", label: "Sesudah tombol navigasi (menuju halaman lain)" },
+  { value: "before_each_card", label: "Sebelum setiap card" },
+  { value: "after_each_card", label: "Sesudah setiap card" },
 ];
 
 function newSlot(): AdSlotConfig {

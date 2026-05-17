@@ -49,7 +49,7 @@ function inject(target: HTMLElement, html: string, where: "prepend" | "append") 
   wrapper.setAttribute(MARK, "1");
   wrapper.className = "custom-ad-block my-4 w-full overflow-hidden text-center";
   wrapper.style.width = "100%";
-  wrapper.style.minWidth = "250px";
+  wrapper.style.maxWidth = "100%";
   const tpl = document.createElement("template");
   tpl.innerHTML = html;
   Array.from(tpl.content.childNodes).forEach((node) => {
@@ -83,7 +83,7 @@ function pushAdsbygoogle() {
   ins.forEach((el) => {
     el.style.display = "block";
     el.style.width = "100%";
-    el.style.minWidth = "250px";
+    el.style.maxWidth = "100%";
     if (el.offsetWidth < 1) return;
     try {
       el.setAttribute("data-ad-pushed", "1");
