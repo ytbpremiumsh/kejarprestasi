@@ -175,20 +175,24 @@ export function AutoAdInjector() {
       const root = document.querySelector("main") as HTMLElement | null;
       if (!root) return;
 
-      // Per-slot incremental injection: only inject slots that haven't
-      // reached their target yet, and don't blow away already-rendered ads.
       let injectedThisPass = 0;
       enabledSlots.forEach((s) => {
         const prev = injectedPerSlot.get(s.id) || 0;
         const cap = Math.max(1, Number(s.max_per_page) || 3);
         if (prev >= cap) return;
 
-        // Temporarily remove only this slot's previous wrappers so injectSlot
-        // recomputes from the latest DOM (handles async-rendered targets like
-        // timeline buttons fetched after first paint).
+        // Only remove this slot's previous wrappers if they haven't been
+        // pushed yet (no <ins> with data-ad-pushed / data-ad-status).
+        // This preserves already-rendered ads while still allowing
+        // re-injection for async-rendered targets.
         root
-          .querySelectorAll(`[${SLOT_ATTR}="${s.id}"]:not([data-ad-pushed-wrapper])`)
-          .forEach((n) => n.remove());
+          .querySelectorAll<HTMLElement>(`[${SLOT_ATTR}="${s.id}"]`)
+          .forEach((n) => {
+            const hasLiveAd = n.querySelector(
+              "ins.adsbygoogle[data-ad-pushed], ins.adsbygoogle[data-ad-status], ins.adsbygoogle iframe",
+            );
+            if (!hasLiveAd) n.remove();
+          });
 
         const n = injectSlot(root, s);
         injectedPerSlot.set(s.id, prev + n);
@@ -197,17 +201,7 @@ export function AutoAdInjector() {
 
       if (injectedThisPass > 0) {
         prepareAdSenseIns(root, adsense.publisher_id);
-        // Mark wrappers whose <ins> has been pushed so we don't re-clear them.
-        window.setTimeout(() => {
-          pushAds(root);
-          root
-            .querySelectorAll<HTMLElement>(`[${MARK_ATTR}]`)
-            .forEach((w) => {
-              if (w.querySelector("ins.adsbygoogle[data-ad-pushed]")) {
-                w.setAttribute("data-ad-pushed-wrapper", "1");
-              }
-            });
-        }, 60);
+        window.setTimeout(() => pushAds(root), 60);
         window.setTimeout(() => pushAds(root), 700);
       }
     };
@@ -230,16 +224,19 @@ export function AutoAdInjector() {
         return;
       }
 
-      // First attempt: clear any leftover wrappers from previous route.
+      // First attempt: clear leftover unpushed wrappers from previous route.
       if (attempts === 1) {
-        root.querySelectorAll(`[${MARK_ATTR}]`).forEach((n) => n.remove());
+        root.querySelectorAll<HTMLElement>(`[${MARK_ATTR}]`).forEach((n) => {
+          const hasLiveAd = n.querySelector(
+            "ins.adsbygoogle[data-ad-pushed], ins.adsbygoogle[data-ad-status], ins.adsbygoogle iframe",
+          );
+          if (!hasLiveAd) n.remove();
+        });
         injectedPerSlot.clear();
       }
 
       runInjection();
 
-      // Keep retrying while any slot still has 0 injections (content
-      // may load asynchronously, e.g. timeline stages from Supabase).
       const anyMissing = enabledSlots.some(
         (s) => (injectedPerSlot.get(s.id) || 0) === 0,
       );
@@ -250,11 +247,21 @@ export function AutoAdInjector() {
 
     const t = window.setTimeout(tryInject, 200);
 
-    // Observe DOM mutations so newly-rendered targets (timeline buttons,
-    // lazy-loaded sections, route-internal content swaps) still get ads.
+    // Observe DOM mutations so newly-rendered targets get ads.
+    // Ignore mutations inside ad wrappers (AdSense injects iframes which
+    // would otherwise cause an infinite re-inject loop).
     const mainEl = document.querySelector("main");
     if (mainEl && typeof MutationObserver !== "undefined") {
-      observer = new MutationObserver(() => scheduleRun(150));
+      observer = new MutationObserver((mutations) => {
+        const relevant = mutations.some((m) => {
+          const tgt = m.target as HTMLElement | null;
+          if (!tgt) return false;
+          if (tgt.closest?.(`[${MARK_ATTR}]`)) return false;
+          if (tgt.closest?.("ins.adsbygoogle")) return false;
+          return true;
+        });
+        if (relevant) scheduleRun(250);
+      });
       observer.observe(mainEl, { childList: true, subtree: true });
     }
 
