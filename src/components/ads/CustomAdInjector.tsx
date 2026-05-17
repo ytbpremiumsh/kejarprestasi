@@ -11,11 +11,36 @@ export type CustomAds = {
 
 const MARK = "data-custom-ad-injection";
 
+function extractPublisherId(html: string) {
+  return html.match(/(?:client=|data-ad-client=["'])(ca-pub-[0-9]+)/)?.[1] || "";
+}
+
+function ensureAdSenseScript(htmlSnippets: string[]) {
+  if (typeof document === "undefined") return;
+  const client = htmlSnippets.map(extractPublisherId).find(Boolean);
+  if (!client) return;
+  if (
+    document.querySelector(
+      `script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]`,
+    )
+  ) {
+    return;
+  }
+  const script = document.createElement("script");
+  script.id = "adsense-script";
+  script.async = true;
+  script.crossOrigin = "anonymous";
+  script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(client)}`;
+  document.head.appendChild(script);
+}
+
 function inject(target: HTMLElement, html: string, where: "prepend" | "append") {
   if (!html?.trim()) return;
   const wrapper = document.createElement("div");
   wrapper.setAttribute(MARK, "1");
-  wrapper.className = "custom-ad-block w-full flex justify-center my-4";
+  wrapper.className = "custom-ad-block my-4 w-full overflow-hidden text-center";
+  wrapper.style.width = "100%";
+  wrapper.style.minWidth = "250px";
   const tpl = document.createElement("template");
   tpl.innerHTML = html;
   Array.from(tpl.content.childNodes).forEach((node) => {
@@ -46,11 +71,16 @@ function pushAdsbygoogle() {
   if (!ins.length) return;
   w.adsbygoogle = w.adsbygoogle || [];
   ins.forEach((el) => {
+    el.style.display = "block";
+    el.style.width = "100%";
+    el.style.minWidth = "250px";
+    if (el.offsetWidth < 1) return;
     try {
       el.setAttribute("data-ad-pushed", "1");
       w.adsbygoogle.push({});
-    } catch {
-      /* ignore */
+    } catch (error) {
+      el.removeAttribute("data-ad-pushed");
+      console.warn("[custom-ads] push failed", error);
     }
   });
 }
