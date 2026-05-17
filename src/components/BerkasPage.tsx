@@ -20,7 +20,7 @@ import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 
 const defaultDocs: Record<"prestasi" | "ekonomi", DocSlot[]> = {
   prestasi: [
-    { id: "identity", key: "identity", label: "Kartu Identitas", required: true },
+    { id: "identity", key: "identity", label: "Kartu Pelajar / Kartu Mahasiswa", required: true },
     {
       id: "transcript",
       key: "transcript",
