@@ -46,7 +46,7 @@ function buildAdNode(slot: AdSlotConfig): HTMLElement | null {
   const wrapper = document.createElement("div");
   wrapper.className = "my-6 w-full overflow-hidden text-center";
   wrapper.style.width = "100%";
-  wrapper.style.minWidth = "250px";
+  wrapper.style.maxWidth = "100%";
   wrapper.setAttribute(MARK_ATTR, "1");
   wrapper.setAttribute(SLOT_ATTR, slot.id);
   wrapper.setAttribute("aria-label", "Iklan");
