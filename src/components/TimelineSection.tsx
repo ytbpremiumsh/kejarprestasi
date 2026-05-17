@@ -27,9 +27,13 @@ function fmt(d: string) {
 function statusOf(stages: Stage[], i: number) {
   const now = new Date().getTime();
   const cur = stages[i];
-  const curStart = cur?.startDate ? new Date(cur.startDate).getTime() : NaN;
-  const curEnd = cur?.date ? new Date(cur.date).getTime() : NaN;
-  const nextStart = stages[i + 1]?.startDate ? new Date(stages[i + 1].startDate).getTime() : Infinity;
+  if (!cur) return "Akan Datang";
+
+  const curStart = cur.startDate ? new Date(cur.startDate).getTime() : NaN;
+  const curEnd = cur.date ? new Date(cur.date).getTime() : NaN;
+
+  const next = stages[i + 1];
+  const nextStart = next?.startDate ? new Date(next.startDate).getTime() : Infinity;
 
   // Fallback: kalau startDate tidak ada, pakai date sebagai tanggal mulai (behavior lama)
   const start = isNaN(curStart) ? curEnd : curStart;
