@@ -87,8 +87,14 @@
   * {
     border-color: var(--color-border);
   }
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   body {
     background-color: var(--color-background);
@@ -97,6 +103,25 @@
   }
   h1, h2, h3, h4 {
     letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+  img, video, iframe {
+    max-width: 100%;
+    height: auto;
+  }
+  /* AdSense responsive guard — keep ads within viewport on mobile */
+  ins.adsbygoogle {
+    display: block !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  [data-auto-ad-injected],
+  [data-custom-ad-injection] {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
   }
 }
 
