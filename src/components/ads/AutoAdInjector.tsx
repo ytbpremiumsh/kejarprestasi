@@ -155,14 +155,26 @@ function pushAds(root: HTMLElement) {
   const w = window as any;
   w.adsbygoogle = w.adsbygoogle || [];
   insList.forEach((ins) => {
-    if (ins.offsetWidth < 1) return;
-    try {
-      ins.setAttribute("data-ad-pushed", "1");
-      w.adsbygoogle.push({});
-    } catch (e) {
-      ins.removeAttribute("data-ad-pushed");
-      console.warn("[adsense] push failed", e);
-    }
+    const tryPush = (attempt = 0) => {
+      if (ins.getAttribute("data-ad-pushed") === "1") return;
+      // Ensure wrapper has measurable width — common on mobile where layout
+      // settles after route transition. Retry a few times before giving up.
+      const w0 = ins.offsetWidth;
+      if (w0 < 1) {
+        if (attempt < 8) {
+          window.setTimeout(() => tryPush(attempt + 1), 250);
+        }
+        return;
+      }
+      try {
+        ins.setAttribute("data-ad-pushed", "1");
+        w.adsbygoogle.push({});
+      } catch (e) {
+        ins.removeAttribute("data-ad-pushed");
+        console.warn("[adsense] push failed", e);
+      }
+    };
+    tryPush();
   });
 }
 
