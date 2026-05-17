@@ -161,41 +161,103 @@ export function AutoAdInjector() {
 
     let cancelled = false;
     let attempts = 0;
-    const maxAttempts = 20; // ~5s with 250ms interval
+    const maxAttempts = 40; // ~12s with 300ms interval
+    const injectedPerSlot = new Map<string, number>();
+    let observer: MutationObserver | null = null;
+    let scheduled = false;
+
+    const runInjection = () => {
+      if (cancelled) return;
+      const root = document.querySelector("main") as HTMLElement | null;
+      if (!root) return;
+
+      // Per-slot incremental injection: only inject slots that haven't
+      // reached their target yet, and don't blow away already-rendered ads.
+      let injectedThisPass = 0;
+      enabledSlots.forEach((s) => {
+        const prev = injectedPerSlot.get(s.id) || 0;
+        const cap = Math.max(1, Number(s.max_per_page) || 3);
+        if (prev >= cap) return;
+
+        // Temporarily remove only this slot's previous wrappers so injectSlot
+        // recomputes from the latest DOM (handles async-rendered targets like
+        // timeline buttons fetched after first paint).
+        root
+          .querySelectorAll(`[${SLOT_ATTR}="${s.id}"]:not([data-ad-pushed-wrapper])`)
+          .forEach((n) => n.remove());
+
+        const n = injectSlot(root, s);
+        injectedPerSlot.set(s.id, prev + n);
+        injectedThisPass += n;
+      });
+
+      if (injectedThisPass > 0) {
+        prepareAdSenseIns(root, adsense.publisher_id);
+        // Mark wrappers whose <ins> has been pushed so we don't re-clear them.
+        window.setTimeout(() => {
+          pushAds(root);
+          root
+            .querySelectorAll<HTMLElement>(`[${MARK_ATTR}]`)
+            .forEach((w) => {
+              if (w.querySelector("ins.adsbygoogle[data-ad-pushed]")) {
+                w.setAttribute("data-ad-pushed-wrapper", "1");
+              }
+            });
+        }, 60);
+        window.setTimeout(() => pushAds(root), 700);
+      }
+    };
+
+    const scheduleRun = (delay = 0) => {
+      if (cancelled || scheduled) return;
+      scheduled = true;
+      window.setTimeout(() => {
+        scheduled = false;
+        runInjection();
+      }, delay);
+    };
 
     const tryInject = () => {
       if (cancelled) return;
       attempts++;
       const root = document.querySelector("main") as HTMLElement | null;
       if (!root) {
-        if (attempts < maxAttempts) window.setTimeout(tryInject, 250);
+        if (attempts < maxAttempts) window.setTimeout(tryInject, 300);
         return;
       }
 
-      // Clear previous injections (route change / retry).
-      root.querySelectorAll(`[${MARK_ATTR}]`).forEach((n) => n.remove());
-
-      let total = 0;
-      enabledSlots.forEach((s) => {
-        total += injectSlot(root, s);
-      });
-      prepareAdSenseIns(root, adsense.publisher_id);
-
-      // If content hasn't rendered yet (no candidates matched), retry.
-      if (total === 0 && attempts < maxAttempts) {
-        window.setTimeout(tryInject, 250);
-        return;
+      // First attempt: clear any leftover wrappers from previous route.
+      if (attempts === 1) {
+        root.querySelectorAll(`[${MARK_ATTR}]`).forEach((n) => n.remove());
+        injectedPerSlot.clear();
       }
 
-      // Trigger AdSense rendering (defer slightly to allow layout).
-      window.setTimeout(() => pushAds(root), 50);
-      window.setTimeout(() => pushAds(root), 600);
+      runInjection();
+
+      // Keep retrying while any slot still has 0 injections (content
+      // may load asynchronously, e.g. timeline stages from Supabase).
+      const anyMissing = enabledSlots.some(
+        (s) => (injectedPerSlot.get(s.id) || 0) === 0,
+      );
+      if (anyMissing && attempts < maxAttempts) {
+        window.setTimeout(tryInject, 300);
+      }
     };
 
     const t = window.setTimeout(tryInject, 200);
+
+    // Observe DOM mutations so newly-rendered targets (timeline buttons,
+    // lazy-loaded sections, route-internal content swaps) still get ads.
+    const mainEl = document.querySelector("main");
+    if (mainEl && typeof MutationObserver !== "undefined") {
+      observer = new MutationObserver(() => scheduleRun(150));
+      observer.observe(mainEl, { childList: true, subtree: true });
+    }
+
     return () => {
       cancelled = true;
       window.clearTimeout(t);
+      observer?.disconnect();
     };
   }, [pathname, loaded, adsense.enabled, slots]);
 
