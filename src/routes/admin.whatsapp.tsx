@@ -35,11 +35,11 @@ type WaConfig = {
 };
 
 const DEFAULT_TEMPLATES: WaTemplates = {
-  pendaftaran_user: `*Kejar Prestasi*\n\nHalo {nama}, pendaftaran {jenis} Anda telah kami terima.\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website.\n\nTerima kasih.`,
-  pendaftaran_admin: `*Pendaftar Baru — Kejar Prestasi*\n\nNama: {nama}\nJenis: {jenis}\nEmail: {email}\nWhatsApp: {whatsapp}`,
-  berkas_user: `*Kejar Prestasi*\n\nBerkas {jenis} dari email {email} ({jumlah_berkas} file) berhasil kami terima dan sedang dalam tahap verifikasi.\n\nKami akan menghubungi Anda kembali setelah proses selesai.`,
-  berkas_admin: `*Berkas Masuk — Kejar Prestasi*\n\nJenis: {jenis}\nEmail: {email}\nJumlah file: {jumlah_berkas}`,
-  status_user: `*Kejar Prestasi*\n\nHalo {nama}, status pendaftaran {jenis} Anda saat ini: *{status}*.`,
+  pendaftaran_user: `*Kejar Prestasi*\n\nHalo {nama}, pendaftaran {jenis} Anda telah kami terima.\n\n🔑 *KODE PENDAFTAR ANDA:*\n*{token}*\n\n_Simpan kode ini baik-baik. Kode wajib digunakan saat:_\n• Mengirim berkas pendukung\n• Mengecek status pendaftaran\n\nLangkah berikutnya: silakan kirim berkas pendukung melalui menu *Kirim Berkas* di website dan masukkan kode di atas.\n\nTerima kasih.`,
+  pendaftaran_admin: `*Pendaftar Baru — Kejar Prestasi*\n\nNama: {nama}\nJenis: {jenis}\nKode: {token}\nEmail: {email}\nWhatsApp: {whatsapp}`,
+  berkas_user: `*Kejar Prestasi*\n\nHalo {nama}, berkas {jenis} Anda ({jumlah_berkas} file) berhasil kami terima dan sedang dalam tahap verifikasi.\n\n🔑 Kode Pendaftar: *{token}*\nEmail: {email}\n\nGunakan kode di atas untuk *Cek Status* pendaftaran Anda di website. Kami akan menghubungi Anda kembali setelah proses verifikasi selesai.\n\nTerima kasih.`,
+  berkas_admin: `*Berkas Masuk — Kejar Prestasi*\n\nNama: {nama}\nJenis: {jenis}\nKode: {token}\nEmail: {email}\nJumlah file: {jumlah_berkas}`,
+  status_user: `*Kejar Prestasi*\n\nHalo {nama}, status pendaftaran {jenis} Anda saat ini: *{status}*.\n\n🔑 Kode Pendaftar: *{token}*\n\nTerima kasih.`,
 };
 
 const DEFAULT: WaConfig = {
@@ -311,7 +311,7 @@ function AdminWhatsApp() {
           <div>
             <h2 className="text-lg font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary" />Template Pesan WhatsApp</h2>
             <p className="text-xs text-muted-foreground mt-1">
-              Variabel: <code className="px-1 rounded bg-muted">{"{nama}"}</code> <code className="px-1 rounded bg-muted">{"{jenis}"}</code> <code className="px-1 rounded bg-muted">{"{email}"}</code> <code className="px-1 rounded bg-muted">{"{whatsapp}"}</code> <code className="px-1 rounded bg-muted">{"{jumlah_berkas}"}</code> <code className="px-1 rounded bg-muted">{"{status}"}</code>
+              Variabel: <code className="px-1 rounded bg-muted">{"{nama}"}</code> <code className="px-1 rounded bg-muted">{"{jenis}"}</code> <code className="px-1 rounded bg-muted">{"{token}"}</code> <code className="px-1 rounded bg-muted">{"{email}"}</code> <code className="px-1 rounded bg-muted">{"{whatsapp}"}</code> <code className="px-1 rounded bg-muted">{"{jumlah_berkas}"}</code> <code className="px-1 rounded bg-muted">{"{status}"}</code>
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={() => setCfg({ ...cfg, templates: DEFAULT_TEMPLATES })}>
