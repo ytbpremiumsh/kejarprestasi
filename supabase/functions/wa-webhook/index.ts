@@ -101,6 +101,34 @@ function mediaFallbackText(p: Record<string, unknown>): string | null {
   return "Peserta mengirim gambar/screenshot bukti share poster Beasiswa Kejar Prestasi melalui WhatsApp/Instagram/Grup WA. Balas dengan ucapan terima kasih karena bukti share poster sudah dikirim, lalu arahkan peserta untuk lanjut ke tahapan Pengiriman Berkas di www.kejarprestasi.id dengan Kode Token dan format PDF atau JPG.";
 }
 
+const SHARE_POSTER_KEYWORDS = [
+  "bukti bagikan poster",
+  "bukti share poster",
+  "kirim bukti poster",
+  "kirim poster",
+  "bagikan poster",
+  "share poster",
+  "bukti share",
+  "bukti bagikan",
+  "sudah bagikan poster",
+  "sudah share poster",
+  "poster beasiswa",
+  "bukti poster beasiswa",
+];
+
+function isSharePosterText(text: string): boolean {
+  const t = text.toLowerCase();
+  return SHARE_POSTER_KEYWORDS.some((kw) => t.includes(kw));
+}
+
+function sharePosterReply(): string {
+  return `Terima kasih Kak, bukti share poster sudah kami terima. 🙏
+
+Kakak bisa langsung melanjutkan ke tahapan berikutnya yaitu *Pengiriman Berkas* melalui www.kejarprestasi.id.
+
+Silakan pilih menu *Kirim Berkas*, lalu masukkan *Kode Token* yang Kakak terima saat pendaftaran. Format file yang diterima hanya *PDF* atau *JPG* ya Kak.`;
+}
+
 function mediaDirectReply(): string {
   return "Terima kasih Kak, bukti share poster sudah kami terima. 🙏\n\nKakak bisa langsung melanjutkan ke tahapan berikutnya yaitu Pengiriman Berkas melalui www.kejarprestasi.id.\n\nSilakan pilih menu Kirim Berkas, lalu masukkan Kode Token yang Kakak terima saat pendaftaran. Format file yang diterima hanya PDF atau JPG ya Kak.";
 }
