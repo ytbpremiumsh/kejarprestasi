@@ -311,7 +311,7 @@ function AdminWhatsApp() {
           <div>
             <h2 className="text-lg font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary" />Template Pesan WhatsApp</h2>
             <p className="text-xs text-muted-foreground mt-1">
-              Variabel: <code className="px-1 rounded bg-muted">{"{nama}"}</code> <code className="px-1 rounded bg-muted">{"{jenis}"}</code> <code className="px-1 rounded bg-muted">{"{email}"}</code> <code className="px-1 rounded bg-muted">{"{whatsapp}"}</code> <code className="px-1 rounded bg-muted">{"{jumlah_berkas}"}</code> <code className="px-1 rounded bg-muted">{"{status}"}</code>
+              Variabel: <code className="px-1 rounded bg-muted">{"{nama}"}</code> <code className="px-1 rounded bg-muted">{"{jenis}"}</code> <code className="px-1 rounded bg-muted">{"{token}"}</code> <code className="px-1 rounded bg-muted">{"{email}"}</code> <code className="px-1 rounded bg-muted">{"{whatsapp}"}</code> <code className="px-1 rounded bg-muted">{"{jumlah_berkas}"}</code> <code className="px-1 rounded bg-muted">{"{status}"}</code>
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={() => setCfg({ ...cfg, templates: DEFAULT_TEMPLATES })}>
