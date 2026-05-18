@@ -23,7 +23,7 @@ export function SharePosterPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
 Halo Sobat Pejuang Pendidikan! 👋
 Saatnya wujudkan mimpi pendidikanmu bersama ${label}!
 
-💰 Total Beasiswa hingga Rp23.000.000/semester
+💰 Total Beasiswa hingga Rp17.000.000/semester
 📚 Terbuka untuk SD, SMP, SMA/SMK/MA & Mahasiswa
 🚫 100% TIDAK DIPUNGUT BIAYA
 

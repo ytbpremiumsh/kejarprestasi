@@ -136,7 +136,7 @@ export function CategoryPage({
         {/* Benefit */}
         <div className="rounded-3xl border border-border bg-card p-8 shadow-card">
           <h2 className="text-2xl font-bold text-foreground">Benefit Beasiswa</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Total beasiswa Rp23.000.000/semester serta benefit pendukung.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Total beasiswa Rp17.000.000/semester serta benefit pendukung.</p>
 
           <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-secondary/30">
             <img

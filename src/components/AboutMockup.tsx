@@ -4,7 +4,7 @@ const features = [
   {
     icon: Wallet,
     title: "Dana Pendidikan",
-    desc: "Bantuan beasiswa hingga Rp23.000.000 per semester langsung ke penerima yang lolos seleksi.",
+    desc: "Bantuan beasiswa hingga Rp17.000.000 per semester langsung ke penerima yang lolos seleksi.",
   },
   {
     icon: BookOpen,

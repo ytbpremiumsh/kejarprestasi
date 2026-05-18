@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     q: "Berapa total beasiswa yang akan diterima?",
-    a: "Total beasiswa hingga Rp23.000.000 per semester untuk penerima yang lolos seluruh tahapan seleksi.",
+    a: "Total beasiswa hingga Rp17.000.000 per semester untuk penerima yang lolos seluruh tahapan seleksi.",
   },
   {
     q: "Bagaimana cara mengetahui hasil seleksi?",
