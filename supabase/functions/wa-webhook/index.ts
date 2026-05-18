@@ -316,6 +316,22 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (text && isSharePosterText(text)) {
+      const reply = sharePosterReply();
+      const sendRes = await sendWA(supabase, phone, reply);
+
+      await supabase.from("wa_chat_messages").insert({
+        phone, contact_name: contactName, direction: "out",
+        message: reply, ai_used: false,
+        status: sendRes.ok ? "sent" : "failed",
+        raw: { send_result: sendRes, share_poster_auto_reply: true },
+      });
+
+      return new Response(JSON.stringify({ ok: true, replied: true, sent: sendRes.ok, share_poster_auto_reply: true }), {
+        headers: { ...cors, "Content-Type": "application/json" },
+      });
+    }
+
     // Load enabled KB
     const [{ data: kbRows }, { data: providerRow }] = await Promise.all([
       supabase
