@@ -4,7 +4,7 @@ const benefits = [
   {
     icon: Wallet,
     title: "Dana Pendidikan Beasiswa",
-    desc: "Bantuan dana pendidikan hingga Rp23.000.000 per semester untuk penerima.",
+    desc: "Bantuan dana pendidikan hingga Rp17.000.000 per semester untuk penerima.",
     accent: "bg-primary text-primary-foreground",
   },
   {

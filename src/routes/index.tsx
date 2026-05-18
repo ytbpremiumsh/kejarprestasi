@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Beasiswa Pendidikan Kejar Prestasi Section #3" },
-      { name: "description", content: "Program beasiswa nasional untuk SD, SMP, SMA/SMK/MA, dan Mahasiswa. Total beasiswa Rp23.000.000/semester. Tidak dipungut biaya." },
+      { name: "description", content: "Program beasiswa nasional untuk SD, SMP, SMA/SMK/MA, dan Mahasiswa. Total beasiswa Rp17.000.000/semester. Tidak dipungut biaya." },
     ],
   }),
   component: Index,
@@ -94,7 +94,7 @@ function Index() {
             </div>
 
             <div className="grid sm:grid-cols-3 gap-3 pt-2">
-              <HighlightCard icon={<Wallet size={18} />} label="Total Beasiswa" value="Rp23.000.000" sub="per semester" highlight />
+              <HighlightCard icon={<Wallet size={18} />} label="Total Beasiswa" value="Rp17.000.000" sub="per semester" highlight />
               <HighlightCard icon={<Trophy size={18} />} label="Beasiswa" value="Prestasi" sub="Akademik & non-akademik" />
               <HighlightCard icon={<HeartHandshake size={18} />} label="Beasiswa" value="Ekonomi" sub="Dukungan finansial" />
             </div>
