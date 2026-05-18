@@ -1,0 +1,2 @@
+UPDATE public.ai_knowledge_base SET answer = REPLACE(answer, 'Rp23.000.000', 'Rp17.000.000') WHERE answer LIKE '%Rp23.000.000%';
+UPDATE public.site_settings SET value = jsonb_set(value, '{subtitle}', to_jsonb(REPLACE(value->>'subtitle', 'Rp23.000.000', 'Rp17.000.000'))) WHERE key = 'countdown' AND value->>'subtitle' LIKE '%Rp23.000.000%';
