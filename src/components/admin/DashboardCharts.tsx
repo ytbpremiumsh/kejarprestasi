@@ -3,9 +3,9 @@ import {
   AreaChart, Area, PieChart, Pie, Cell,
 } from "recharts";
 
-const PRIMARY = "hsl(var(--primary))";
-const ACCENT = "oklch(0.68 0.14 200)"; // modern teal
-const PRIMARY_SOFT = "oklch(0.72 0.16 80)"; // warm gold for prestasi accent
+const PRIMARY = "oklch(0.58 0.18 260)"; // modern indigo/blue
+const PRIMARY_SOFT = "oklch(0.74 0.14 75)"; // warm amber for secondary segment
+const ACCENT = "oklch(0.70 0.13 195)"; // teal
 const MUTED = "hsl(var(--muted-foreground))";
 
 function TooltipCard({ active, payload, label }: any) {
