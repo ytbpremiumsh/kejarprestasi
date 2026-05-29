@@ -22,6 +22,7 @@ import {
   Mail,
   HardDrive,
   Rocket,
+  Wrench,
 } from "lucide-react";
 import {
   Sidebar,
@@ -88,6 +89,7 @@ const groups: { label: string; items: Item[] }[] = [
     label: "Sistem",
     items: [
       { title: "Sistem Update", url: "/admin/sistem-update", icon: Rocket },
+      { title: "Mode Maintenance", url: "/admin/maintenance", icon: Wrench },
     ],
   },
   {
