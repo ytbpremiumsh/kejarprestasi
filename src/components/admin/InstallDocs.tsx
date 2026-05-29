@@ -111,46 +111,44 @@ export function UpdateSection() {
           <RefreshCcw className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-foreground">Auto Update via update.sh</h2>
+          <h2 className="text-lg font-bold text-foreground">Update dari GitHub</h2>
           <p className="text-xs text-muted-foreground">
-            Jalankan satu perintah untuk mengambil versi terbaru, build, & restart service.
+            Tarik perubahan terbaru, build ulang, lalu publikasikan ke webroot Nginx.
           </p>
         </div>
       </div>
 
       <div className="space-y-4 text-sm">
-        <div>
-          <p className="mb-2 font-medium text-foreground">Update ke versi terbaru:</p>
-          <CodeBlock
-            code={`cd /var/www/kejarprestasi
-sudo bash deploy/update.sh`}
-          />
-        </div>
+        <CodeBlock
+          code={`cd /var/www/kejarprestasi
 
-        <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 text-xs text-foreground">
-          <p className="font-medium">Yang dilakukan script:</p>
-          <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted-foreground">
-            <li>Backup otomatis file <code className="rounded bg-muted px-1">.env</code></li>
-            <li>Tarik commit terbaru dari Git (branch <code className="rounded bg-muted px-1">main</code>)</li>
-            <li><code className="rounded bg-muted px-1">npm ci</code> + <code className="rounded bg-muted px-1">npm run build:node</code></li>
-            <li>Validasi keras: <code className="rounded bg-muted px-1">dist/server/server.node.js</code> harus ada</li>
-            <li>Stage <code className="rounded bg-muted px-1">dist/client</code> ke webroot: <code className="rounded bg-muted px-1">assets/</code>, <code className="rounded bg-muted px-1">index.html</code>, <code className="rounded bg-muted px-1">favicon.ico</code></li>
-            <li><strong>Auto-rollback</strong> ke commit sebelumnya jika build gagal</li>
-            <li><code className="rounded bg-muted px-1">pm2 reload kejarprestasi --update-env</code> (zero-downtime)</li>
-          </ul>
-        </div>
+git pull origin main
+
+npm install --legacy-peer-deps
+
+npm run build
+
+rm -rf /www/wwwroot/kejarprestasi.id/*
+
+cp -r dist/* /www/wwwroot/kejarprestasi.id/
+
+chown -R www:www /www/wwwroot/kejarprestasi.id
+
+nginx -s reload`}
+        />
 
         <div>
           <p className="mb-2 font-medium text-foreground">Opsional — jadwalkan auto-update tiap malam (cron):</p>
           <CodeBlock
             code={`sudo crontab -e
 # Tambahkan baris berikut:
-0 3 * * * cd /var/www/kejarprestasi && bash deploy/update.sh >> logs/update.log 2>&1`}
+0 3 * * * cd /var/www/kejarprestasi && bash deploy.sh >> /var/log/kejarprestasi-update.log 2>&1`}
           />
         </div>
       </div>
     </Card>
   );
 }
+
 
 export const Icons = { Server, Globe, Terminal };
