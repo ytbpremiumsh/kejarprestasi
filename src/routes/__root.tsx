@@ -19,6 +19,7 @@ import { CustomAdInjector } from "@/components/ads/CustomAdInjector";
 import { CustomCodeInjector } from "@/components/CustomCodeInjector";
 import { AnalyticsInjector } from "@/components/AnalyticsInjector";
 import { ForceReloadNavigation } from "@/components/ForceReloadNavigation";
+import { MaintenanceGate } from "@/components/MaintenanceGate";
 
 function NotFoundComponent() {
   return (
@@ -144,13 +145,15 @@ function RootComponent() {
         {isBareLayout ? (
           <Outlet />
         ) : (
-          <div className="flex min-h-screen flex-col">
-            <SiteHeader />
-            <main className="flex-1">
-              <Outlet />
-            </main>
-            <SiteFooter />
-          </div>
+          <MaintenanceGate>
+            <div className="flex min-h-screen flex-col">
+              <SiteHeader />
+              <main className="flex-1">
+                <Outlet />
+              </main>
+              <SiteFooter />
+            </div>
+          </MaintenanceGate>
         )}
         <Toaster richColors position="top-center" />
       </AdSettingsProvider>
