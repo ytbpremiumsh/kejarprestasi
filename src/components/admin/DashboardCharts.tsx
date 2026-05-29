@@ -1,49 +1,146 @@
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  LineChart, Line, PieChart, Pie, Cell, Legend,
+  AreaChart, Area, PieChart, Pie, Cell,
 } from "recharts";
 
-const COLORS = ["hsl(var(--primary))", "oklch(0.7 0.18 80)"];
+const PRIMARY = "hsl(var(--primary))";
+const ACCENT = "oklch(0.68 0.14 200)"; // modern teal
+const PRIMARY_SOFT = "oklch(0.72 0.16 80)"; // warm gold for prestasi accent
+const MUTED = "hsl(var(--muted-foreground))";
+
+function TooltipCard({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-xl border border-border/60 bg-popover/95 backdrop-blur px-3 py-2 shadow-lg text-xs">
+      {label && <div className="font-medium text-foreground mb-1.5">{label}</div>}
+      <div className="space-y-1">
+        {payload.map((p: any, i: number) => (
+          <div key={i} className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full" style={{ background: p.color || p.payload?.fill }} />
+            <span className="text-muted-foreground">{p.name}</span>
+            <span className="ml-auto font-semibold tabular-nums text-foreground">{p.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LegendDots({ items }: { items: { name: string; color: string; value?: number | string }[] }) {
+  return (
+    <div className="flex flex-wrap justify-center gap-x-5 gap-y-1.5 pt-3 text-xs">
+      {items.map((it) => (
+        <div key={it.name} className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full" style={{ background: it.color }} />
+          <span className="text-muted-foreground">{it.name}</span>
+          {it.value !== undefined && (
+            <span className="font-semibold text-foreground tabular-nums">{it.value}</span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function LineDaily({ data }: { data: { label: string; count: number }[] }) {
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <LineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-        <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-        <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-        <Tooltip />
-        <Line type="monotone" dataKey="count" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={{ r: 3 }} name="Pendaftar" />
-      </LineChart>
+      <AreaChart data={data} margin={{ top: 16, right: 12, left: -16, bottom: 0 }}>
+        <defs>
+          <linearGradient id="dailyFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={PRIMARY} stopOpacity={0.28} />
+            <stop offset="100%" stopColor={PRIMARY} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" opacity={0.5} vertical={false} />
+        <XAxis dataKey="label" tick={{ fontSize: 11, fill: MUTED }} tickLine={false} axisLine={false} />
+        <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: MUTED }} tickLine={false} axisLine={false} width={28} />
+        <Tooltip content={<TooltipCard />} cursor={{ stroke: PRIMARY, strokeOpacity: 0.25, strokeWidth: 2 }} />
+        <Area
+          type="monotone"
+          dataKey="count"
+          stroke={PRIMARY}
+          strokeWidth={2.5}
+          fill="url(#dailyFill)"
+          name="Pendaftar"
+          dot={false}
+          activeDot={{ r: 5, strokeWidth: 2, stroke: "hsl(var(--background))" }}
+        />
+      </AreaChart>
     </ResponsiveContainer>
   );
 }
 
 export function PieKind({ data }: { data: { name: string; value: number }[] }) {
+  const total = data.reduce((s, d) => s + d.value, 0);
+  const colors = [PRIMARY, PRIMARY_SOFT];
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <PieChart>
-        <Pie data={data} dataKey="value" nameKey="name" outerRadius={80} label>
-          {data.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-        </Pie>
-        <Tooltip />
-        <Legend />
-      </PieChart>
-    </ResponsiveContainer>
+    <div className="relative h-full w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <defs>
+            {colors.map((c, i) => (
+              <linearGradient key={i} id={`pieGrad-${i}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={c} stopOpacity={1} />
+                <stop offset="100%" stopColor={c} stopOpacity={0.75} />
+              </linearGradient>
+            ))}
+          </defs>
+          <Tooltip content={<TooltipCard />} />
+          <Pie
+            data={data}
+            dataKey="value"
+            nameKey="name"
+            innerRadius="62%"
+            outerRadius="92%"
+            paddingAngle={3}
+            cornerRadius={6}
+            stroke="hsl(var(--background))"
+            strokeWidth={2}
+          >
+            {data.map((_, i) => (
+              <Cell key={i} fill={`url(#pieGrad-${i % colors.length})`} />
+            ))}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center -mt-4">
+        <div className="text-2xl font-bold tabular-nums text-foreground">{total}</div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Total</div>
+      </div>
+      <div className="absolute inset-x-0 bottom-0">
+        <LegendDots
+          items={data.map((d, i) => ({
+            name: d.name,
+            color: colors[i % colors.length],
+            value: total > 0 ? `${Math.round((d.value / total) * 100)}%` : "0%",
+          }))}
+        />
+      </div>
+    </div>
   );
 }
 
 export function BarJenjang({ data }: { data: { name: string; prestasi: number; ekonomi: number }[] }) {
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-        <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="prestasi" stackId="a" fill="hsl(var(--primary))" name="Prestasi" />
-        <Bar dataKey="ekonomi" stackId="a" fill="oklch(0.75 0.15 80)" name="Ekonomi" radius={[6, 6, 0, 0]} />
+      <BarChart data={data} margin={{ top: 16, right: 12, left: -16, bottom: 0 }} barCategoryGap="28%">
+        <defs>
+          <linearGradient id="barPrestasi" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={PRIMARY} stopOpacity={1} />
+            <stop offset="100%" stopColor={PRIMARY} stopOpacity={0.7} />
+          </linearGradient>
+          <linearGradient id="barEkonomi" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={ACCENT} stopOpacity={1} />
+            <stop offset="100%" stopColor={ACCENT} stopOpacity={0.7} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" opacity={0.5} vertical={false} />
+        <XAxis dataKey="name" tick={{ fontSize: 12, fill: MUTED }} tickLine={false} axisLine={false} />
+        <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: MUTED }} tickLine={false} axisLine={false} width={28} />
+        <Tooltip content={<TooltipCard />} cursor={{ fill: "hsl(var(--muted))", opacity: 0.4 }} />
+        <Bar dataKey="prestasi" stackId="a" fill="url(#barPrestasi)" name="Prestasi" maxBarSize={44} />
+        <Bar dataKey="ekonomi" stackId="a" fill="url(#barEkonomi)" name="Ekonomi" maxBarSize={44} radius={[8, 8, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

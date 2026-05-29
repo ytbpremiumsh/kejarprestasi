@@ -1,72 +1,39 @@
-# Admin Bar Floating + Maintenance untuk Publik
+Modernisasi tampilan chart admin dashboard di `src/components/admin/DashboardCharts.tsx` agar lebih profesional dan tidak terkesan klasik.
 
-## Tujuan
+## Perubahan visual
 
-1. **Publik (tanpa login)**: Bila Mode Maintenance aktif → hanya melihat halaman maintenance.
-2. **Admin (sudah login)**: Tetap bisa menjelajah seluruh halaman publik (`/`, `/beasiswa-ekonomi`, `/beasiswa-prestasi`, `/berkas/*`, `/bagikan-poster/*`, `/tentang`, `/artikel/*`, dll.) walau maintenance aktif, dengan **Admin Bar floating** di atas layar berisi menu konteks cepat.
+**Palet warna baru (semantic tokens):**
+- Prestasi → `hsl(var(--primary))` dengan gradient ke versi lebih terang
+- Ekonomi → warna sekunder modern (teal/indigo) dengan gradient
+- Grid lebih halus (dashed, opacity rendah), axis tanpa garis tebal
+- Tooltip custom: rounded-xl, shadow lembut, background `--popover`, border tipis
 
-## Yang sudah berjalan (tidak perlu diubah)
+**Pie Chart (Distribusi Kategori):**
+- Ubah jadi **Donut chart** (innerRadius 60, outerRadius 95) — lebih modern
+- `paddingAngle: 4`, `cornerRadius: 6` untuk segmen membulat
+- Label di tengah donut: total angka + label "Total Pendaftar"
+- Legend custom di bawah dengan dot + persentase
+- Hilangkan label garis ke samping (yang menampilkan "7" dan "1" mencuat) — pindah ke tooltip + center label
 
-- `MaintenanceGate.tsx` sudah memblokir publik dan melewatkan admin. Logika ini tetap dipakai apa adanya.
-- Toggle Mode Maintenance di `/admin/maintenance` sudah berfungsi.
+**Line Chart (Pendaftar per Hari):**
+- Tambah `Area` gradient di bawah line (fade primary → transparent)
+- Line tebal 2.5, dot hanya muncul saat hover (activeDot)
+- Axis label muted, tickLine dihilangkan
+- Margin atas agar tidak mepet
 
-## Yang akan ditambahkan
+**Bar Chart (Pendaftar per Jenjang):**
+- Bar dengan gradient vertikal + `radius={[8,8,0,0]}` di top stack
+- Lebar bar dibatasi (`maxBarSize: 48`) agar tidak gemuk
+- Spacing antar kategori lebih lega
+- Legend custom dengan dot bulat
 
-### 1. Komponen `AdminBar` (baru)
+**Card wrapper (di `admin.index.tsx` jika perlu):**
+- Tidak diubah strukturnya, hanya chart internal yang dirombak
 
-File: `src/components/admin/AdminBar.tsx`
+## Catatan teknis
+- Semua warna pakai semantic tokens (`--primary`, `--accent`, `--muted-foreground`, `--border`, `--popover`) — tidak ada hex hardcoded
+- Tambah `<defs><linearGradient/></defs>` di tiap chart untuk efek gradient
+- Custom `Tooltip` content component yang konsisten di 3 chart
+- Tidak ada perubahan data/logic, murni presentasi
 
-Bar tipis (tinggi ~40px) yang **fixed di atas layar** pada semua halaman publik, hanya muncul jika user adalah admin.
-
-Isi bar (kiri ke kanan):
-- Logo/ikon "KP Admin"
-- Badge status: **"Mode Maintenance: AKTIF"** (kuning) atau **"Live"** (hijau) — dibaca dari `site_settings.maintenance`
-- Dropdown **"Edit Halaman Ini"** — menu kontekstual berdasarkan route saat ini:
-  - `/` → Branding, Benefit, FAQ, Info Beasiswa, Timeline, Alumni
-  - `/beasiswa-*` → Kategori Beasiswa, Berkas
-  - `/berkas/*` → Berkas Builder, Formulir
-  - `/bagikan-poster/*` → Bagikan Poster
-  - `/artikel/*` → Artikel
-  - dan fallback default
-- Tombol cepat: **Dashboard**, **Pendaftar**, **Mode Maintenance**, **Pengaturan**
-- Sebelah kanan: nama/email admin + tombol **Keluar**
-- Tombol toggle mini untuk sembunyikan bar (state disimpan di `localStorage`, bisa dibuka lagi via tombol mengambang di pojok)
-
-Versi mobile: bar tetap muncul, tapi menu konteks dipersempit jadi 1 tombol "Menu Admin" → buka `Sheet` dari `ui/sheet.tsx`.
-
-### 2. Hook `useIsAdmin` (baru)
-
-File: `src/hooks/use-is-admin.ts`
-
-Mengambil session + cek `user_roles.role = admin`. Memakai cache lokal supaya tidak query berulang di tiap navigasi. Subscribe ke `supabase.auth.onAuthStateChange` agar reaktif saat login/logout.
-
-### 3. Integrasi di `__root.tsx`
-
-Tambahkan `<AdminBar />` di dalam `MaintenanceGate` (di luar konten halaman, hanya render kalau admin). Beri padding-top pada body wrapper saat AdminBar terlihat agar konten tidak ketutup.
-
-AdminBar **TIDAK** ditampilkan di route yang diawali `/admin` (sudah ada sidebar sendiri) dan `/login`.
-
-### 4. Banner kecil di halaman maintenance versi admin (opsional kecil)
-
-Saat admin buka situs sementara maintenance aktif, AdminBar sudah menunjukkan badge "Maintenance: AKTIF" → ini sekaligus jadi pengingat publik tidak bisa akses. Tidak perlu komponen tambahan.
-
-## Detail teknis
-
-- **Tidak ada perubahan database** — semua data yang dibutuhkan sudah ada (`user_roles`, `site_settings`).
-- **Tidak ada perubahan RLS** — bar hanya menampilkan data dan link, tidak mengubah aturan akses.
-- **Styling**: pakai design token (`bg-background`, `border-border`, `bg-primary`, `text-primary-foreground`), tidak ada hex langsung. Bar pakai backdrop blur + border bawah agar elegan menempel di atas hero section.
-- **Tidak menyentuh** komponen konten halaman publik — fitur edit tetap dilakukan di dashboard `/admin/*` yang sudah ada. Bar hanya jadi jalan pintas (sesuai pilihan "Bar admin floating dengan menu konteks").
-
-## File yang akan dibuat/disentuh
-
-- **Baru**: `src/components/admin/AdminBar.tsx`
-- **Baru**: `src/hooks/use-is-admin.ts`
-- **Edit**: `src/routes/__root.tsx` — sisipkan `<AdminBar />` di dalam `MaintenanceGate`, kecualikan route `/admin/*` dan `/login`.
-
-## Tidak termasuk dalam plan ini
-
-- Tidak ada inline text/image editing di halaman publik (sesuai pilihan Anda: "Bar admin floating dengan menu konteks").
-- Tidak ada perubahan logika maintenance (sudah benar).
-- Tidak menambahkan tabel `site_content` atau CMS mini.
-
-Konfirmasi untuk lanjut ke implementasi.
+File yang diubah: hanya `src/components/admin/DashboardCharts.tsx`.
