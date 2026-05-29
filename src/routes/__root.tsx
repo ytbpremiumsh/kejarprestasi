@@ -20,6 +20,7 @@ import { CustomCodeInjector } from "@/components/CustomCodeInjector";
 import { AnalyticsInjector } from "@/components/AnalyticsInjector";
 import { ForceReloadNavigation } from "@/components/ForceReloadNavigation";
 import { MaintenanceGate } from "@/components/MaintenanceGate";
+import { AdminBar } from "@/components/admin/AdminBar";
 
 function NotFoundComponent() {
   return (
@@ -146,6 +147,7 @@ function RootComponent() {
           <Outlet />
         ) : (
           <MaintenanceGate>
+            <AdminBar />
             <div className="flex min-h-screen flex-col">
               <SiteHeader />
               <main className="flex-1">
