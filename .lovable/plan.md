@@ -1,77 +1,72 @@
-## Akar Masalah
+# Admin Bar Floating + Maintenance untuk Publik
 
-Folder `/www/wwwroot/kejarprestasi.id/` masih terisi karena **halaman dokumentasi admin (`/admin/instalasi/vps` dan `/admin/instalasi/hosting`) belum diperbarui** — masih mengajarkan pola aaPanel lama: clone repo ke `/www/wwwroot/kejarprestasi.id`, build di sana, `bun run build` (Worker), lalu PM2 `npm run start`.
+## Tujuan
 
-Itu sebabnya:
-- `client/` & `server/` muncul langsung di `/www/wwwroot/kejarprestasi.id/` → hasil build TanStack lama dipindah ke webroot.
-- Screenshot Anda yang menunjukkan `assets/ index.html favicon.ico` di docs juga **salah** untuk SSR — `index.html` memang tidak pernah ada di SSR.
+1. **Publik (tanpa login)**: Bila Mode Maintenance aktif → hanya melihat halaman maintenance.
+2. **Admin (sudah login)**: Tetap bisa menjelajah seluruh halaman publik (`/`, `/beasiswa-ekonomi`, `/beasiswa-prestasi`, `/berkas/*`, `/bagikan-poster/*`, `/tentang`, `/artikel/*`, dll.) walau maintenance aktif, dengan **Admin Bar floating** di atas layar berisi menu konteks cepat.
 
-Backend (`deploy/*.sh`, `ecosystem.config.cjs`, `docs/INSTALL-VPS.md`) sudah betul untuk Node SSR di `/var/www/kejarprestasi`. Yang belum sinkron hanyalah UI dokumentasi di dalam aplikasi.
+## Yang sudah berjalan (tidak perlu diubah)
 
-## Yang Akan Diperbaiki
+- `MaintenanceGate.tsx` sudah memblokir publik dan melewatkan admin. Logika ini tetap dipakai apa adanya.
+- Toggle Mode Maintenance di `/admin/maintenance` sudah berfungsi.
 
-### 1. `src/routes/admin.instalasi.vps.tsx` — tulis ulang total
-Hapus seluruh alur aaPanel + `/www/wwwroot/...` + `bun run build` + `npm run start`. Ganti jadi alur **Node SSR + PM2 + Nginx reverse proxy** yang sesuai dengan `deploy/install-vps.sh`:
+## Yang akan ditambahkan
 
-Langkah baru (ringkas):
-1. Siapkan VPS Ubuntu/Debian, install Node 20+, Nginx, Git, PM2 (installer otomatis)
-2. `sudo mkdir -p /var/www && cd /var/www && git clone <REPO> kejarprestasi`
-3. Isi `/var/www/kejarprestasi/.env` (Supabase keys + secret server)
-4. `sudo REPO_URL=<...> bash deploy/install-vps.sh` → installer otomatis: `npm ci` → `npm run build:node` → validasi `dist/server/server.node.js` → `pm2 start ecosystem.config.cjs`
-5. Salin `deploy/nginx-kejarprestasi.id.conf` ke `/etc/nginx/conf.d/` → `nginx -t && systemctl reload nginx`
-6. `certbot --nginx -d kejarprestasi.id -d www.kejarprestasi.id` untuk HTTPS
-7. **Verifikasi yang benar** (ganti screenshot lama):
-   ```
-   ls /var/www/kejarprestasi/dist/server/server.node.js   # harus ada
-   pm2 status                                              # online
-   curl -I http://127.0.0.1:3000                           # 200
-   ls /www/wwwroot/kejarprestasi.id                        # KOSONG — itu yang benar
-   ```
-8. Update: `cd /var/www/kejarprestasi && sudo bash deploy/update.sh`
+### 1. Komponen `AdminBar` (baru)
 
-Tambah callout merah di atas: **"Migrasi dari instalasi lama"** — jika `/www/wwwroot/kejarprestasi.id/` masih berisi `client/`, `server/`, `assets/`, atau `index.html`, jalankan `sudo bash /var/www/kejarprestasi/deploy/migrate-from-static.sh` untuk membersihkannya dan re-point Nginx.
+File: `src/components/admin/AdminBar.tsx`
 
-Hapus referensi: aaPanel, `bun run build`, `npm run start`, port `7800`, "Setup Node.js App", `Application startup file: .output/server/index.mjs`.
+Bar tipis (tinggi ~40px) yang **fixed di atas layar** pada semua halaman publik, hanya muncul jika user adalah admin.
 
-### 2. `src/routes/admin.instalasi.hosting.tsx` — tandai TIDAK didukung
-Shared hosting cPanel **tidak cocok** untuk TanStack Start SSR build ini (tidak ada `.output/server/index.mjs`, build target adalah `dist/server/server.node.js` via `build:node` dengan dependensi cluster PM2 & Nginx reverse proxy). Ganti seluruh isi jadi halaman peringatan singkat:
+Isi bar (kiri ke kanan):
+- Logo/ikon "KP Admin"
+- Badge status: **"Mode Maintenance: AKTIF"** (kuning) atau **"Live"** (hijau) — dibaca dari `site_settings.maintenance`
+- Dropdown **"Edit Halaman Ini"** — menu kontekstual berdasarkan route saat ini:
+  - `/` → Branding, Benefit, FAQ, Info Beasiswa, Timeline, Alumni
+  - `/beasiswa-*` → Kategori Beasiswa, Berkas
+  - `/berkas/*` → Berkas Builder, Formulir
+  - `/bagikan-poster/*` → Bagikan Poster
+  - `/artikel/*` → Artikel
+  - dan fallback default
+- Tombol cepat: **Dashboard**, **Pendaftar**, **Mode Maintenance**, **Pengaturan**
+- Sebelah kanan: nama/email admin + tombol **Keluar**
+- Tombol toggle mini untuk sembunyikan bar (state disimpan di `localStorage`, bisa dibuka lagi via tombol mengambang di pojok)
 
-> "Shared hosting cPanel tidak didukung resmi untuk versi ini. Gunakan VPS (lihat tab VPS). Alasan: aplikasi memerlukan Node 20+, akses sudo untuk PM2 + Nginx reverse proxy, dan tidak menghasilkan file static `.output/...` yang biasa diharapkan cPanel Node App."
+Versi mobile: bar tetap muncul, tapi menu konteks dipersempit jadi 1 tombol "Menu Admin" → buka `Sheet` dari `ui/sheet.tsx`.
 
-Plus link ke tab VPS.
+### 2. Hook `useIsAdmin` (baru)
 
-### 3. `src/components/admin/InstallDocs.tsx` — perbaiki path konsisten
-Baris 158: `/var/www/kejar-prestasi` (dengan strip) → `/var/www/kejarprestasi` (tanpa strip), agar konsisten dengan seluruh deploy script. Juga ubah daftar "Yang dilakukan script" supaya akurat (validasi build, auto-rollback, bersihkan webroot legacy).
+File: `src/hooks/use-is-admin.ts`
 
-### 4. (Opsional, tidak wajib untuk request ini) `docs/INSTALL-VPS.md`
-Sudah betul, tidak diubah.
+Mengambil session + cek `user_roles.role = admin`. Memakai cache lokal supaya tidak query berulang di tiap navigasi. Subscribe ke `supabase.auth.onAuthStateChange` agar reaktif saat login/logout.
 
-## Hasil Akhir yang Diharapkan di User
+### 3. Integrasi di `__root.tsx`
 
-Setelah dokumentasi dirombak + user menjalankan `migrate-from-static.sh`:
+Tambahkan `<AdminBar />` di dalam `MaintenanceGate` (di luar konten halaman, hanya render kalau admin). Beri padding-top pada body wrapper saat AdminBar terlihat agar konten tidak ketutup.
 
-```
-$ ls -lah /www/wwwroot/kejarprestasi.id
-total 8K
-drwxr-xr-x  2 www www 4.0K ... .
-drwxr-xr-x 23 www www 4.0K ... ..
-# kosong — itu memang yang benar, Nginx tidak melayani dari sini lagi
+AdminBar **TIDAK** ditampilkan di route yang diawali `/admin` (sudah ada sidebar sendiri) dan `/login`.
 
-$ ls /var/www/kejarprestasi/dist/server/server.node.js
-/var/www/kejarprestasi/dist/server/server.node.js   # ← ada
+### 4. Banner kecil di halaman maintenance versi admin (opsional kecil)
 
-$ pm2 status
-│ kejarprestasi │ online │ cluster │ ...
+Saat admin buka situs sementara maintenance aktif, AdminBar sudah menunjukkan badge "Maintenance: AKTIF" → ini sekaligus jadi pengingat publik tidak bisa akses. Tidak perlu komponen tambahan.
 
-$ curl -I https://kejarprestasi.id
-HTTP/2 200
-content-type: text/html; charset=utf-8
-```
+## Detail teknis
 
-Tidak ada `client/`, `server/`, atau `index.html` di webroot — itu **fitur**, bukan bug. SSR berarti HTML dirender Node, bukan disajikan dari disk.
+- **Tidak ada perubahan database** — semua data yang dibutuhkan sudah ada (`user_roles`, `site_settings`).
+- **Tidak ada perubahan RLS** — bar hanya menampilkan data dan link, tidak mengubah aturan akses.
+- **Styling**: pakai design token (`bg-background`, `border-border`, `bg-primary`, `text-primary-foreground`), tidak ada hex langsung. Bar pakai backdrop blur + border bawah agar elegan menempel di atas hero section.
+- **Tidak menyentuh** komponen konten halaman publik — fitur edit tetap dilakukan di dashboard `/admin/*` yang sudah ada. Bar hanya jadi jalan pintas (sesuai pilihan "Bar admin floating dengan menu konteks").
 
-## File yang Diubah
+## File yang akan dibuat/disentuh
 
-1. `src/routes/admin.instalasi.vps.tsx` — tulis ulang (≈180 baris)
-2. `src/routes/admin.instalasi.hosting.tsx` — sederhanakan jadi halaman "tidak didukung" (≈40 baris)
-3. `src/components/admin/InstallDocs.tsx` — fix path + update daftar fitur script
+- **Baru**: `src/components/admin/AdminBar.tsx`
+- **Baru**: `src/hooks/use-is-admin.ts`
+- **Edit**: `src/routes/__root.tsx` — sisipkan `<AdminBar />` di dalam `MaintenanceGate`, kecualikan route `/admin/*` dan `/login`.
+
+## Tidak termasuk dalam plan ini
+
+- Tidak ada inline text/image editing di halaman publik (sesuai pilihan Anda: "Bar admin floating dengan menu konteks").
+- Tidak ada perubahan logika maintenance (sudah benar).
+- Tidak menambahkan tabel `site_content` atau CMS mini.
+
+Konfirmasi untuk lanjut ke implementasi.
