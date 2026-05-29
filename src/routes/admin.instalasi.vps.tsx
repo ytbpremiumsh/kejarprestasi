@@ -1,12 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
-import { Server, AlertTriangle, CheckCircle2 } from "lucide-react";
-import {
-  CodeBlock,
-  PageHeader,
-  Step,
-  UpdateSection,
-} from "@/components/admin/InstallDocs";
+import { Server, CheckCircle2, RefreshCcw, Rocket, Layers } from "lucide-react";
+import { CodeBlock, PageHeader, Step } from "@/components/admin/InstallDocs";
 
 export const Route = createFileRoute("/admin/instalasi/vps")({
   component: VpsInstallPage,
@@ -17,56 +12,39 @@ function VpsInstallPage() {
     <div className="space-y-6 max-w-4xl">
       <PageHeader
         icon={Server}
-        badge="VPS / Node SSR + PM2 + Nginx"
-        title="Instalasi di VPS (Node SSR)"
-        desc="Deploy Kejar Prestasi ke VPS Linux (Ubuntu 20.04+ / Debian 11+) sebagai Node.js SSR di /var/www/kejarprestasi, di-proxy Nginx. Bukan static SPA — tidak ada index.html di webroot."
+        badge="VPS · aaPanel · Nginx"
+        title="Instalasi di VPS (aaPanel & Standar)"
+        desc="Deploy Kejar Prestasi ke VPS Linux melalui aaPanel atau instalasi standar. Build hasilnya dipublikasikan sebagai static site di webroot Nginx."
       />
 
-      {/* Arsitektur singkat */}
+      {/* Arsitektur */}
       <Card className="rounded-2xl p-6">
-        <h2 className="mb-2 text-lg font-semibold text-foreground">Arsitektur</h2>
+        <h2 className="mb-2 text-lg font-semibold text-foreground flex items-center gap-2">
+          <Layers className="h-5 w-5 text-primary" /> Alur Singkat
+        </h2>
         <CodeBlock
-          code={`Browser ──HTTPS──▶ Nginx :443
-                   ├─ /assets/*  → alias /var/www/kejarprestasi/dist/client/assets/  (cache 1y)
-                   └─ /*         → proxy_pass 127.0.0.1:3000  (Node SSR via PM2)
+          code={`Source code: /var/www/kejarprestasi  (git clone)
+   └── npm run build  →  ./dist/
 
-App dir tunggal: /var/www/kejarprestasi
-Webroot /www/wwwroot/kejarprestasi.id hanya berisi static fallback: assets/, index.html, favicon.ico.`}
+Web publik:  /www/wwwroot/kejarprestasi.id  (webroot Nginx / aaPanel)
+   └── isi: assets/, index.html, favicon.ico, dll.`}
         />
+        <p className="mt-2 text-xs text-muted-foreground">
+          Repository disimpan terpisah dari webroot. Hasil <code className="rounded bg-muted px-1">dist/</code>
+          {" "}disalin ke webroot setiap kali deploy.
+        </p>
       </Card>
 
-      {/* Migrasi dari instalasi lama */}
-      <Card className="rounded-2xl border-red-500/40 bg-red-500/5 p-4">
-        <div className="flex gap-3 text-sm">
-          <AlertTriangle className="h-5 w-5 shrink-0 text-red-600" />
-          <div className="text-foreground space-y-2">
-            <p className="font-semibold">Perbaiki webroot yang berisi client/ dan server/</p>
-            <p className="text-muted-foreground">
-              Jika <code className="rounded bg-muted px-1">/www/wwwroot/kejarprestasi.id/</code> masih
-              berisi <code>client/</code> dan <code>server/</code> → berarti <code>dist/</code> tersalin mentah
-              ke webroot. Normalnya webroot harus berisi <code>assets/</code>, <code>index.html</code>, dan{" "}
-              <code>favicon.ico</code>. Perbaiki dengan:
-            </p>
-            <CodeBlock
-              code={`sudo bash /var/www/kejarprestasi/deploy/migrate-from-static.sh`}
-            />
-            <p className="text-muted-foreground">
-              Script ini menyalin isi <code>dist/client</code> ke webroot, menghapus <code>client/</code> +{" "}
-              <code>server/</code> yang salah, memasang Nginx config, dan restart PM2.
-            </p>
-          </div>
-        </div>
-      </Card>
-
-      {/* Langkah install */}
+      {/* Langkah Install */}
       <Card className="rounded-2xl p-6 md:p-8">
         <div className="space-y-8">
-          <Step n={1} title="Prasyarat VPS">
+          <Step n={1} title="Prasyarat">
             <ul className="list-disc space-y-1 pl-5">
-              <li>Ubuntu 20.04+ / Debian 11+ dengan akses <strong>sudo</strong></li>
-              <li>Port 80 & 443 terbuka, domain <code className="rounded bg-muted px-1">kejarprestasi.id</code> sudah point ke IP VPS</li>
-              <li>Nginx + Git terpasang (<code className="rounded bg-muted px-1">apt install -y nginx git</code>)</li>
-              <li>Node 20+ & PM2 akan diinstal otomatis oleh installer</li>
+              <li>VPS Ubuntu 20.04+ / Debian 11+ dengan akses <strong>root / sudo</strong></li>
+              <li>aaPanel terpasang (atau Nginx + Git manual)</li>
+              <li>Node.js <strong>20+</strong> dan npm (install via aaPanel App Store atau NodeSource)</li>
+              <li>Domain <code className="rounded bg-muted px-1">kejarprestasi.id</code> sudah point ke IP VPS</li>
+              <li>Webroot site di aaPanel: <code className="rounded bg-muted px-1">/www/wwwroot/kejarprestasi.id</code></li>
             </ul>
           </Step>
 
@@ -75,80 +53,90 @@ Webroot /www/wwwroot/kejarprestasi.id hanya berisi static fallback: assets/, ind
               code={`sudo mkdir -p /var/www
 cd /var/www
 sudo git clone -b main <REPO_URL> kejarprestasi
-cd kejarprestasi`}
+cd /var/www/kejarprestasi`}
             />
             <p className="text-xs text-muted-foreground">
-              Ganti <code className="rounded bg-muted px-1">&lt;REPO_URL&gt;</code> dengan URL Git Anda.
-              <strong> Jangan</strong> clone ke <code>/www/wwwroot/...</code>.
+              Ganti <code className="rounded bg-muted px-1">&lt;REPO_URL&gt;</code> dengan URL GitHub project Anda.
             </p>
           </Step>
 
           <Step n={3} title="Isi File .env">
-            <CodeBlock
-              code={`sudo nano /var/www/kejarprestasi/.env`}
-            />
+            <CodeBlock code={`sudo nano /var/www/kejarprestasi/.env`} />
             <p>Minimum yang harus ada:</p>
             <CodeBlock
               code={`VITE_SUPABASE_URL=https://xxxxx.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=eyJhbGciOi...
-VITE_SUPABASE_PROJECT_ID=xxxxx
-# secret server (jangan pakai prefix VITE_)
-SUPABASE_SERVICE_ROLE_KEY=...
-LOVABLE_API_KEY=...`}
+VITE_SUPABASE_PROJECT_ID=xxxxx`}
             />
           </Step>
 
-          <Step n={4} title="Jalankan Installer Otomatis">
+          <Step n={4} title="Install Dependency & Build">
             <CodeBlock
-              code={`sudo REPO_URL=<REPO_URL> bash /var/www/kejarprestasi/deploy/install-vps.sh`}
-            />
-            <p>Installer akan otomatis:</p>
-            <ul className="list-disc space-y-1 pl-5">
-              <li>Install Node 20 (via NodeSource) & PM2 global jika belum ada</li>
-              <li><code className="rounded bg-muted px-1">npm ci</code> + <code className="rounded bg-muted px-1">npm run build:node</code></li>
-              <li>Validasi keras: <code>dist/server/server.node.js</code> harus ada</li>
-              <li>Stage webroot: <code>/www/wwwroot/kejarprestasi.id</code> → <code>assets/</code>, <code>index.html</code>, <code>favicon.ico</code></li>
-              <li><code>pm2 start ecosystem.config.cjs</code> + <code>pm2 save</code> + autostart on boot</li>
-              <li>Salin contoh Nginx config ke <code>/etc/nginx/conf.d/kejarprestasi.id.conf.example</code></li>
-              <li>Smoke test <code>curl http://127.0.0.1:3000</code></li>
-            </ul>
-          </Step>
-
-          <Step n={5} title="Aktifkan Nginx Reverse Proxy">
-            <CodeBlock
-              code={`sudo cp /etc/nginx/conf.d/kejarprestasi.id.conf.example /etc/nginx/conf.d/kejarprestasi.id.conf
-sudo nginx -t && sudo systemctl reload nginx`}
+              code={`cd /var/www/kejarprestasi
+npm install --legacy-peer-deps
+npm run build`}
             />
             <p className="text-xs text-muted-foreground">
-              Config sudah berisi: <code>/assets/</code> → alias disk (cache 1y immutable),{" "}
-              <code>/</code> → proxy ke Node port 3000.
+              Hasil build akan tersedia di folder <code className="rounded bg-muted px-1">dist/</code>.
             </p>
           </Step>
 
-          <Step n={6} title="HTTPS via Let's Encrypt">
+          <Step n={5} title="Publikasikan ke Webroot Nginx / aaPanel">
+            <CodeBlock
+              code={`rm -rf /www/wwwroot/kejarprestasi.id/*
+cp -r dist/* /www/wwwroot/kejarprestasi.id/
+chown -R www:www /www/wwwroot/kejarprestasi.id
+nginx -s reload`}
+            />
+            <p className="text-xs text-muted-foreground">
+              Owner <code className="rounded bg-muted px-1">www:www</code> adalah user default aaPanel.
+              Pada Nginx non-aaPanel gunakan <code className="rounded bg-muted px-1">www-data:www-data</code>.
+            </p>
+          </Step>
+
+          <Step n={6} title="Konfigurasi Nginx (SPA fallback)">
+            <p>Di aaPanel: <em>Website → Settings → Config File</em>, tambahkan dalam blok <code>server</code>:</p>
+            <CodeBlock
+              code={`root /www/wwwroot/kejarprestasi.id;
+index index.html;
+
+# SPA fallback untuk TanStack Router
+location / {
+  try_files $uri $uri/ /index.html;
+}
+
+# Cache aset statis 1 tahun
+location ~* \\.(?:css|js|woff2?|ttf|otf|eot|ico|svg|png|jpg|jpeg|gif|webp|avif)$ {
+  expires 1y;
+  add_header Cache-Control "public, immutable";
+  access_log off;
+}`}
+            />
+            <p className="text-xs text-muted-foreground">
+              Simpan, lalu jalankan <code className="rounded bg-muted px-1">nginx -t &amp;&amp; nginx -s reload</code>.
+            </p>
+          </Step>
+
+          <Step n={7} title="HTTPS (SSL)">
+            <p>aaPanel: <em>Website → SSL → Let's Encrypt → Apply</em>.</p>
+            <p>Atau manual via certbot:</p>
             <CodeBlock
               code={`sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d kejarprestasi.id -d www.kejarprestasi.id`}
             />
-            <p className="text-xs text-muted-foreground">Auto-renew aktif otomatis.</p>
           </Step>
 
-          <Step n={7} title="Verifikasi (yang BENAR)">
+          <Step n={8} title="Verifikasi">
             <CodeBlock
-              code={`# 1. Build artifact Node SSR ada?
-ls /var/www/kejarprestasi/dist/server/server.node.js
+              code={`# 1. Webroot terisi
+ls /www/wwwroot/kejarprestasi.id
+# → assets/  index.html  favicon.ico  ...
 
-# 2. PM2 jalan?
-pm2 status
+# 2. Nginx OK
+nginx -t
 
-# 3. Node respond di port 3000?
-curl -I http://127.0.0.1:3000
-
-# 4. Domain respond + HTML (bukan 403)?
-curl -I https://kejarprestasi.id
-
-# 5. Webroot normal hanya static fallback
-ls -lah /www/wwwroot/kejarprestasi.id`}
+# 3. Site respond 200 OK
+curl -I https://kejarprestasi.id`}
             />
             <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 text-xs text-foreground">
               <div className="flex gap-2">
@@ -156,30 +144,60 @@ ls -lah /www/wwwroot/kejarprestasi.id`}
                 <div>
                   <p className="font-medium">Hasil yang benar:</p>
                   <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted-foreground">
-                    <li><code>dist/server/server.node.js</code> ada</li>
-                    <li><code>pm2 status</code> → <code>kejarprestasi · online · cluster</code></li>
-                    <li><code>curl -I https://kejarprestasi.id</code> → <code>HTTP/2 200</code> +{" "}
-                      <code>content-type: text/html</code></li>
-                    <li><code>/www/wwwroot/kejarprestasi.id/</code> berisi <code>assets/</code>,{" "}
-                      <code>index.html</code>, <code>favicon.ico</code>. Tidak boleh ada{" "}
-                      <code>client/</code> atau <code>server/</code>.</li>
+                    <li><code>curl -I https://kejarprestasi.id</code> → <code>HTTP/2 200</code></li>
+                    <li>Webroot berisi <code>assets/</code>, <code>index.html</code>, <code>favicon.ico</code></li>
                   </ul>
                 </div>
               </div>
             </div>
           </Step>
+        </div>
+      </Card>
 
-          <Step n={8} title="Update / Deploy Ulang">
-            <CodeBlock
-              code={`cd /var/www/kejarprestasi
-sudo bash deploy/update.sh`}
-            />
+      {/* Update / Deploy ulang */}
+      <Card className="rounded-2xl p-6">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600">
+            <RefreshCcw className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Update / Deploy Ulang</h2>
             <p className="text-xs text-muted-foreground">
-              Script: <code>git pull</code> → <code>npm ci</code> → <code>npm run build:node</code> →
-              validasi → <code>pm2 reload</code> (zero-downtime). Auto-rollback jika build gagal.
-              Webroot di-stage ulang otomatis agar berisi <code>assets/</code>, <code>index.html</code>, dan <code>favicon.ico</code>.
+              Jalankan perintah ini setiap kali ada perubahan kode dari GitHub.
             </p>
-          </Step>
+          </div>
+        </div>
+
+        <CodeBlock
+          code={`cd /var/www/kejarprestasi
+
+git pull origin main
+
+npm install --legacy-peer-deps
+
+npm run build
+
+rm -rf /www/wwwroot/kejarprestasi.id/*
+
+cp -r dist/* /www/wwwroot/kejarprestasi.id/
+
+chown -R www:www /www/wwwroot/kejarprestasi.id
+
+nginx -s reload`}
+        />
+
+        <div className="mt-4 rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs text-foreground">
+          <div className="flex gap-2">
+            <Rocket className="h-4 w-4 shrink-0 text-primary" />
+            <div>
+              <p className="font-medium">Opsional — simpan jadi script <code>deploy.sh</code>:</p>
+              <p className="mt-1 text-muted-foreground">
+                Buat file <code className="rounded bg-muted px-1">/var/www/kejarprestasi/deploy.sh</code>{" "}
+                dengan isi perintah di atas, lalu chmod +x. Cukup jalankan{" "}
+                <code className="rounded bg-muted px-1">bash deploy.sh</code> setiap update.
+              </p>
+            </div>
+          </div>
         </div>
       </Card>
 
@@ -192,48 +210,39 @@ sudo bash deploy/update.sh`}
               <tr className="border-b text-left text-xs uppercase text-muted-foreground">
                 <th className="py-2 pr-4">Gejala</th>
                 <th className="py-2 pr-4">Penyebab</th>
-                <th className="py-2">Fix</th>
+                <th className="py-2">Solusi</th>
               </tr>
             </thead>
             <tbody className="text-muted-foreground">
               <tr className="border-b">
-                <td className="py-2 pr-4">403 di domain; webroot berisi <code>assets/</code> + <code>update.sh</code></td>
-                <td className="py-2 pr-4">Sisa deploy static lama</td>
-                <td className="py-2"><code>bash deploy/migrate-from-static.sh</code></td>
+                <td className="py-2 pr-4">404 saat refresh di halaman dalam</td>
+                <td className="py-2 pr-4">SPA fallback belum dipasang</td>
+                <td className="py-2">Tambahkan <code>try_files $uri /index.html</code> di Nginx</td>
               </tr>
               <tr className="border-b">
-                <td className="py-2 pr-4">Webroot berisi <code>client/</code> + <code>server/</code></td>
-                <td className="py-2 pr-4"><code>dist/</code> tersalin mentah ke webroot</td>
-                <td className="py-2"><code>bash deploy/migrate-from-static.sh</code></td>
+                <td className="py-2 pr-4">403 Forbidden</td>
+                <td className="py-2 pr-4">Permission webroot salah</td>
+                <td className="py-2"><code>chown -R www:www /www/wwwroot/kejarprestasi.id</code></td>
               </tr>
               <tr className="border-b">
-                <td className="py-2 pr-4"><code>dist/server/server.node.js</code> tidak ada setelah build</td>
-                <td className="py-2 pr-4">Dijalankan <code>npm run build</code> (target Cloudflare Worker)</td>
-                <td className="py-2">Wajib <code>npm run build:node</code></td>
+                <td className="py-2 pr-4"><code>npm run build</code> gagal / OOM</td>
+                <td className="py-2 pr-4">RAM VPS terbatas</td>
+                <td className="py-2"><code>NODE_OPTIONS=--max-old-space-size=2048 npm run build</code></td>
               </tr>
               <tr className="border-b">
-                <td className="py-2 pr-4">PM2 restart loop</td>
-                <td className="py-2 pr-4"><code>.env</code> kurang / port 3000 sudah dipakai</td>
-                <td className="py-2"><code>pm2 logs kejarprestasi</code></td>
+                <td className="py-2 pr-4">Halaman blank / asset 404</td>
+                <td className="py-2 pr-4">Cache lama / file <code>dist</code> belum tersalin</td>
+                <td className="py-2">Ulangi langkah 5, lalu hard refresh (Ctrl+Shift+R)</td>
               </tr>
               <tr>
-                <td className="py-2 pr-4">502 Bad Gateway</td>
-                <td className="py-2 pr-4">Node mati</td>
-                <td className="py-2"><code>pm2 restart kejarprestasi</code></td>
+                <td className="py-2 pr-4">Perubahan tidak muncul</td>
+                <td className="py-2 pr-4">Nginx cache / browser cache</td>
+                <td className="py-2"><code>nginx -s reload</code> &amp; clear cache aaPanel</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Shared hosting cPanel tidak didukung → lihat{" "}
-          <Link to="/admin/instalasi/hosting" className="text-primary underline">
-            tab Hosting
-          </Link>
-          .
-        </p>
       </Card>
-
-      <UpdateSection />
     </div>
   );
 }
