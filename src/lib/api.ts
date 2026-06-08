@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 type InvokeResult<T> = { data: T };
 
 async function invoke<T>(fn: string, body: unknown): Promise<T> {
-  const { data, error } = await supabase.functions.invoke(fn, { body });
+  const { data, error } = await supabase.functions.invoke(fn, { body: body as Record<string, unknown> });
   if (error) {
     // Coba ambil pesan dari response body kalau ada
     const ctx = (error as { context?: Response }).context;

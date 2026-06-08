@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Save, RotateCcw, Send, Eye } from "lucide-react";
 import { toast } from "sonner";
-import { sendTestEmail } from "@/lib/email.functions";
+import { sendTestEmail } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/email-template")({
   component: AdminEmailTemplate,
