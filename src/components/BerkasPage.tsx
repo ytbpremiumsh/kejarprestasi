@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowRight,
   CheckCircle2,
@@ -13,8 +12,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { BerkasSchema, DocSlot } from "@/lib/form-schema";
-import { submitBerkasDocuments } from "@/lib/berkas.functions";
-import { sendAppEmail } from "@/lib/email.functions";
+import { submitBerkasDocuments, sendAppEmail } from "@/lib/api";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { KetentuanBerkasCard } from "@/components/KetentuanBerkasCard";
 
@@ -79,8 +77,8 @@ const tokenPrefix = (k: "prestasi" | "ekonomi") => (k === "prestasi" ? "KP-PRE-"
 
 export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
-  const submitBerkas = useServerFn(submitBerkasDocuments);
-  const sendEmail = useServerFn(sendAppEmail);
+  const submitBerkas = submitBerkasDocuments;
+  const sendEmail = sendAppEmail;
   const search = useSearch({ strict: false }) as { token?: string };
   const [token, setToken] = useState((search.token ?? "").toUpperCase());
   const [docs, setDocs] = useState<DocSlot[]>(defaultDocs[kind]);
@@ -209,11 +207,9 @@ export function BerkasPage({ kind }: { kind: "prestasi" | "ekonomi" }) {
         }));
 
       const result = await submitBerkas({
-        data: {
-          token: token.trim().toUpperCase(),
-          kind,
-          documents: submittedDocs,
-        },
+        token: token.trim().toUpperCase(),
+        kind,
+        documents: submittedDocs,
       });
 
       supabase.functions
