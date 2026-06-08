@@ -123,7 +123,7 @@ function AdminEmailTemplate() {
   const [sendingTest, setSendingTest] = useState(false);
   const htmlRef = useRef<HTMLTextAreaElement>(null);
   const subjectRef = useRef<HTMLInputElement>(null);
-  const sendTest = useServerFn(sendTestEmail);
+  const sendTest = sendTestEmail;
 
   useEffect(() => {
     setLoading(true);
