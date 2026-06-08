@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { FormField, FormSchema } from "@/lib/form-schema";
 import { STANDARD_REG_COLUMNS } from "@/lib/form-schema";
 import { AdSlot } from "@/components/ads/AdSlot";
-import { sendAppEmail } from "@/lib/email.functions";
-import { submitRegistration } from "@/lib/registration.functions";
+import { sendAppEmail, submitRegistrationFn } from "@/lib/api";
 
 const FALLBACK: Record<"prestasi" | "ekonomi", FormSchema> = {
   prestasi: { fields: [] },
@@ -89,8 +87,7 @@ function defaultPlaceholder(field: FormField): string {
 
 export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
   const navigate = useNavigate();
-  const sendEmail = useServerFn(sendAppEmail);
-  const submitRegistrationFn = useServerFn(submitRegistration);
+  const sendEmail = sendAppEmail;
   const [schema, setSchema] = useState<FormSchema>(FALLBACK[kind]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -205,7 +202,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }
       payload.extra = extra;
 
-      const { token } = await submitRegistrationFn({ data: payload });
+      const { token } = await submitRegistrationFn({ data: payload as never });
 
       // Fire-and-forget WA notification (include token)
       try {

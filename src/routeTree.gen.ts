@@ -15,7 +15,6 @@ import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as CekStatusRouteImport } from './routes/cek-status'
 import { Route as BeasiswaPrestasiRouteImport } from './routes/beasiswa-prestasi'
 import { Route as BeasiswaEkonomiRouteImport } from './routes/beasiswa-ekonomi'
-import { Route as AdsDottxtRouteImport } from './routes/ads[.]txt'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BerkasIndexRouteImport } from './routes/berkas.index'
@@ -25,7 +24,6 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran.sukses'
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
 import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
-import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as DonasiTerimaKasihRouteImport } from './routes/donasi.terima-kasih'
 import { Route as BerkasTerkirimRouteImport } from './routes/berkas.terkirim'
 import { Route as BerkasPrestasiRouteImport } from './routes/berkas.prestasi'
@@ -55,19 +53,10 @@ import { Route as AdminAiBalasanRouteImport } from './routes/admin.ai-balasan'
 import { Route as AdminAdsenseRouteImport } from './routes/admin.adsense'
 import { Route as BerkasPrestasiIndexRouteImport } from './routes/berkas.prestasi.index'
 import { Route as BerkasEkonomiIndexRouteImport } from './routes/berkas.ekonomi.index'
-import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as BerkasPrestasiUploadRouteImport } from './routes/berkas.prestasi.upload'
 import { Route as BerkasEkonomiUploadRouteImport } from './routes/berkas.ekonomi.upload'
-import { Route as ApiPublicWaWebhookRouteImport } from './routes/api/public/wa-webhook'
-import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
-import { Route as ApiPublicGithubWebhookRouteImport } from './routes/api/public/github-webhook'
 import { Route as AdminInstalasiVpsRouteImport } from './routes/admin.instalasi.vps'
 import { Route as AdminInstalasiHostingRouteImport } from './routes/admin.instalasi.hosting'
-import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
-import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
-import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
-import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
-import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
@@ -97,11 +86,6 @@ const BeasiswaPrestasiRoute = BeasiswaPrestasiRouteImport.update({
 const BeasiswaEkonomiRoute = BeasiswaEkonomiRouteImport.update({
   id: '/beasiswa-ekonomi',
   path: '/beasiswa-ekonomi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdsDottxtRoute = AdsDottxtRouteImport.update({
-  id: '/ads.txt',
-  path: '/ads.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -147,11 +131,6 @@ const PendaftaranPrestasiRoute = PendaftaranPrestasiRouteImport.update({
 const PendaftaranEkonomiRoute = PendaftaranEkonomiRouteImport.update({
   id: '/pendaftaran/ekonomi',
   path: '/pendaftaran/ekonomi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
-  id: '/email/unsubscribe',
-  path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DonasiTerimaKasihRoute = DonasiTerimaKasihRouteImport.update({
@@ -299,11 +278,6 @@ const BerkasEkonomiIndexRoute = BerkasEkonomiIndexRouteImport.update({
   path: '/',
   getParentRoute: () => BerkasEkonomiRoute,
 } as any)
-const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
-  id: '/lovable/email/suppression',
-  path: '/lovable/email/suppression',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BerkasPrestasiUploadRoute = BerkasPrestasiUploadRouteImport.update({
   id: '/upload',
   path: '/upload',
@@ -313,21 +287,6 @@ const BerkasEkonomiUploadRoute = BerkasEkonomiUploadRouteImport.update({
   id: '/upload',
   path: '/upload',
   getParentRoute: () => BerkasEkonomiRoute,
-} as any)
-const ApiPublicWaWebhookRoute = ApiPublicWaWebhookRouteImport.update({
-  id: '/api/public/wa-webhook',
-  path: '/api/public/wa-webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
-  id: '/api/public/health',
-  path: '/api/public/health',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicGithubWebhookRoute = ApiPublicGithubWebhookRouteImport.update({
-  id: '/api/public/github-webhook',
-  path: '/api/public/github-webhook',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminInstalasiVpsRoute = AdminInstalasiVpsRouteImport.update({
   id: '/instalasi/vps',
@@ -339,39 +298,10 @@ const AdminInstalasiHostingRoute = AdminInstalasiHostingRouteImport.update({
   path: '/instalasi/hosting',
   getParentRoute: () => AdminRoute,
 } as any)
-const LovableEmailTransactionalSendRoute =
-  LovableEmailTransactionalSendRouteImport.update({
-    id: '/lovable/email/transactional/send',
-    path: '/lovable/email/transactional/send',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LovableEmailTransactionalPreviewRoute =
-  LovableEmailTransactionalPreviewRouteImport.update({
-    id: '/lovable/email/transactional/preview',
-    path: '/lovable/email/transactional/preview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LovableEmailQueueProcessRoute =
-  LovableEmailQueueProcessRouteImport.update({
-    id: '/lovable/email/queue/process',
-    path: '/lovable/email/queue/process',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
-  id: '/lovable/email/auth/webhook',
-  path: '/lovable/email/auth/webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
-  id: '/lovable/email/auth/preview',
-  path: '/lovable/email/auth/preview',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/ads.txt': typeof AdsDottxtRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/cek-status': typeof CekStatusRoute
@@ -405,7 +335,6 @@ export interface FileRoutesByFullPath {
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
@@ -415,23 +344,13 @@ export interface FileRoutesByFullPath {
   '/berkas/': typeof BerkasIndexRoute
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
-  '/api/public/github-webhook': typeof ApiPublicGithubWebhookRoute
-  '/api/public/health': typeof ApiPublicHealthRoute
-  '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi/': typeof BerkasPrestasiIndexRoute
-  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
-  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/ads.txt': typeof AdsDottxtRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/cek-status': typeof CekStatusRoute
@@ -463,7 +382,6 @@ export interface FileRoutesByTo {
   '/bagikan-poster/prestasi': typeof BagikanPosterPrestasiRoute
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
@@ -473,25 +391,15 @@ export interface FileRoutesByTo {
   '/berkas': typeof BerkasIndexRoute
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
-  '/api/public/github-webhook': typeof ApiPublicGithubWebhookRoute
-  '/api/public/health': typeof ApiPublicHealthRoute
-  '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/berkas/ekonomi': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi': typeof BerkasPrestasiIndexRoute
-  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
-  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/ads.txt': typeof AdsDottxtRoute
   '/beasiswa-ekonomi': typeof BeasiswaEkonomiRoute
   '/beasiswa-prestasi': typeof BeasiswaPrestasiRoute
   '/cek-status': typeof CekStatusRoute
@@ -525,7 +433,6 @@ export interface FileRoutesById {
   '/berkas/prestasi': typeof BerkasPrestasiRouteWithChildren
   '/berkas/terkirim': typeof BerkasTerkirimRoute
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
@@ -535,26 +442,16 @@ export interface FileRoutesById {
   '/berkas/': typeof BerkasIndexRoute
   '/admin/instalasi/hosting': typeof AdminInstalasiHostingRoute
   '/admin/instalasi/vps': typeof AdminInstalasiVpsRoute
-  '/api/public/github-webhook': typeof ApiPublicGithubWebhookRoute
-  '/api/public/health': typeof ApiPublicHealthRoute
-  '/api/public/wa-webhook': typeof ApiPublicWaWebhookRoute
   '/berkas/ekonomi/upload': typeof BerkasEkonomiUploadRoute
   '/berkas/prestasi/upload': typeof BerkasPrestasiUploadRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/berkas/ekonomi/': typeof BerkasEkonomiIndexRoute
   '/berkas/prestasi/': typeof BerkasPrestasiIndexRoute
-  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
-  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
-    | '/ads.txt'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/cek-status'
@@ -588,7 +485,6 @@ export interface FileRouteTypes {
     | '/berkas/prestasi'
     | '/berkas/terkirim'
     | '/donasi/terima-kasih'
-    | '/email/unsubscribe'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
@@ -598,23 +494,13 @@ export interface FileRouteTypes {
     | '/berkas/'
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
-    | '/api/public/github-webhook'
-    | '/api/public/health'
-    | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
-    | '/lovable/email/suppression'
     | '/berkas/ekonomi/'
     | '/berkas/prestasi/'
-    | '/lovable/email/auth/preview'
-    | '/lovable/email/auth/webhook'
-    | '/lovable/email/queue/process'
-    | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/ads.txt'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/cek-status'
@@ -646,7 +532,6 @@ export interface FileRouteTypes {
     | '/bagikan-poster/prestasi'
     | '/berkas/terkirim'
     | '/donasi/terima-kasih'
-    | '/email/unsubscribe'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
@@ -656,24 +541,14 @@ export interface FileRouteTypes {
     | '/berkas'
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
-    | '/api/public/github-webhook'
-    | '/api/public/health'
-    | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
-    | '/lovable/email/suppression'
     | '/berkas/ekonomi'
     | '/berkas/prestasi'
-    | '/lovable/email/auth/preview'
-    | '/lovable/email/auth/webhook'
-    | '/lovable/email/queue/process'
-    | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   id:
     | '__root__'
     | '/'
     | '/admin'
-    | '/ads.txt'
     | '/beasiswa-ekonomi'
     | '/beasiswa-prestasi'
     | '/cek-status'
@@ -707,7 +582,6 @@ export interface FileRouteTypes {
     | '/berkas/prestasi'
     | '/berkas/terkirim'
     | '/donasi/terima-kasih'
-    | '/email/unsubscribe'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
@@ -717,25 +591,15 @@ export interface FileRouteTypes {
     | '/berkas/'
     | '/admin/instalasi/hosting'
     | '/admin/instalasi/vps'
-    | '/api/public/github-webhook'
-    | '/api/public/health'
-    | '/api/public/wa-webhook'
     | '/berkas/ekonomi/upload'
     | '/berkas/prestasi/upload'
-    | '/lovable/email/suppression'
     | '/berkas/ekonomi/'
     | '/berkas/prestasi/'
-    | '/lovable/email/auth/preview'
-    | '/lovable/email/auth/webhook'
-    | '/lovable/email/queue/process'
-    | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
-  AdsDottxtRoute: typeof AdsDottxtRoute
   BeasiswaEkonomiRoute: typeof BeasiswaEkonomiRoute
   BeasiswaPrestasiRoute: typeof BeasiswaPrestasiRoute
   CekStatusRoute: typeof CekStatusRoute
@@ -749,22 +613,12 @@ export interface RootRouteChildren {
   BerkasPrestasiRoute: typeof BerkasPrestasiRouteWithChildren
   BerkasTerkirimRoute: typeof BerkasTerkirimRoute
   DonasiTerimaKasihRoute: typeof DonasiTerimaKasihRoute
-  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   PendaftaranEkonomiRoute: typeof PendaftaranEkonomiRoute
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
   PendaftaranSuksesRoute: typeof PendaftaranSuksesRoute
   ArtikelIndexRoute: typeof ArtikelIndexRoute
   BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
   BerkasIndexRoute: typeof BerkasIndexRoute
-  ApiPublicGithubWebhookRoute: typeof ApiPublicGithubWebhookRoute
-  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
-  ApiPublicWaWebhookRoute: typeof ApiPublicWaWebhookRoute
-  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
-  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
-  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
-  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
-  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
-  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -809,13 +663,6 @@ declare module '@tanstack/react-router' {
       path: '/beasiswa-ekonomi'
       fullPath: '/beasiswa-ekonomi'
       preLoaderRoute: typeof BeasiswaEkonomiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ads.txt': {
-      id: '/ads.txt'
-      path: '/ads.txt'
-      fullPath: '/ads.txt'
-      preLoaderRoute: typeof AdsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -879,13 +726,6 @@ declare module '@tanstack/react-router' {
       path: '/pendaftaran/ekonomi'
       fullPath: '/pendaftaran/ekonomi'
       preLoaderRoute: typeof PendaftaranEkonomiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/email/unsubscribe': {
-      id: '/email/unsubscribe'
-      path: '/email/unsubscribe'
-      fullPath: '/email/unsubscribe'
-      preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/donasi/terima-kasih': {
@@ -1091,13 +931,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BerkasEkonomiIndexRouteImport
       parentRoute: typeof BerkasEkonomiRoute
     }
-    '/lovable/email/suppression': {
-      id: '/lovable/email/suppression'
-      path: '/lovable/email/suppression'
-      fullPath: '/lovable/email/suppression'
-      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/berkas/prestasi/upload': {
       id: '/berkas/prestasi/upload'
       path: '/upload'
@@ -1112,27 +945,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BerkasEkonomiUploadRouteImport
       parentRoute: typeof BerkasEkonomiRoute
     }
-    '/api/public/wa-webhook': {
-      id: '/api/public/wa-webhook'
-      path: '/api/public/wa-webhook'
-      fullPath: '/api/public/wa-webhook'
-      preLoaderRoute: typeof ApiPublicWaWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/health': {
-      id: '/api/public/health'
-      path: '/api/public/health'
-      fullPath: '/api/public/health'
-      preLoaderRoute: typeof ApiPublicHealthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/github-webhook': {
-      id: '/api/public/github-webhook'
-      path: '/api/public/github-webhook'
-      fullPath: '/api/public/github-webhook'
-      preLoaderRoute: typeof ApiPublicGithubWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/instalasi/vps': {
       id: '/admin/instalasi/vps'
       path: '/instalasi/vps'
@@ -1146,41 +958,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/instalasi/hosting'
       preLoaderRoute: typeof AdminInstalasiHostingRouteImport
       parentRoute: typeof AdminRoute
-    }
-    '/lovable/email/transactional/send': {
-      id: '/lovable/email/transactional/send'
-      path: '/lovable/email/transactional/send'
-      fullPath: '/lovable/email/transactional/send'
-      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/transactional/preview': {
-      id: '/lovable/email/transactional/preview'
-      path: '/lovable/email/transactional/preview'
-      fullPath: '/lovable/email/transactional/preview'
-      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/queue/process': {
-      id: '/lovable/email/queue/process'
-      path: '/lovable/email/queue/process'
-      fullPath: '/lovable/email/queue/process'
-      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/auth/webhook': {
-      id: '/lovable/email/auth/webhook'
-      path: '/lovable/email/auth/webhook'
-      fullPath: '/lovable/email/auth/webhook'
-      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/auth/preview': {
-      id: '/lovable/email/auth/preview'
-      path: '/lovable/email/auth/preview'
-      fullPath: '/lovable/email/auth/preview'
-      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -1270,7 +1047,6 @@ const BerkasPrestasiRouteWithChildren = BerkasPrestasiRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
-  AdsDottxtRoute: AdsDottxtRoute,
   BeasiswaEkonomiRoute: BeasiswaEkonomiRoute,
   BeasiswaPrestasiRoute: BeasiswaPrestasiRoute,
   CekStatusRoute: CekStatusRoute,
@@ -1284,33 +1060,13 @@ const rootRouteChildren: RootRouteChildren = {
   BerkasPrestasiRoute: BerkasPrestasiRouteWithChildren,
   BerkasTerkirimRoute: BerkasTerkirimRoute,
   DonasiTerimaKasihRoute: DonasiTerimaKasihRoute,
-  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   PendaftaranEkonomiRoute: PendaftaranEkonomiRoute,
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
   PendaftaranSuksesRoute: PendaftaranSuksesRoute,
   ArtikelIndexRoute: ArtikelIndexRoute,
   BagikanPosterIndexRoute: BagikanPosterIndexRoute,
   BerkasIndexRoute: BerkasIndexRoute,
-  ApiPublicGithubWebhookRoute: ApiPublicGithubWebhookRoute,
-  ApiPublicHealthRoute: ApiPublicHealthRoute,
-  ApiPublicWaWebhookRoute: ApiPublicWaWebhookRoute,
-  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
-  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
-  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
-  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
-  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
-  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
