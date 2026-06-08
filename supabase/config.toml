@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.donation-status]
 verify_jwt = false
+
+[functions.ads-txt]
+verify_jwt = false
