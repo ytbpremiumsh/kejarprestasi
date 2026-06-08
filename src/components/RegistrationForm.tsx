@@ -202,7 +202,7 @@ export function RegistrationForm({ kind }: { kind: "prestasi" | "ekonomi" }) {
       }
       payload.extra = extra;
 
-      const { token } = await submitRegistrationFn({ data: payload });
+      const { token } = await submitRegistrationFn({ data: payload as never });
 
       // Fire-and-forget WA notification (include token)
       try {
