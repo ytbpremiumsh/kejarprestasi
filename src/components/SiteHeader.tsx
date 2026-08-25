@@ -1,13 +1,14 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useBranding } from "@/hooks/use-branding";
 
 const nav = [
   { to: "/", label: "Beranda" },
+  { to: "/beasiswa-prestasi", label: "Prestasi" },
+  { to: "/beasiswa-ekonomi", label: "Ekonomi" },
   { to: "/artikel", label: "Artikel" },
-  { to: "/tentang", label: "Tentang Kami" },
-  { to: "/cek-status", label: "Cek Status" },
+  { to: "/tentang", label: "Tentang" },
 ] as const;
 
 export function SiteHeader() {
@@ -15,70 +16,18 @@ export function SiteHeader() {
   const navigate = useNavigate();
   const { headerLogo } = useBranding();
 
-  const goToTimeline = async () => {
-    setOpen(false);
-    if (window.location.pathname !== "/") await navigate({ to: "/" });
-    setTimeout(() => document.getElementById("timeline")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
-  };
-
-  return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/95 text-foreground shadow-[0_4px_20px_oklch(0.15_0.05_285/0.06)] backdrop-blur-xl">
-      <div className="container-page flex h-[72px] items-center justify-between gap-6">
-        <Link to="/" className="flex min-w-0 items-center" aria-label="Kejar Prestasi">
-          <img src={headerLogo} alt="Logo Kejar Prestasi" className="h-10 w-auto max-w-[190px] object-contain" />
-        </Link>
-
-        <nav className="hidden lg:flex items-center gap-1" aria-label="Navigasi utama">
-          {nav.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              className="group relative rounded-full px-4 py-2.5 text-sm font-medium text-foreground/65 transition hover:bg-secondary hover:text-primary"
-              activeProps={{ className: "group relative rounded-full px-4 py-2.5 text-sm font-semibold text-primary bg-primary-soft" }}
-              activeOptions={{ exact: n.to === "/" }}
-            >
-              {n.label}
-            </Link>
-          ))}
-          <button type="button" onClick={goToTimeline} className="group inline-flex items-center gap-1 rounded-full px-4 py-2.5 text-sm font-medium text-foreground/65 transition hover:bg-secondary hover:text-primary">
-            Timeline <ChevronDown size={14} className="rotate-[-90deg] opacity-50" />
-          </button>
-        </nav>
-
-        <div className="hidden lg:flex items-center gap-2.5">
-          <button type="button" onClick={() => navigate({ to: "/cek-status" })} className="rounded-full border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground transition hover:border-primary/30 hover:bg-secondary hover:text-primary">
-            Masuk
-          </button>
-          <button type="button" onClick={goToTimeline} className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-soft transition hover:-translate-y-0.5 hover:opacity-95">
-            Daftar Sekarang
-          </button>
-        </div>
-
-        <button aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open} className="lg:hidden rounded-xl border border-border bg-background p-2.5 text-foreground shadow-card" onClick={() => setOpen((v) => !v)}>
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+  return <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur-xl">
+    <div className="container-page flex h-[70px] items-center justify-between gap-5 md:h-[78px]">
+      <Link to="/" aria-label="Kejar Prestasi" className="flex shrink-0 items-center"><img src={headerLogo} alt="Kejar Prestasi" className="h-9 w-auto max-w-[170px] object-contain md:h-10 md:max-w-[190px]" /></Link>
+      <nav className="hidden items-center rounded-full border border-border/80 bg-secondary/45 p-1 lg:flex" aria-label="Navigasi utama">
+        {nav.map((item) => <Link key={item.to} to={item.to} activeOptions={{ exact: item.to === "/" }} className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-background hover:text-foreground" activeProps={{ className: "rounded-full bg-background px-4 py-2 text-sm font-bold text-primary shadow-sm" }}>{item.label}</Link>)}
+      </nav>
+      <div className="hidden items-center gap-2 lg:flex">
+        <Link to="/cek-status" className="px-4 py-2 text-sm font-semibold text-foreground/75 transition hover:text-primary">Cek Status</Link>
+        <button type="button" onClick={() => navigate({ to: "/daftar" })} className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-3 text-sm font-bold text-background transition hover:-translate-y-0.5">Pilih Beasiswa <ArrowUpRight size={16} /></button>
       </div>
-
-      {open && (
-        <div className="lg:hidden border-t border-border bg-background">
-          <div className="container-page py-4">
-            <nav className="flex flex-col gap-1" aria-label="Navigasi mobile">
-              {nav.map((n) => (
-                <Link key={n.to} to={n.to} onClick={() => setOpen(false)} className="rounded-xl px-4 py-3 text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-primary">
-                  {n.label}
-                </Link>
-              ))}
-              <button type="button" onClick={goToTimeline} className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-primary">
-                Timeline <ChevronDown size={16} className="rotate-[-90deg] opacity-50" />
-              </button>
-              <div className="mt-2 grid grid-cols-2 gap-2 border-t border-border pt-3">
-                <button type="button" onClick={() => { setOpen(false); navigate({ to: "/cek-status" }); }} className="rounded-full border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground">Masuk</button>
-                <button type="button" onClick={goToTimeline} className="rounded-full bg-primary px-4 py-3 text-sm font-bold text-primary-foreground">Daftar Sekarang</button>
-              </div>
-            </nav>
-          </div>
-        </div>
-      )}
-    </header>
-  );
+      <button type="button" aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open} onClick={() => setOpen(!open)} className="grid h-11 w-11 place-items-center rounded-full border border-border bg-background text-foreground lg:hidden">{open ? <X size={20} /> : <Menu size={20} />}</button>
+    </div>
+    {open && <div className="border-t border-border bg-background lg:hidden"><div className="container-page py-4"><nav className="grid gap-1">{nav.map((item) => <Link key={item.to} to={item.to} onClick={() => setOpen(false)} className="rounded-2xl px-4 py-3.5 text-sm font-semibold text-foreground/80 transition hover:bg-secondary hover:text-primary">{item.label}</Link>)}<div className="mt-3 grid grid-cols-2 gap-2 border-t border-border pt-4"><Link to="/cek-status" onClick={() => setOpen(false)} className="rounded-full border border-border px-4 py-3 text-center text-sm font-semibold">Cek Status</Link><Link to="/daftar" onClick={() => setOpen(false)} className="rounded-full bg-foreground px-4 py-3 text-center text-sm font-bold text-background">Pilih Beasiswa</Link></div></nav></div></div>}
+  </header>;
 }
