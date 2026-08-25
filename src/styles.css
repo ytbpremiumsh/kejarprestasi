@@ -11,7 +11,6 @@
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
-
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -35,11 +34,9 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
-
   --shadow-soft: 0 8px 30px -10px color-mix(in oklab, var(--primary) 18%, transparent);
   --shadow-card: 0 4px 20px -8px color-mix(in oklab, var(--primary) 12%, transparent);
   --shadow-gold: 0 8px 24px -8px color-mix(in oklab, var(--gold) 35%, transparent);
-
   --gradient-primary: linear-gradient(135deg, oklch(0.38 0.18 295) 0%, oklch(0.32 0.20 290) 100%);
   --gradient-hero: radial-gradient(ellipse at top right, color-mix(in oklab, var(--gold) 18%, transparent), transparent 60%), linear-gradient(160deg, color-mix(in oklab, var(--primary) 6%, white) 0%, white 60%);
   --gradient-gold: linear-gradient(135deg, oklch(0.82 0.16 85) 0%, oklch(0.75 0.18 75) 100%);
@@ -47,202 +44,103 @@
 
 :root {
   --radius: 0.875rem;
-
   --background: oklch(1 0 0);
   --foreground: oklch(0.20 0.04 290);
-
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.20 0.04 290);
-
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.20 0.04 290);
-
-  /* Ungu #4B2FA8 */
   --primary: oklch(0.38 0.18 295);
   --primary-foreground: oklch(0.99 0 0);
   --primary-soft: oklch(0.96 0.03 295);
-
   --secondary: oklch(0.97 0.01 290);
   --secondary-foreground: oklch(0.30 0.10 295);
-
   --muted: oklch(0.97 0.005 280);
   --muted-foreground: oklch(0.50 0.03 280);
-
   --accent: oklch(0.95 0.04 295);
   --accent-foreground: oklch(0.30 0.12 295);
-
-  /* Kuning emas #F5B400 */
   --gold: oklch(0.82 0.16 85);
   --gold-foreground: oklch(0.25 0.05 80);
-
   --destructive: oklch(0.58 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
-
   --border: oklch(0.93 0.01 285);
   --input: oklch(0.93 0.01 285);
   --ring: oklch(0.55 0.18 295);
 }
 
 @layer base {
-  * {
-    border-color: var(--color-border);
+  * { border-color: var(--color-border); }
+  html, body { max-width: 100%; overflow-x: hidden; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body { background-color: var(--color-background); color: var(--color-foreground); font-feature-settings: "ss01", "cv11"; }
+  h1, h2, h3, h4 { letter-spacing: -0.02em; overflow-wrap: anywhere; }
+  img, video, iframe { max-width: 100%; height: auto; }
+
+  /* Dimensional icon system — applies to Lucide icons site-wide. */
+  svg.lucide {
+    filter: drop-shadow(0 2px 1px rgba(255,255,255,.32)) drop-shadow(0 4px 5px rgba(38,25,85,.16));
+    transform: translateZ(0);
+    transition: transform .2s ease, filter .2s ease;
   }
-  html, body {
-    max-width: 100%;
-    overflow-x: hidden;
+  a:hover svg.lucide,
+  button:hover svg.lucide {
+    filter: drop-shadow(0 2px 1px rgba(255,255,255,.42)) drop-shadow(0 6px 8px rgba(38,25,85,.22));
   }
-  html {
-    scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+
+  /* Any icon-only holder automatically receives a soft 3D surface. */
+  :where(div,span)[class*="place-items-center"]:has(> svg.lucide:only-child),
+  :where(div,span)[class*="justify-center"][class*="items-center"]:has(> svg.lucide:only-child) {
+    position: relative;
+    isolation: isolate;
+    border-color: color-mix(in oklab, currentColor 13%, var(--border)) !important;
+    box-shadow:
+      0 9px 18px -10px color-mix(in oklab, currentColor 34%, transparent),
+      inset 0 1.5px 1px rgba(255,255,255,.74),
+      inset 0 -3px 5px rgba(35,22,78,.08);
+    transform: translateY(0) translateZ(0);
+    transition: transform .2s ease, box-shadow .2s ease;
   }
-  body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-feature-settings: "ss01", "cv11";
+  :where(a,button):hover :where(div,span)[class*="place-items-center"]:has(> svg.lucide:only-child),
+  :where(a,button):hover :where(div,span)[class*="justify-center"][class*="items-center"]:has(> svg.lucide:only-child) {
+    transform: translateY(-2px) translateZ(0);
+    box-shadow:
+      0 13px 23px -11px color-mix(in oklab, currentColor 42%, transparent),
+      inset 0 1.5px 1px rgba(255,255,255,.82),
+      inset 0 -3px 5px rgba(35,22,78,.1);
   }
-  h1, h2, h3, h4 {
-    letter-spacing: -0.02em;
-    overflow-wrap: anywhere;
+
+  /* Cards receive a subtle depth so the dimensional icons feel intentional. */
+  [data-slot="card"], .kp-dimensional-card {
+    box-shadow: 0 14px 32px -24px rgba(38,25,85,.34), 0 2px 8px -5px rgba(38,25,85,.16), inset 0 1px 0 rgba(255,255,255,.72);
   }
-  img, video, iframe {
-    max-width: 100%;
-    height: auto;
-  }
-  /* AdSense responsive guard — keep ads within viewport on mobile */
-  ins.adsbygoogle {
-    display: block !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-  }
-  [data-auto-ad-injected],
-  [data-custom-ad-injection] {
-    max-width: 100% !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-    /* Survive being placed inside a grid/flex parent so the ad keeps full width */
-    grid-column: 1 / -1 !important;
-    flex: 1 1 100% !important;
-    min-width: 0 !important;
-  }
-  /* Card responsif — pastikan tidak terpotong di mobile */
+
+  ins.adsbygoogle { display: block !important; max-width: 100% !important; width: 100% !important; overflow: hidden !important; box-sizing: border-box !important; }
+  [data-auto-ad-injected], [data-custom-ad-injection] { max-width: 100% !important; overflow: hidden !important; box-sizing: border-box !important; grid-column: 1 / -1 !important; flex: 1 1 100% !important; min-width: 0 !important; }
+
   @media (max-width: 640px) {
-    .rounded-3xl.bg-card,
-    .rounded-2xl.bg-card,
-    [class*="shadow-card"] {
-      min-width: 0;
-      max-width: 100%;
-    }
-    .rounded-3xl.bg-card.p-8,
-    .rounded-2xl.bg-card.p-8,
-    .rounded-3xl.bg-card.p-7,
-    .rounded-2xl.bg-card.p-7,
-    .rounded-3xl.bg-card.p-6,
-    .rounded-2xl.bg-card.p-6,
-    [class*="shadow-card"].p-8,
-    [class*="shadow-card"].p-7,
-    [class*="shadow-card"].p-6 {
-      padding: 1.1rem;
-    }
-    /* Form & berkas — cegah input/grid overflow di mobile */
-    form input,
-    form select,
-    form textarea,
-    form button {
-      max-width: 100%;
-      min-width: 0;
-    }
-    form .grid > * {
-      min-width: 0;
-    }
-    /* Paksa semua sm:grid-cols-2 jadi 1 kolom di mobile (default Tailwind sm = 640px) */
-    form .grid.sm\:grid-cols-2,
-    .grid.sm\:grid-cols-2 {
-      grid-template-columns: 1fr !important;
-    }
-    .grid.sm\:grid-cols-\[1fr_auto\] {
-      grid-template-columns: 1fr !important;
-    }
-    /* Token input mono tracking lebar — kecilkan di mobile agar tidak overflow */
-    input[type="text"].font-mono.tracking-wider {
-      letter-spacing: 0.05em;
-      font-size: 0.85rem;
-    }
-    /* Aside CTA & sticky tidak boleh sticky di mobile (sering memotong) */
-    aside.lg\:sticky {
-      position: static !important;
-    }
-    /* Pastikan container tidak melebihi viewport */
-    .container-page {
-      padding-inline: 1rem;
-    }
-    /* Iklan di dalam form/aside — paksa full-width & tidak meledak gap */
-    form [data-auto-ad-injected],
-    aside [data-auto-ad-injected],
-    form [data-custom-ad-injection],
-    aside [data-custom-ad-injection] {
-      width: 100% !important;
-      max-width: 100% !important;
-      margin-top: 0.75rem !important;
-      margin-bottom: 0.75rem !important;
-      overflow: hidden !important;
-    }
-    /* Card-card mini di dalam grid (KetentuanBerkasCard) — tidak ada gap aneh */
-    .rounded-3xl.bg-card .grid,
-    .rounded-2xl.bg-card .grid {
-      gap: 0.75rem;
-    }
+    .rounded-3xl.bg-card, .rounded-2xl.bg-card, [class*="shadow-card"] { min-width: 0; max-width: 100%; }
+    .rounded-3xl.bg-card.p-8, .rounded-2xl.bg-card.p-8, .rounded-3xl.bg-card.p-7, .rounded-2xl.bg-card.p-7, .rounded-3xl.bg-card.p-6, .rounded-2xl.bg-card.p-6, [class*="shadow-card"].p-8, [class*="shadow-card"].p-7, [class*="shadow-card"].p-6 { padding: 1.1rem; }
+    form input, form select, form textarea, form button { max-width: 100%; min-width: 0; }
+    form .grid > * { min-width: 0; }
+    form .grid.sm\:grid-cols-2, .grid.sm\:grid-cols-2 { grid-template-columns: 1fr !important; }
+    .grid.sm\:grid-cols-\[1fr_auto\] { grid-template-columns: 1fr !important; }
+    input[type="text"].font-mono.tracking-wider { letter-spacing: 0.05em; font-size: 0.85rem; }
+    aside.lg\:sticky { position: static !important; }
+    .container-page { padding-inline: 1rem; }
+    form [data-auto-ad-injected], aside [data-auto-ad-injected], form [data-custom-ad-injection], aside [data-custom-ad-injection] { width: 100% !important; max-width: 100% !important; margin-top: 0.75rem !important; margin-bottom: 0.75rem !important; overflow: hidden !important; }
+    .rounded-3xl.bg-card .grid, .rounded-2xl.bg-card .grid { gap: 0.75rem; }
   }
-  /* Timeline — iklan AdSense di mobile: full-width card & ad besar */
   @media (max-width: 640px) {
-    #timeline ol > li {
-      padding-left: 0 !important;
-    }
-    #timeline [data-auto-ad-injected],
-    #timeline [data-custom-ad-injection],
-    #timeline ins.adsbygoogle {
-      display: block !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      min-height: 250px;
-      margin-top: 0.75rem;
-      margin-bottom: 0.25rem;
-    }
+    #timeline ol > li { padding-left: 0 !important; }
+    #timeline [data-auto-ad-injected], #timeline [data-custom-ad-injection], #timeline ins.adsbygoogle { display: block !important; width: 100% !important; max-width: 100% !important; min-height: 250px; margin-top: 0.75rem; margin-bottom: 0.25rem; }
   }
 }
 
-@utility container-page {
-  width: 100%;
-  margin-inline: auto;
-  padding-inline: 1.25rem;
-  max-width: 1200px;
-}
+@utility container-page { width: 100%; margin-inline: auto; padding-inline: 1.25rem; max-width: 1200px; }
 
-/* Lite mode — diaktifkan dari Admin > Mode Performa */
-html.lite-mode *,
-html.lite-mode *::before,
-html.lite-mode *::after {
-  animation-duration: 0.001ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.001ms !important;
-  transition-delay: 0ms !important;
-  scroll-behavior: auto !important;
-}
-html.lite-mode img,
-html.lite-mode video {
-  content-visibility: auto;
-}
-html[data-disable-ads="1"] .adsbygoogle,
-html[data-disable-ads="1"] [data-ad-slot] {
-  display: none !important;
-}
+html.lite-mode *, html.lite-mode *::before, html.lite-mode *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; transition-delay: 0ms !important; scroll-behavior: auto !important; }
+html.lite-mode img, html.lite-mode video { content-visibility: auto; }
+html[data-disable-ads="1"] .adsbygoogle, html[data-disable-ads="1"] [data-ad-slot] { display: none !important; }
 
-@keyframes bounce-soft {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-.animate-bounce-soft {
-  animation: bounce-soft 1.6s ease-in-out infinite;
-}
+@keyframes bounce-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.animate-bounce-soft { animation: bounce-soft 1.6s ease-in-out infinite; }
