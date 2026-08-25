@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Award, HeartHandshake, Trophy, Users, Wallet, ArrowRight, CheckCircle2, Sparkles, FileText } from "lucide-react";
+import { ArrowRight, CheckCircle2, GraduationCap, HeartHandshake, ShieldCheck, Trophy, Users, Wallet } from "lucide-react";
 import heroImg from "@/assets/students-hero.png";
 import { Countdown } from "@/components/Countdown";
 import { AboutMockup } from "@/components/AboutMockup";
@@ -19,70 +19,59 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const jenjang = ["SD", "SMP", "SMA/SMK/MA", "Mahasiswa"];
-
 function Index() {
   return (
     <>
-      {/* HERO */}
-      <section className="relative overflow-hidden border-b border-border/60" style={{ background: "var(--gradient-hero)" }}>
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.28]" style={{ backgroundImage: "linear-gradient(to right, color-mix(in oklab, var(--primary) 10%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--primary) 10%, transparent) 1px, transparent 1px)", backgroundSize: "56px 56px", maskImage: "radial-gradient(ellipse at 30% 20%, black, transparent 70%)" }} />
-        <div aria-hidden="true" className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
-        <div aria-hidden="true" className="pointer-events-none absolute top-1/3 -right-20 h-80 w-80 rounded-full bg-gold/25 blur-3xl" />
+      <section className="relative overflow-hidden border-b border-border/60 bg-[radial-gradient(circle_at_78%_36%,oklch(0.92_0.12_285/.8),transparent_34%),radial-gradient(circle_at_12%_10%,oklch(0.94_0.1_300/.7),transparent_28%),linear-gradient(180deg,oklch(0.985_0.01_285),white)]">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.22]" style={{ backgroundImage: "linear-gradient(to right, color-mix(in oklab, var(--primary) 9%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--primary) 9%, transparent) 1px, transparent 1px)", backgroundSize: "52px 52px", maskImage: "radial-gradient(ellipse at 45% 20%, black, transparent 74%)" }} />
+        <div aria-hidden="true" className="pointer-events-none absolute -right-40 top-24 h-[32rem] w-[32rem] rounded-full bg-primary/10 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -left-32 bottom-0 h-72 w-72 rounded-full bg-gold/10 blur-3xl" />
 
-        <div className="container-page relative py-12 md:py-24 grid lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-14 items-center">
-          <div className="order-1 lg:order-1 lg:hidden space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <HeroTitle />
+        <div className="container-page relative grid items-center gap-8 py-10 sm:py-14 lg:min-h-[620px] lg:grid-cols-[0.92fr_1.08fr] lg:gap-4 lg:py-16">
+          <div className="relative z-10 order-1 max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/75 px-4 py-2 text-xs font-bold text-primary shadow-card backdrop-blur"><GraduationCap size={15} /> Program Beasiswa Pendidikan Nasional</div>
+            <h1 className="mt-5 text-[2.55rem] font-black leading-[0.98] tracking-[-0.04em] text-foreground sm:text-5xl md:text-6xl lg:text-[4.35rem]">Raih Pendidikan,<span className="block bg-gradient-to-r from-primary via-[oklch(0.58_0.23_290)] to-[oklch(0.48_0.2_285)] bg-clip-text text-transparent">Wujudkan Prestasi</span></h1>
+            <p className="mt-5 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base md:text-lg">Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia. Tanpa minimal nilai, tanpa biaya pendaftaran.</p>
+
+            <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:max-w-2xl">
+              <HeroFeature icon={<ShieldCheck size={18} />} title="Gratis 100%" text="Tidak dipungut biaya" />
+              <HeroFeature icon={<GraduationCap size={18} />} title="Tanpa Minimal Nilai" text="Kesempatan untuk semua" />
+              <HeroFeature icon={<CheckCircle2 size={18} />} title="Proses Transparan" text="Seleksi adil & terpercaya" />
+              <HeroFeature icon={<Users size={18} />} title="Untuk Semua" text="SD hingga Mahasiswa" />
+            </div>
+
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <button type="button" onClick={() => document.getElementById("timeline")?.scrollIntoView({ behavior: "smooth" })} className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-[oklch(0.78_0.17_82)] px-7 py-3.5 text-sm font-bold text-[oklch(0.18_0.12_285)] shadow-[0_12px_30px_oklch(0.78_0.17_82/0.2)] transition hover:-translate-y-0.5 hover:brightness-105 sm:w-auto">Daftar Beasiswa Sekarang <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" /></button>
+              <button type="button" onClick={() => document.getElementById("timeline")?.scrollIntoView({ behavior: "smooth" })} className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-primary/25 bg-white/70 px-7 py-3.5 text-sm font-bold text-primary backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/50 hover:bg-white sm:w-auto">Lihat Timeline <ArrowRight size={16} /></button>
+            </div>
           </div>
 
-          <div className="order-2 lg:order-2 relative">
-            <div aria-hidden="true" className="absolute inset-x-6 bottom-6 top-10 rounded-[2.5rem] bg-gradient-to-br from-primary/10 via-transparent to-gold/20 blur-2xl" />
-            <img src={heroImg} alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi" width={1024} height={1024} className="relative w-full h-auto max-w-md mx-auto lg:max-w-none drop-shadow-[0_24px_40px_oklch(0.38_0.18_295/0.18)]" fetchPriority="high" />
-          </div>
-
-          <div className="order-3 lg:order-1 space-y-6 md:space-y-7 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="hidden lg:block"><HeroTitle /></div>
-            <p className="text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed">Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia. Tanpa minimal nilai, tanpa biaya pendaftaran.</p>
-
-            <div className="flex flex-wrap gap-2">
-              {jenjang.map((j) => <span key={j} className="rounded-full border border-border bg-card/70 px-3 py-1.5 text-xs font-medium text-foreground/80 backdrop-blur">{j}</span>)}
-            </div>
-
-            <div className="grid sm:grid-cols-3 gap-3 pt-2">
-              <HighlightCard icon={<Wallet size={20} />} label="Total Beasiswa" value="Rp17.000.000" sub="per semester" highlight />
-              <HighlightCard icon={<Trophy size={20} />} label="Beasiswa" value="Prestasi" sub="Akademik & non-akademik" />
-              <HighlightCard icon={<HeartHandshake size={20} />} label="Beasiswa" value="Ekonomi" sub="Dukungan finansial" />
-            </div>
-
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
-              <a href="#timeline" className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground shadow-soft hover:opacity-95 hover:-translate-y-0.5 transition sm:w-auto sm:min-w-[260px]">Daftar Sekarang <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" /></a>
-              <p className="text-xs text-muted-foreground sm:max-w-[180px]">Gratis 100% — tidak dipungut biaya apa pun.</p>
-            </div>
+          <div className="relative order-2 min-h-[330px] sm:min-h-[430px] lg:min-h-[560px]">
+            <div aria-hidden="true" className="absolute inset-x-2 bottom-3 top-8 rounded-[3rem] bg-primary/10 blur-3xl" />
+            <div aria-hidden="true" className="absolute right-[19%] top-[8%] h-28 w-28 rounded-full bg-gold/20 blur-2xl" />
+            <img src={heroImg} alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi" width={1024} height={1024} className="relative mx-auto h-full max-h-[570px] w-full object-contain object-center drop-shadow-[0_28px_42px_oklch(0.35_0.18_290/0.2)]" fetchPriority="high" />
           </div>
         </div>
 
-        <div className="container-page relative pb-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden rounded-3xl border border-border bg-border shadow-card">
-            {[
-              { k: "Rp17 Jt", v: "Total beasiswa / semester" },
-              { k: "4 Jenjang", v: "SD sampai Mahasiswa" },
-              { k: "2 Kategori", v: "Prestasi & Ekonomi" },
-              { k: "Rp0", v: "Biaya pendaftaran" },
-            ].map((s) => <div key={s.k} className="bg-card px-5 py-6 text-center"><div className="text-xl md:text-2xl font-extrabold text-primary">{s.k}</div><div className="mt-1 text-xs text-muted-foreground">{s.v}</div></div>)}
+        <div className="container-page relative pb-8 sm:pb-12">
+          <div className="overflow-hidden rounded-[1.7rem] bg-gradient-to-r from-[oklch(0.31_0.2_285)] via-primary to-[oklch(0.38_0.2_285)] p-1 shadow-[0_20px_50px_oklch(0.35_0.18_285/0.18)]">
+            <div className="grid overflow-hidden rounded-[1.45rem] bg-[oklch(0.32_0.2_285)] sm:grid-cols-3">
+              <StatCard icon={<Wallet size={22} />} label="Total Beasiswa" value="Rp17.000.000" sub="per semester" />
+              <StatCard icon={<Trophy size={22} />} label="Beasiswa Prestasi" value="Akademik & Non-Akademik" sub="Untuk pelajar berprestasi" />
+              <StatCard icon={<HeartHandshake size={22} />} label="Beasiswa Ekonomi" value="Dukungan Finansial" sub="Bagi yang membutuhkan" />
+            </div>
           </div>
         </div>
       </section>
 
       <AdSlot placement="after_hero" />
+      <section className="container-page pt-12 pb-4 sm:pt-16"><Countdown /></section>
 
-      <section className="container-page pt-16 pb-4"><Countdown /></section>
-
-      {/* KATEGORI */}
-      <section className="container-page py-16">
+      <section className="container-page py-14 sm:py-16">
         <SectionHeader eyebrow="Kategori Beasiswa" title="Pilih Jalur Beasiswamu" desc="Dua kategori, satu tujuan: membuka akses pendidikan untuk seluruh anak Indonesia." />
-        <div className="mt-12 grid md:grid-cols-2 gap-6">
-          <CategoryCard tag="Beasiswa Prestasi" icon={<Trophy size={28} strokeWidth={1.8} />} title="Untuk yang berprestasi, akademik & non-akademik" desc="Program beasiswa bagi pelajar dan mahasiswa yang memiliki prestasi akademik maupun non akademik." to="/beasiswa-prestasi" />
-          <CategoryCard tag="Beasiswa Ekonomi" icon={<HeartHandshake size={28} strokeWidth={1.8} />} title="Untuk yang membutuhkan dukungan finansial" desc="Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial untuk pendidikan." to="/beasiswa-ekonomi" variant="gold" />
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
+          <CategoryCard tag="Beasiswa Prestasi" icon={<Trophy size={28} />} title="Untuk yang berprestasi, akademik & non-akademik" desc="Program beasiswa bagi pelajar dan mahasiswa yang memiliki prestasi akademik maupun non-akademik." to="/beasiswa-prestasi" />
+          <CategoryCard tag="Beasiswa Ekonomi" icon={<HeartHandshake size={28} />} title="Untuk yang membutuhkan dukungan finansial" desc="Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial untuk pendidikan." to="/beasiswa-ekonomi" variant="gold" />
         </div>
       </section>
 
@@ -99,56 +88,19 @@ function Index() {
   );
 }
 
-function HeroTitle() {
-  return (
-    <>
-      <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-card/80 px-4 py-1.5 text-xs font-semibold text-primary shadow-card backdrop-blur"><Sparkles size={14} /> Meraih Pendidikan, Mewujudkan Prestasi</span>
-      <h1 className="relative mt-5 text-[2rem] sm:text-4xl lg:text-[4rem] font-extrabold leading-[1.02] tracking-tight text-foreground">
-        <span className="block">Beasiswa</span>
-        <span className="relative inline-block bg-gradient-to-br from-primary via-[oklch(0.55_0.22_290)] to-[oklch(0.45_0.22_280)] bg-clip-text text-transparent drop-shadow-[0_4px_24px_oklch(0.55_0.22_290/0.3)]">Kejar Prestasi</span>{" "}
-        <span className="inline-block">Section</span>{" "}
-        <span className="relative inline-block bg-gradient-to-br from-[oklch(0.75_0.18_80)] to-[oklch(0.55_0.16_60)] bg-clip-text text-transparent">#3</span>
-      </h1>
-    </>
-  );
+function HeroFeature({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
+  return <div className="group rounded-2xl border border-border/70 bg-white/75 p-3 shadow-card backdrop-blur transition hover:-translate-y-1 hover:shadow-soft"><div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-soft text-primary transition group-hover:scale-105">{icon}</div><div className="mt-2 text-[11px] font-bold leading-tight text-foreground sm:text-xs">{title}</div><div className="mt-1 text-[10px] leading-4 text-muted-foreground">{text}</div></div>;
 }
 
-function HighlightCard({ icon, label, value, sub, highlight }: { icon: React.ReactNode; label: string; value: string; sub: string; highlight?: boolean }) {
-  return (
-    <div className={`group relative overflow-hidden rounded-2xl border p-4.5 transition-all duration-300 hover:-translate-y-1 hover:shadow-soft ${highlight ? "border-transparent text-primary-foreground shadow-soft" : "border-border/80 bg-card/80 text-foreground shadow-card backdrop-blur"}`} style={highlight ? { background: "var(--gradient-primary)" } : undefined}>
-      <span aria-hidden="true" className={`absolute -right-8 -top-8 h-24 w-24 rounded-full blur-2xl transition-opacity group-hover:opacity-100 ${highlight ? "bg-gold/30" : "bg-primary/10"}`} />
-      <div className={`relative flex h-10 w-10 items-center justify-center rounded-xl ${highlight ? "bg-primary-foreground/15 text-primary-foreground" : "bg-primary-soft text-primary"}`}>{icon}</div>
-      <div className={`relative mt-3 text-[11px] font-semibold uppercase tracking-wider ${highlight ? "text-primary-foreground/75" : "text-muted-foreground"}`}>{label}</div>
-      <div className="relative mt-1 text-lg font-extrabold">{value}</div>
-      <div className={`relative text-xs ${highlight ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{sub}</div>
-    </div>
-  );
+function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub: string }) {
+  return <div className="flex items-center gap-4 border-white/10 p-5 text-white sm:border-r sm:p-6 last:border-r-0"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-[oklch(0.82_0.16_82)] ring-1 ring-white/10">{icon}</div><div className="min-w-0"><div className="text-[10px] font-semibold uppercase tracking-wider text-white/65">{label}</div><div className="mt-1 truncate text-base font-extrabold sm:text-lg">{value}</div><div className="mt-0.5 text-xs text-white/60">{sub}</div></div></div>;
 }
 
 function SectionHeader({ eyebrow, title, desc }: { eyebrow: string; title: string; desc: string }) {
-  return <div className="text-center max-w-2xl mx-auto"><span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">{eyebrow}</span><h2 className="mt-4 text-3xl md:text-[2.6rem] font-extrabold leading-[1.1] text-foreground">{title}</h2><span aria-hidden="true" className="mt-4 mx-auto block h-1 w-16 rounded-full bg-gradient-to-r from-primary to-gold" /><p className="mt-4 text-muted-foreground">{desc}</p></div>;
+  return <div className="mx-auto max-w-2xl text-center"><span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary-soft px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary">{eyebrow}</span><h2 className="mt-4 text-3xl font-extrabold leading-[1.1] text-foreground sm:text-[2.6rem]">{title}</h2><span aria-hidden="true" className="mx-auto mt-4 block h-1 w-16 rounded-full bg-gradient-to-r from-primary to-gold" /><p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base">{desc}</p></div>;
 }
 
 function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; icon: React.ReactNode; title: string; desc: string; to: "/beasiswa-prestasi" | "/beasiswa-ekonomi"; variant?: "gold" }) {
   const isGold = variant === "gold";
-  return (
-    <Link to={to} className="group relative block overflow-hidden rounded-[2rem] border border-border/80 bg-card p-7 md:p-8 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-soft">
-      <span aria-hidden="true" className={`absolute inset-x-0 top-0 h-1 ${isGold ? "bg-gradient-to-r from-gold to-[oklch(0.75_0.18_60)]" : "bg-gradient-to-r from-primary to-[oklch(0.55_0.22_290)]"}`} />
-      <div aria-hidden="true" className={`absolute -right-16 -top-16 h-52 w-52 rounded-full blur-3xl opacity-40 transition-all duration-500 group-hover:scale-125 group-hover:opacity-70 ${isGold ? "bg-[oklch(0.88_0.16_85)]/60" : "bg-primary/30"}`} />
-      <div className="relative flex items-start justify-between gap-5">
-        <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border shadow-card transition-transform duration-300 group-hover:scale-105 group-hover:rotate-1 ${isGold ? "border-gold/20 bg-[oklch(0.92_0.14_85)] text-gold-foreground" : "border-primary/15 bg-primary-soft text-primary"}`}>{icon}</div>
-        <span className="rounded-full border border-border bg-background/70 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Pelajari</span>
-      </div>
-      <span className={`relative mt-6 inline-block text-xs font-bold uppercase tracking-wider ${isGold ? "text-[oklch(0.55_0.16_75)]" : "text-primary"}`}>{tag}</span>
-      <h3 className="mt-2 text-xl md:text-2xl font-bold leading-snug text-foreground">{title}</h3>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{desc}</p>
-      <ul className="relative mt-5 space-y-2 text-sm text-foreground/80">
-        {["Terbuka untuk SD, SMP, SMA/SMK/MA, & Mahasiswa", "Tanpa minimal nilai rapor / IPK", "Tidak dipungut biaya"].map((x) => <li key={x} className="flex items-start gap-2"><CheckCircle2 size={16} className={`mt-0.5 shrink-0 ${isGold ? "text-[oklch(0.65_0.16_75)]" : "text-primary"}`} />{x}</li>)}
-      </ul>
-      <div className="relative mt-7 inline-flex items-center gap-2 text-sm font-bold text-primary">Lihat Detail <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></div>
-    </Link>
-  );
+  return <Link to={to} className="group relative block overflow-hidden rounded-[2rem] border border-border/80 bg-card p-6 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-soft sm:p-8"><span aria-hidden="true" className={`absolute inset-x-0 top-0 h-1 ${isGold ? "bg-gradient-to-r from-gold to-[oklch(0.75_0.18_60)]" : "bg-gradient-to-r from-primary to-[oklch(0.55_0.22_290)]"}`} /><div aria-hidden="true" className={`absolute -right-16 -top-16 h-52 w-52 rounded-full blur-3xl opacity-40 transition-all duration-500 group-hover:scale-125 ${isGold ? "bg-gold/25" : "bg-primary/20"}`} /><div className="relative flex items-start justify-between gap-5"><div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border shadow-card transition-transform group-hover:scale-105 ${isGold ? "border-gold/20 bg-gold/10 text-gold-foreground" : "border-primary/15 bg-primary-soft text-primary"}`}>{icon}</div><span className="rounded-full border border-border bg-background/70 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Pelajari</span></div><span className={`relative mt-6 inline-block text-xs font-bold uppercase tracking-wider ${isGold ? "text-[oklch(0.55_0.16_75)]" : "text-primary"}`}>{tag}</span><h3 className="mt-2 text-xl font-bold leading-snug text-foreground sm:text-2xl">{title}</h3><p className="mt-3 text-sm leading-relaxed text-muted-foreground">{desc}</p><ul className="relative mt-5 space-y-2 text-sm text-foreground/80">{["Terbuka untuk SD, SMP, SMA/SMK/MA, & Mahasiswa", "Tanpa minimal nilai rapor / IPK", "Tidak dipungut biaya"].map((x) => <li key={x} className="flex items-start gap-2"><CheckCircle2 size={16} className={`mt-0.5 shrink-0 ${isGold ? "text-[oklch(0.65_0.16_75)]" : "text-primary"}`} />{x}</li>)}</ul><div className="relative mt-7 inline-flex items-center gap-2 text-sm font-bold text-primary">Lihat Detail <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" /></div></Link>;
 }
-
-void Award;
-void Users;
