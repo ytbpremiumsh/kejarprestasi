@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Download, Instagram, ListChecks, MessageCircle, Info, CheckCircle2, Copy, Check, Upload, Image as ImageIcon, Users, Sparkles } from "lucide-react";
+import { Download, Instagram, MessageCircle, Info, CheckCircle2, Copy, Check, Upload, Image as ImageIcon, Users, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import defaultPoster from "@/assets/poster-beasiswa.png";
 import { AdSlot } from "@/components/ads/AdSlot";
@@ -7,19 +7,19 @@ import { supabase } from "@/integrations/supabase/client";
 
 type PosterCfg = { image_url:string; download_url:string; caption:string; wa_number:string; wa_message:string; twibbon_frame_url?:string; twibbon_caption?:string };
 
-export function SharePosterPage({ kind }: { kind:"prestasi"|"ekonomi" }) {
- const isGold=kind==="ekonomi"; const label=isGold?"Beasiswa Ekonomi":"Beasiswa Prestasi";
- const url=typeof window!=="undefined"?window.location.origin+(isGold?"/beasiswa-ekonomi":"/beasiswa-prestasi"):"https://kejarprestasi.id";
- const defaultCaption=`🎓 BEASISWA PENDIDIKAN KEJAR PRESTASI — SECTION #3\n\nAku sedang mengikuti ${label} Kejar Prestasi. Yuk ikut membuka kesempatan pendidikan dan prestasi bersama!\n\n💰 Total Beasiswa hingga Rp17.000.000/semester\n📚 Terbuka untuk pelajar & mahasiswa\n\nDaftar: ${url}\nInstagram: @kejarprestasi_id\n\n#KejarPrestasi #BeasiswaPendidikan`;
- const defaultTwibbon=`Aku siap menjadi bagian dari ${label} Kejar Prestasi Section #3! 🎓✨\n\nSaatnya berani melangkah, bertumbuh, dan mengejar kesempatan pendidikan yang lebih baik.\n\n@kejarprestasi_id #KejarPrestasi #BeasiswaIndonesia`;
- const [cfg,setCfg]=useState<PosterCfg>({image_url:defaultPoster,download_url:defaultPoster,caption:defaultCaption,wa_number:"6281280010302",wa_message:"Halo, saya ingin mengirim bukti Bagikan Twibbon dan Poster Beasiswa Kejar Prestasi.",twibbon_frame_url:"",twibbon_caption:defaultTwibbon});
- useEffect(()=>{(async()=>{const {data}=await supabase.from("site_settings").select("value").eq("key","share_poster").maybeSingle(); const v=data?.value as {prestasi?:Partial<PosterCfg>;ekonomi?:Partial<PosterCfg>}|undefined; const k=v?.[kind]; if(k)setCfg(p=>({...p,...k,image_url:k.image_url||p.image_url,download_url:k.download_url||k.image_url||p.download_url,twibbon_caption:k.twibbon_caption||p.twibbon_caption}));})();},[kind]);
+export function SharePosterPage({ kind, unified=false }: { kind:"prestasi"|"ekonomi"; unified?:boolean }) {
+ const isGold=kind==="ekonomi"; const label=unified?"Program Beasiswa Kejar Prestasi":isGold?"Beasiswa Ekonomi":"Beasiswa Prestasi";
+ const url=typeof window!=="undefined"?window.location.origin+(unified?"/":isGold?"/beasiswa-ekonomi":"/beasiswa-prestasi"):"https://kejarprestasi.id";
+ const defaultCaption=`🎓 BEASISWA PENDIDIKAN KEJAR PRESTASI — SECTION #3\n\nAku sedang mengikuti ${label}. Yuk ikut membuka kesempatan pendidikan dan prestasi bersama!\n\n💰 Total Beasiswa hingga Rp17.000.000/semester\n📚 Terbuka untuk pelajar & mahasiswa\n\nDaftar: ${url}\nInstagram: @kejarprestasi_id\n\n#KejarPrestasi #BeasiswaPendidikan`;
+ const defaultTwibbon=`Aku siap menjadi bagian dari Program Beasiswa Kejar Prestasi Section #3! 🎓✨\n\nSaatnya berani melangkah, bertumbuh, dan mengejar kesempatan pendidikan yang lebih baik.\n\n@kejarprestasi_id #KejarPrestasi #BeasiswaIndonesia`;
+ const [cfg,setCfg]=useState<PosterCfg>({image_url:defaultPoster,download_url:defaultPoster,caption:defaultCaption,wa_number:"6281280010302",wa_message:"Halo, saya ingin mengirim bukti Bagikan Twibbon dan Poster Program Beasiswa Kejar Prestasi.",twibbon_frame_url:"",twibbon_caption:defaultTwibbon});
+ useEffect(()=>{(async()=>{const {data}=await supabase.from("site_settings").select("value").eq("key","share_poster").maybeSingle(); const v=data?.value as {prestasi?:Partial<PosterCfg>;ekonomi?:Partial<PosterCfg>}|undefined; const k=v?.[kind]; if(k)setCfg(p=>({...p,image_url:k.image_url||p.image_url,download_url:k.download_url||k.image_url||p.download_url,wa_number:k.wa_number||p.wa_number,wa_message:k.wa_message||p.wa_message,twibbon_frame_url:k.twibbon_frame_url||p.twibbon_frame_url,caption:unified?p.caption:(k.caption||p.caption),twibbon_caption:unified?p.twibbon_caption:(k.twibbon_caption||p.twibbon_caption)}));})();},[kind,unified]);
  return <section className="container-page py-12 md:py-16"><Link to="/" className="text-xs font-semibold text-primary">← Kembali ke Beranda</Link><div className="mt-5 max-w-3xl"><span className="inline-flex rounded-full bg-primary-soft px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">Tahap Publikasi</span><h1 className="mt-3 text-3xl md:text-4xl font-extrabold">Bagikan Twibbon & Poster</h1><p className="mt-2 text-muted-foreground">Buat Twibbon dengan fotomu, bagikan ke Instagram, lalu sebarkan poster resmi ke minimal 5 grup.</p></div>
  <div className="mt-8 grid gap-4 md:grid-cols-2"><Rule n="01" icon={<Instagram size={20}/>} title="Twibbon → Instagram" desc="Masukkan foto, unduh Twibbon yang sudah jadi, lalu unggah ke Instagram menggunakan caption resmi."/><Rule n="02" icon={<Users size={20}/>} title="Poster → 5 Grup" desc="Unduh poster resmi dan bagikan beserta caption ke minimal 5 grup WhatsApp/komunitas yang berbeda."/></div>
  <AdSlot placement="share_top"/>
  <TwibbonMaker frameUrl={cfg.twibbon_frame_url||""} caption={cfg.twibbon_caption||defaultTwibbon}/>
  <div className="my-10 border-t border-border"/>
- <PosterBlock cfg={cfg} kind={kind}/>
+ <PosterBlock cfg={cfg} kind={unified?"program":kind}/>
  <div className="mt-8 rounded-3xl border border-border bg-card p-6"><div className="flex items-start gap-3"><Info className="mt-0.5 shrink-0 text-primary" size={18}/><div><h3 className="font-bold">Selesaikan kedua tahap</h3><p className="mt-1 text-sm text-muted-foreground">Pastikan Twibbon sudah dibagikan ke Instagram dan poster sudah dikirim ke minimal 5 grup. Simpan screenshot sebagai bukti.</p></div></div><a href={`https://wa.me/${cfg.wa_number.replace(/\D/g,"")}?text=${encodeURIComponent(cfg.wa_message)}`} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground"><MessageCircle size={16}/> Konfirmasi Bukti via WhatsApp</a></div><AdSlot placement="share_bottom"/></section>;
 }
 function Rule({n,icon,title,desc}:{n:string;icon:React.ReactNode;title:string;desc:string}){return <div className="rounded-3xl border border-border bg-card p-5 shadow-card"><div className="flex items-center justify-between"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-primary-soft text-primary">{icon}</span><span className="text-3xl font-black text-primary/10">{n}</span></div><h2 className="mt-4 font-extrabold">{title}</h2><p className="mt-1 text-sm leading-6 text-muted-foreground">{desc}</p></div>}
