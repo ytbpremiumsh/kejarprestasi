@@ -26,20 +26,34 @@ function Index() {
     <>
       {/* HERO */}
       <section
-        className="relative overflow-hidden"
+        className="relative overflow-hidden border-b border-border/60"
         style={{ background: "var(--gradient-hero)" }}
       >
-        <div className="container-page py-12 md:py-24 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        {/* decorative layers */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-[0.35]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, color-mix(in oklab, var(--primary) 10%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--primary) 10%, transparent) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+            maskImage: "radial-gradient(ellipse at 30% 20%, black, transparent 70%)",
+          }}
+        />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute top-1/3 -right-20 h-80 w-80 rounded-full bg-gold/25 blur-3xl" />
+
+        <div className="container-page relative py-12 md:py-24 grid lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-14 items-center">
           {/* Title block — first on mobile, part of left column on desktop */}
           <div className="order-1 lg:order-1 lg:hidden space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-card/80 px-4 py-1.5 text-xs font-semibold text-primary shadow-card backdrop-blur">
               <Sparkles size={14} /> Meraih Pendidikan, Mewujudkan Prestasi
             </span>
-            <h1 className="relative text-3xl sm:text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground">
+            <h1 className="relative text-[2rem] sm:text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground">
               <span className="block">Beasiswa</span>
               <span className="relative inline-block bg-gradient-to-br from-primary via-[oklch(0.55_0.22_290)] to-[oklch(0.45_0.22_280)] bg-clip-text text-transparent drop-shadow-[0_2px_12px_oklch(0.55_0.22_290/0.25)]">
                 Kejar Prestasi
-                <svg aria-hidden="true" viewBox="0 0 200 8" preserveAspectRatio="none" className="absolute -bottom-1 left-0 h-1.5 w-full text-primary/60">
+                <svg aria-hidden="true" viewBox="0 0 200 8" preserveAspectRatio="none" className="absolute -bottom-1 left-0 h-1.5 w-full text-gold">
                   <path d="M2 5 Q 50 1, 100 4 T 198 4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
                 </svg>
               </span>
@@ -52,25 +66,26 @@ function Index() {
           </div>
 
           <div className="order-2 lg:order-2 relative">
+            <div aria-hidden="true" className="absolute inset-x-6 bottom-6 top-10 rounded-[2.5rem] bg-gradient-to-br from-primary/10 via-transparent to-gold/20 blur-2xl" />
             <img
               src={heroImg}
               alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi"
               width={1024}
               height={1024}
-              className="w-full h-auto max-w-md mx-auto lg:max-w-none"
+              className="relative w-full h-auto max-w-md mx-auto lg:max-w-none drop-shadow-[0_24px_40px_oklch(0.38_0.18_295/0.18)]"
               fetchPriority="high"
             />
           </div>
 
           <div className="order-3 lg:order-1 space-y-6 md:space-y-7 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <span className="hidden lg:inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
+            <span className="hidden lg:inline-flex items-center gap-2 rounded-full border border-primary/15 bg-card/80 px-4 py-1.5 text-xs font-semibold text-primary shadow-card backdrop-blur">
               <Sparkles size={14} /> Meraih Pendidikan, Mewujudkan Prestasi
             </span>
-            <h1 className="hidden lg:block relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight text-foreground">
+            <h1 className="hidden lg:block relative text-3xl sm:text-4xl md:text-5xl lg:text-[4rem] font-extrabold leading-[1.02] tracking-tight text-foreground">
               <span className="block">Beasiswa</span>
               <span className="relative inline-block bg-gradient-to-br from-primary via-[oklch(0.55_0.22_290)] to-[oklch(0.45_0.22_280)] bg-clip-text text-transparent drop-shadow-[0_4px_24px_oklch(0.55_0.22_290/0.3)]">
                 Kejar Prestasi
-                <svg aria-hidden="true" viewBox="0 0 300 10" preserveAspectRatio="none" className="absolute -bottom-2 left-0 h-2 w-full text-primary/60">
+                <svg aria-hidden="true" viewBox="0 0 300 10" preserveAspectRatio="none" className="absolute -bottom-2 left-0 h-2 w-full text-gold">
                   <path d="M2 6 Q 75 1, 150 5 T 298 5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
                 </svg>
               </span>{" "}
@@ -80,14 +95,14 @@ function Index() {
                 <span className="absolute -top-1 -right-3 h-2.5 w-2.5 rounded-full bg-[oklch(0.75_0.18_80)] shadow-[0_0_16px_oklch(0.75_0.18_80)]" />
               </span>
             </h1>
-            <p className="text-base md:text-lg text-muted-foreground max-w-xl">
+            <p className="text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed">
               Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia.
               Tanpa minimal nilai, tanpa biaya pendaftaran.
             </p>
 
             <div className="flex flex-wrap gap-2">
               {jenjang.map((j) => (
-                <span key={j} className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground/80">
+                <span key={j} className="rounded-full border border-border bg-card/70 px-3 py-1.5 text-xs font-medium text-foreground/80 backdrop-blur">
                   {j}
                 </span>
               ))}
@@ -99,11 +114,31 @@ function Index() {
               <HighlightCard icon={<HeartHandshake size={18} />} label="Beasiswa" value="Ekonomi" sub="Dukungan finansial" />
             </div>
 
-            <div className="flex pt-2">
-              <a href="#timeline" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition sm:w-auto sm:min-w-[280px]">
-                Daftar Sekarang <ArrowRight size={18} />
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
+              <a href="#timeline" className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground shadow-soft hover:opacity-95 hover:-translate-y-0.5 transition sm:w-auto sm:min-w-[260px]">
+                Daftar Sekarang <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
               </a>
+              <p className="text-xs text-muted-foreground sm:max-w-[180px]">
+                Gratis 100% — tidak dipungut biaya apa pun.
+              </p>
             </div>
+          </div>
+        </div>
+
+        {/* stat strip */}
+        <div className="container-page relative pb-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden rounded-3xl border border-border bg-border shadow-card">
+            {[
+              { k: "Rp17 Jt", v: "Total beasiswa / semester" },
+              { k: "4 Jenjang", v: "SD sampai Mahasiswa" },
+              { k: "2 Kategori", v: "Prestasi & Ekonomi" },
+              { k: "Rp0", v: "Biaya pendaftaran" },
+            ].map((s) => (
+              <div key={s.k} className="bg-card px-5 py-6 text-center">
+                <div className="text-xl md:text-2xl font-extrabold text-primary">{s.k}</div>
+                <div className="mt-1 text-xs text-muted-foreground">{s.v}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -141,6 +176,7 @@ function Index() {
           />
         </div>
       </section>
+
 
       <AdSlot placement="after_categories" />
 
