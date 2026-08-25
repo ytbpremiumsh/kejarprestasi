@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, BadgeCheck, Check, Clock3, Crown, Gift, HeartHandshake, Share2, ShieldCheck, Sparkles, Tablet, Trophy, Users, Wallet, X, Zap } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BadgeCheck, Check, Clock3, Crown, HeartHandshake, Share2, ShieldCheck, Sparkles, Trophy, Users, Wallet, X, Zap } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { AdSlot } from "@/components/ads/AdSlot";
 
@@ -80,58 +80,52 @@ export function CategoryPage({ kind, title, tagline, desc, registerTo, shareTo }
 
 function RegistrationPathModal({ registerTo, kind, onClose }: { registerTo: RegistrationPath; kind: CategoryKind; onClose: () => void }) {
   const programName = kind === "prestasi" ? "Prestasi" : "Ekonomi";
+  const [selected, setSelected] = useState<PathId>("akselerasi");
   const paths = [
-    { id: "reguler" as PathId, name: "Jalur Reguler", price: "Gratis", icon: Clock3, theme: "regular" as const, description: "Jalur standar tanpa biaya untuk peserta yang ingin mengikuti seluruh proses sesuai ketentuan.", features: ["Wajib membagikan Twibbon Program", "Wajib membagikan Poster Program", "Wajib Follow Instagram Resmi Program Beasiswa"] },
-    { id: "akselerasi" as PathId, name: "Jalur Akselerasi", price: "Rp15.000", icon: Zap, theme: "accent" as const, badge: "REKOMENDASI", description: "Pilihan praktis dengan proses yang lebih ringkas dan prioritas layanan pendaftaran.", highlight: "Lolos administrasi secara otomatis", features: ["Berkesempatan meraih dana pendidikan beasiswa", "Proses pendaftaran lebih cepat", "Sertifikat peserta program", "E-Book Strategi Menyusun Target Prestasi", "E-Sheet Planner Prestasi Mingguan"] },
-    { id: "platinum" as PathId, name: "Jalur Akselerasi Platinum", price: "Rp45.000", icon: Crown, theme: "premium" as const, badge: "PREMIUM", description: "Pilihan paling lengkap dengan kemudahan Akselerasi dan kesempatan benefit eksklusif untuk Awardee.", highlight: "Lolos administrasi secara otomatis", features: ["Mendapatkan Dana Pendidikan", "Proses pendaftaran diprioritaskan", "Sertifikat peserta program", "E-Book Masterplan Pendidikan & Prestasi", "E-Sheet Dashboard Target Belajar"] },
+    { id: "reguler" as PathId, name: "Reguler", fullName: "Jalur Reguler", price: "Gratis", icon: Clock3, theme: "regular" as const, description: "Jalur standar tanpa biaya.", features: ["Bagikan Twibbon Program", "Bagikan Poster Program", "Follow Instagram resmi"] },
+    { id: "akselerasi" as PathId, name: "Akselerasi", fullName: "Jalur Akselerasi", price: "Rp15.000", icon: Zap, theme: "accent" as const, badge: "REKOMENDASI", description: "Proses lebih praktis dan cepat.", highlight: "Lolos administrasi otomatis", features: ["Peluang dana pendidikan", "Proses dipercepat", "Sertifikat peserta", "E-Book strategi prestasi", "E-Sheet planner mingguan"] },
+    { id: "platinum" as PathId, name: "Platinum", fullName: "Jalur Akselerasi Platinum", price: "Rp45.000", icon: Crown, theme: "premium" as const, badge: "PREMIUM", description: "Akselerasi dengan benefit eksklusif Awardee.", highlight: "Lolos administrasi otomatis", features: ["Dana Pendidikan", "Pendaftaran diprioritaskan", "Sertifikat peserta", "E-Book Masterplan", "E-Sheet Target Belajar"] },
   ];
 
-  return <div className="fixed inset-0 z-[100] flex items-end justify-center bg-foreground/55 backdrop-blur-sm sm:items-center sm:p-5" role="dialog" aria-modal="true" aria-labelledby="registration-path-title">
-    <div className="relative max-h-[96vh] w-full max-w-7xl overflow-y-auto rounded-t-[2rem] border border-border bg-background px-4 pb-28 pt-5 shadow-2xl sm:rounded-[2rem] sm:p-7">
-      <button type="button" onClick={onClose} aria-label="Tutup pilihan jalur" className="absolute right-4 top-4 z-20 rounded-full border border-border bg-card p-2 text-muted-foreground shadow-sm transition hover:text-foreground"><X size={19} /></button>
-      <div className="mx-auto max-w-2xl pr-10 text-center"><span className="inline-flex rounded-full bg-primary-soft px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Pilih jalur pendaftaran</span><h2 id="registration-path-title" className="mt-3 text-2xl font-extrabold text-foreground md:text-3xl">Tentukan jalur Beasiswa {programName}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Biaya kini tampil di bagian atas card agar langsung terlihat sebelum peserta membaca benefit.</p></div>
+  const renderCard = (path: typeof paths[number]) => {
+    const PathIcon = path.icon;
+    const accent = path.theme === "accent";
+    const premium = path.theme === "premium";
+    const target = `${registerTo}?jalur=${path.id}` as RegistrationPath;
+    return <article key={path.id} className={`relative flex h-full min-h-0 flex-col overflow-hidden rounded-[1.6rem] border bg-card p-4 shadow-[0_15px_40px_rgba(15,23,42,.08)] lg:p-4 xl:p-5 ${premium ? "border-emerald-200" : accent ? "border-amber-300" : "border-border"}`}>
+      {path.badge && <span className={`absolute right-0 top-0 rounded-bl-xl px-3 py-1.5 text-[8px] font-black tracking-wider text-white ${premium ? "bg-emerald-600" : "bg-orange-500"}`}>{path.badge}</span>}
+      <div className="flex items-center gap-3 pr-20">
+        <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl border shadow-sm ${premium ? "border-emerald-100 bg-emerald-50 text-emerald-600" : accent ? "border-amber-100 bg-amber-50 text-amber-600" : "border-primary/10 bg-primary-soft text-primary"}`}><PathIcon size={19}/></span>
+        <div className="min-w-0"><h3 className="truncate text-base font-extrabold xl:text-lg">{path.fullName}</h3><p className="mt-0.5 text-[11px] leading-4 text-muted-foreground xl:text-xs">{path.description}</p></div>
+      </div>
+      <div className={`mt-3 flex items-center justify-between rounded-xl border px-3 py-2.5 ${premium ? "border-emerald-200 bg-emerald-50/70" : accent ? "border-amber-200 bg-amber-50/70" : "border-border bg-secondary/35"}`}>
+        <div><p className="text-[8px] font-black uppercase tracking-[.12em] text-muted-foreground">Biaya Pendaftaran</p><p className={`text-xl font-black ${premium ? "text-emerald-700" : accent ? "text-orange-600" : "text-primary"}`}>{path.price}</p></div>
+        <span className={`grid h-8 w-8 place-items-center rounded-lg bg-white ${premium ? "text-emerald-600" : accent ? "text-amber-600" : "text-primary"}`}>{premium ? <Crown size={16}/> : accent ? <Wallet size={16}/> : <BadgeCheck size={16}/>}</span>
+      </div>
+      {premium && <div className="platinum-benefit mt-3 grid min-h-[112px] grid-cols-[1fr_128px] items-center overflow-hidden rounded-xl border border-emerald-400 bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-600 p-3 text-white shadow-[0_12px_24px_rgba(5,150,105,.22)]"><div className="relative z-10 pr-1"><span className="text-[8px] font-black uppercase tracking-[.14em] text-emerald-100">Benefit Platinum</span><p className="mt-1 text-sm font-extrabold leading-4">Tablet Pendidikan untuk Awardee</p><p className="mt-1 text-[9px] leading-3 text-emerald-100">Khusus Awardee Platinum.</p></div><TabletMockup/></div>}
+      {path.highlight && <div className={`mt-3 rounded-lg border px-3 py-2 ${premium ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}><p className={`flex items-center gap-1.5 text-[11px] font-extrabold ${premium ? "text-emerald-700" : "text-amber-700"}`}><Check size={13}/> {path.highlight}</p></div>}
+      <div className="mt-3 grid gap-1.5">{path.features.map(feature => <div key={feature} className="flex items-center gap-2 text-[10px] leading-4 text-foreground/80 xl:text-[11px]"><span className={`grid h-4 w-4 shrink-0 place-items-center rounded-full text-white ${premium ? "bg-emerald-500" : accent ? "bg-amber-500" : "bg-primary"}`}><Check size={9}/></span><span>{feature}</span></div>)}</div>
+      <Link to={target} onClick={onClose} className={`mt-auto flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black transition hover:-translate-y-0.5 ${premium ? "bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-[0_8px_18px_rgba(5,150,105,.25)]" : accent ? "bg-gradient-to-r from-orange-500 to-amber-400 text-white shadow-[0_8px_18px_rgba(245,158,11,.25)]" : "border-2 border-primary bg-background text-primary"}`}>{path.id === "reguler" ? "Pilih Reguler" : path.id === "akselerasi" ? "Daftar Akselerasi" : "Daftar Platinum"}<ArrowRight size={14}/></Link>
+    </article>;
+  };
 
-      <div className="mt-8 grid items-stretch gap-5 lg:grid-cols-3">
-        {paths.map((path) => {
-          const PathIcon = path.icon;
-          const accent = path.theme === "accent";
-          const premium = path.theme === "premium";
-          const target = `${registerTo}?jalur=${path.id}` as RegistrationPath;
-          const buttonLabel = path.id === "platinum" ? "Daftar Platinum" : path.id === "akselerasi" ? "Daftar Akselerasi" : "Pilih Reguler";
-          return <article key={path.id} className={`relative flex min-h-[610px] flex-col overflow-hidden rounded-[2rem] border bg-card p-5 shadow-[0_18px_55px_rgba(15,23,42,.08)] transition duration-300 hover:-translate-y-1 sm:p-6 ${premium ? "border-emerald-200" : accent ? "border-amber-300" : "border-border"}`}>
-            {path.badge && <span className={`absolute right-0 top-0 rounded-bl-[1.4rem] px-5 py-2.5 text-[10px] font-black tracking-[0.12em] text-white ${premium ? "bg-gradient-to-r from-emerald-600 to-emerald-500" : "bg-gradient-to-r from-amber-500 to-orange-500"}`}>{path.badge}</span>}
+  return <div className="fixed inset-0 z-[100] grid place-items-center bg-foreground/55 p-2 backdrop-blur-sm sm:p-4" role="dialog" aria-modal="true" aria-labelledby="registration-path-title">
+    <div className="relative flex h-[calc(100dvh-16px)] w-full max-w-7xl flex-col overflow-hidden rounded-[1.6rem] border border-border bg-background p-3 shadow-2xl sm:h-[calc(100dvh-32px)] sm:p-4 lg:h-auto lg:max-h-[94vh] lg:p-5">
+      <button type="button" onClick={onClose} aria-label="Tutup pilihan jalur" className="absolute right-3 top-3 z-30 rounded-full border border-border bg-card p-2 text-muted-foreground shadow-sm hover:text-foreground"><X size={17}/></button>
+      <div className="shrink-0 pr-10 text-center"><span className="inline-flex rounded-full bg-primary-soft px-2.5 py-1 text-[8px] font-black uppercase tracking-[.14em] text-primary">Pilih jalur</span><h2 id="registration-path-title" className="mt-1.5 text-lg font-extrabold sm:text-xl lg:text-2xl">Jalur Beasiswa {programName}</h2><p className="mt-1 text-[10px] text-muted-foreground sm:text-xs">Bandingkan benefit dan pilih jalur yang sesuai.</p></div>
 
-            <div className="flex items-center justify-between gap-4 pr-24">
-              <div className={`grid h-14 w-14 place-items-center rounded-2xl border shadow-[0_10px_22px_rgba(15,23,42,.12),inset_0_1px_1px_rgba(255,255,255,.85)] ${premium ? "border-emerald-100 bg-emerald-50 text-emerald-600" : accent ? "border-amber-100 bg-amber-50 text-amber-600" : "border-primary/10 bg-primary-soft text-primary"}`}><PathIcon size={25} /></div>
-            </div>
-            <h3 className="mt-6 text-xl font-extrabold text-foreground">{path.name}</h3>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">{path.description}</p>
+      <div className="mt-3 grid shrink-0 grid-cols-3 gap-1.5 lg:hidden">{paths.map(path => <button key={path.id} onClick={() => setSelected(path.id)} className={`rounded-xl border px-2 py-2 text-[10px] font-extrabold transition ${selected === path.id ? path.theme === "premium" ? "border-emerald-500 bg-emerald-50 text-emerald-700" : path.theme === "accent" ? "border-amber-500 bg-amber-50 text-amber-700" : "border-primary bg-primary-soft text-primary" : "border-border bg-card text-muted-foreground"}`}>{path.name}<span className="block text-[9px] font-semibold">{path.price}</span></button>)}</div>
 
-            <div className={`mt-5 flex items-center justify-between rounded-2xl border p-4 ${premium ? "border-emerald-200 bg-emerald-50/70" : accent ? "border-amber-200 bg-amber-50/70" : "border-border bg-secondary/35"}`}>
-              <div><p className={`text-[10px] font-extrabold uppercase tracking-[0.14em] ${premium ? "text-emerald-700" : accent ? "text-amber-700" : "text-primary"}`}>Biaya Pendaftaran</p><p className={`mt-1 text-2xl font-black ${premium ? "text-emerald-700" : accent ? "text-orange-600" : "text-primary"}`}>{path.price}</p></div>
-              <span className={`grid h-11 w-11 place-items-center rounded-xl border shadow-sm ${premium ? "border-emerald-200 bg-white text-emerald-600" : accent ? "border-amber-200 bg-white text-amber-600" : "border-primary/10 bg-white text-primary"}`}>{premium ? <Crown size={20}/> : accent ? <Wallet size={20}/> : <BadgeCheck size={20}/>}</span>
-            </div>
-
-            {premium && <div className="mt-4 rounded-2xl border border-emerald-400 bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-600 p-3.5 text-white shadow-[0_14px_32px_rgba(5,150,105,.25)]"><div className="flex items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/15"><Gift size={18}/></span><div><span className="text-[9px] font-black uppercase tracking-[0.14em] text-emerald-100">Benefit Platinum</span><p className="mt-0.5 text-sm font-extrabold leading-5">Tablet Pendidikan untuk Awardee</p><p className="mt-0.5 text-[11px] leading-4 text-emerald-100/90">Khusus peserta Platinum yang terpilih sebagai Awardee.</p></div></div></div>}
-
-            {path.highlight && <div className={`mt-4 rounded-xl border px-4 py-3 ${premium ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}><p className={`flex items-center gap-2 text-sm font-extrabold ${premium ? "text-emerald-700" : "text-amber-700"}`}><Check size={16}/> {path.highlight}</p></div>}
-
-            <div className="mt-5 space-y-3">{path.features.map(feature => <div key={feature} className="flex gap-2.5 text-sm leading-5 text-foreground/80"><span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full text-white ${premium ? "bg-emerald-500" : accent ? "bg-amber-500" : "bg-primary"}`}><Check size={12}/></span><span>{feature}</span></div>)}</div>
-
-            <div className="mt-auto hidden pt-7 sm:block"><Link to={target} onClick={onClose} className={`group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-5 py-4 text-sm font-black transition hover:-translate-y-0.5 ${premium ? "bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-[0_10px_24px_rgba(5,150,105,.28)]" : accent ? "bg-gradient-to-r from-orange-500 to-amber-400 text-white shadow-[0_10px_24px_rgba(245,158,11,.28)]" : "border-2 border-primary bg-background text-primary"}`}>{buttonLabel}<ArrowRight size={17}/>{(premium || accent) && <Sparkles size={15} className="absolute right-4 opacity-70"/>}</Link></div>
-          </article>;
-        })}
+      <div className="mt-3 min-h-0 flex-1 lg:grid lg:grid-cols-3 lg:gap-3 xl:gap-4">
+        <div className="h-full lg:hidden">{renderCard(paths.find(p => p.id === selected) ?? paths[1])}</div>
+        <div className="hidden min-h-0 lg:contents">{paths.map(renderCard)}</div>
       </div>
 
-      <div className="mt-5 hidden rounded-2xl border border-border bg-card p-4 text-xs text-muted-foreground sm:flex sm:items-center sm:justify-between sm:gap-4"><span className="flex items-center gap-2"><ShieldCheck size={16} className="text-primary"/>Semua jalur tetap memiliki kesempatan mengikuti program sesuai ketentuan.</span><span className="font-semibold text-foreground">Pilih sesuai kebutuhanmu.</span></div>
-
-      <div className="fixed inset-x-0 bottom-0 z-[120] border-t border-border bg-background/95 p-3 shadow-[0_-12px_30px_rgba(15,23,42,.12)] backdrop-blur-xl sm:hidden">
-        <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto pb-[env(safe-area-inset-bottom)]">
-          {paths.map(path => { const premium=path.theme==="premium", accent=path.theme==="accent", target=`${registerTo}?jalur=${path.id}` as RegistrationPath; return <Link key={path.id} to={target} onClick={onClose} className={`flex min-w-[118px] flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-3 text-xs font-black ${premium?"bg-emerald-600 text-white":accent?"bg-orange-500 text-white":"border-2 border-primary bg-background text-primary"}`}>{path.id==="platinum"?"Platinum":path.id==="akselerasi"?"Akselerasi":"Reguler"}<ArrowRight size={13}/></Link>})}
-        </div>
-      </div>
+      <div className="mt-3 hidden shrink-0 items-center justify-between rounded-xl border border-border bg-card px-4 py-2 text-[10px] text-muted-foreground lg:flex"><span className="flex items-center gap-2"><ShieldCheck size={13} className="text-primary"/>Semua jalur tetap mengikuti ketentuan program.</span><span className="font-semibold text-foreground">Pilih sesuai kebutuhanmu.</span></div>
     </div>
   </div>;
 }
+
+function TabletMockup(){return <div className="tablet-stage" aria-hidden="true"><div className="tablet-back"><span className="tablet-camera"/></div><div className="tablet-front"><span className="tablet-screen"/></div><span className="tablet-podium"/></div>}
 
 function Metric({ icon, title, value, desc }: { icon: ReactNode; title: string; value: string; desc: string }) { return <div className="rounded-3xl border border-border bg-card p-6 shadow-card"><div>{icon}</div><p className="mt-5 text-xs font-semibold text-muted-foreground">{title}</p><p className="mt-1 text-2xl font-extrabold">{value}</p><p className="mt-1 text-sm text-muted-foreground">{desc}</p></div>; }
