@@ -4,18 +4,18 @@ import { CategoryPage } from "@/components/CategoryPage";
 export const Route = createFileRoute("/beasiswa-ekonomi")({
   head: () => ({
     meta: [
-      { title: "Beasiswa Ekonomi — Kejar Prestasi Section #3" },
-      { name: "description", content: "Beasiswa untuk pelajar dan mahasiswa yang membutuhkan dukungan finansial. Total Rp17.000.000/semester." },
-      { property: "og:title", content: "Beasiswa Ekonomi — Kejar Prestasi Section #3" },
-      { property: "og:description", content: "Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial." },
+      { title: "Jalur Ekonomi — Kejar Prestasi Section #3" },
+      { name: "description", content: "Jalur dukungan pendidikan bagi pelajar dan mahasiswa yang menghadapi keterbatasan finansial dalam melanjutkan studi." },
+      { property: "og:title", content: "Jalur Ekonomi — Kejar Prestasi Section #3" },
+      { property: "og:description", content: "Pelajari manfaat, persiapan, dan proses mengikuti jalur Ekonomi Kejar Prestasi." },
     ],
   }),
   component: () => (
     <CategoryPage
       kind="ekonomi"
-      tagline="Beasiswa Ekonomi"
-      title="Beasiswa untuk Dukungan Pendidikan yang Setara"
-      desc="Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial untuk pendidikan. Pendidikan berkualitas adalah hak semua anak Indonesia."
+      tagline="Jalur Ekonomi"
+      title="Tetap Melangkah, Meski Kondisi Finansial Terbatas"
+      desc="Program ini hadir untuk membantu peserta yang memiliki kebutuhan dukungan finansial agar dapat menjaga semangat belajar, melanjutkan pendidikan, dan membuka peluang masa depan yang lebih luas."
       registerTo="/pendaftaran/ekonomi"
       shareTo="/bagikan-poster/ekonomi"
     />
