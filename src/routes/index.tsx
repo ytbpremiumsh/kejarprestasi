@@ -209,12 +209,20 @@ function Index() {
 
 function HighlightCard({ icon, label, value, sub, highlight }: { icon: React.ReactNode; label: string; value: string; sub: string; highlight?: boolean }) {
   return (
-    <div className={`rounded-2xl border p-4 ${highlight ? "border-transparent bg-primary text-primary-foreground shadow-soft" : "border-border bg-card text-foreground shadow-card"}`}>
-      <div className={`flex items-center gap-2 text-xs font-medium ${highlight ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+    <div
+      className={`relative overflow-hidden rounded-2xl border p-4 transition hover:-translate-y-0.5 ${
+        highlight
+          ? "border-transparent text-primary-foreground shadow-soft"
+          : "border-border bg-card/80 text-foreground shadow-card backdrop-blur"
+      }`}
+      style={highlight ? { background: "var(--gradient-primary)" } : undefined}
+    >
+      {highlight && <span aria-hidden="true" className="absolute -top-8 -right-8 h-20 w-20 rounded-full bg-gold/30 blur-2xl" />}
+      <div className={`relative flex items-center gap-2 text-xs font-medium ${highlight ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
         {icon} {label}
       </div>
-      <div className="mt-1.5 text-lg font-bold">{value}</div>
-      <div className={`text-xs ${highlight ? "text-primary-foreground/75" : "text-muted-foreground"}`}>{sub}</div>
+      <div className="relative mt-1.5 text-lg font-bold">{value}</div>
+      <div className={`relative text-xs ${highlight ? "text-primary-foreground/75" : "text-muted-foreground"}`}>{sub}</div>
     </div>
   );
 }
@@ -222,9 +230,12 @@ function HighlightCard({ icon, label, value, sub, highlight }: { icon: React.Rea
 function SectionHeader({ eyebrow, title, desc }: { eyebrow: string; title: string; desc: string }) {
   return (
     <div className="text-center max-w-2xl mx-auto">
-      <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">{eyebrow}</span>
-      <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-foreground">{title}</h2>
-      <p className="mt-3 text-muted-foreground">{desc}</p>
+      <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
+        {eyebrow}
+      </span>
+      <h2 className="mt-4 text-3xl md:text-[2.6rem] font-extrabold leading-[1.1] text-foreground">{title}</h2>
+      <span aria-hidden="true" className="mt-4 mx-auto block h-1 w-16 rounded-full bg-gradient-to-r from-primary to-gold" />
+      <p className="mt-4 text-muted-foreground">{desc}</p>
     </div>
   );
 }
@@ -233,28 +244,30 @@ function CategoryCard({ tag, icon, title, desc, to, variant }: { tag: string; ic
   const isGold = variant === "gold";
   return (
     <div className="group relative overflow-hidden rounded-3xl border border-border bg-card p-8 shadow-card hover:shadow-soft hover:-translate-y-1 transition-all duration-300">
+      <span aria-hidden="true" className={`absolute inset-x-0 top-0 h-1 ${isGold ? "bg-gradient-to-r from-gold to-[oklch(0.75_0.18_60)]" : "bg-gradient-to-r from-primary to-[oklch(0.55_0.22_290)]"}`} />
       <div className={`absolute -top-16 -right-16 h-48 w-48 rounded-full blur-2xl opacity-50 group-hover:opacity-80 transition ${isGold ? "bg-[oklch(0.88_0.16_85)]/60" : "bg-primary/30"}`} />
       <div className="relative">
-        <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${isGold ? "bg-[oklch(0.92_0.14_85)] text-gold-foreground" : "bg-primary-soft text-primary"}`}>
+        <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl shadow-card ${isGold ? "bg-[oklch(0.92_0.14_85)] text-gold-foreground" : "bg-primary-soft text-primary"}`}>
           {icon}
         </div>
         <span className={`mt-5 inline-block text-xs font-semibold uppercase tracking-wider ${isGold ? "text-[oklch(0.55_0.16_75)]" : "text-primary"}`}>{tag}</span>
-        <h3 className="mt-2 text-xl md:text-2xl font-bold text-foreground">{title}</h3>
+        <h3 className="mt-2 text-xl md:text-2xl font-bold leading-snug text-foreground">{title}</h3>
         <p className="mt-3 text-sm text-muted-foreground">{desc}</p>
 
         <ul className="mt-5 space-y-2 text-sm text-foreground/80">
           {["Terbuka untuk SD, SMP, SMA/SMK/MA, & Mahasiswa", "Tanpa minimal nilai rapor / IPK", "Tidak dipungut biaya"].map((x) => (
-            <li key={x} className="flex items-start gap-2"><CheckCircle2 size={16} className="mt-0.5 text-primary" /> {x}</li>
+            <li key={x} className="flex items-start gap-2"><CheckCircle2 size={16} className={`mt-0.5 ${isGold ? "text-[oklch(0.65_0.16_75)]" : "text-primary"}`} /> {x}</li>
           ))}
         </ul>
 
-        <Link to={to} className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition">
-          Lihat Detail <ArrowRight size={16} />
+        <Link to={to} className="group/btn mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition">
+          Lihat Detail <ArrowRight size={16} className="transition-transform group-hover/btn:translate-x-1" />
         </Link>
       </div>
     </div>
   );
 }
+
 
 // Suppress unused
 void Award;
