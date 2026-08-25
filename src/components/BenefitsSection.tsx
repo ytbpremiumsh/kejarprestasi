@@ -43,13 +43,14 @@ export function BenefitsSection() {
   return (
     <section className="container-page py-20">
       <div className="text-center max-w-2xl mx-auto">
-        <span className="inline-block rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
+        <span className="inline-block rounded-full border border-primary/15 bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
           Benefit Beasiswa
         </span>
-        <h2 className="mt-4 text-3xl md:text-4xl font-extrabold text-foreground">
+        <h2 className="mt-4 text-3xl md:text-[2.6rem] font-extrabold leading-[1.1] text-foreground">
           Apa Saja yang Kamu Dapatkan?
         </h2>
-        <p className="mt-3 text-muted-foreground">
+        <span aria-hidden="true" className="mt-4 mx-auto block h-1 w-16 rounded-full bg-gradient-to-r from-primary to-gold" />
+        <p className="mt-4 text-muted-foreground">
           Bukan sekadar beasiswa tunai — kamu mendapatkan paket lengkap untuk mendukung
           perjalanan akademis dan pengembangan diri.
         </p>
@@ -59,16 +60,18 @@ export function BenefitsSection() {
         {benefits.map((b) => (
           <div
             key={b.title}
-            className="rounded-3xl border border-border bg-card p-6 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition"
+            className="group relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-card hover:shadow-soft hover:-translate-y-1 transition duration-300"
           >
-            <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${b.accent}`}>
+            <span aria-hidden="true" className="absolute inset-x-0 -bottom-px h-1 scale-x-0 bg-gradient-to-r from-primary to-gold transition-transform duration-300 group-hover:scale-x-100" />
+            <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl shadow-card ${b.accent}`}>
               <b.icon size={20} />
             </div>
             <h3 className="mt-4 text-lg font-semibold text-foreground">{b.title}</h3>
-            <p className="mt-1.5 text-sm text-muted-foreground">{b.desc}</p>
+            <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{b.desc}</p>
           </div>
         ))}
       </div>
     </section>
   );
 }
+
