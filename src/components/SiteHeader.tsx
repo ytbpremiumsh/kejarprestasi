@@ -22,7 +22,7 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[oklch(0.17_0.13_285)] text-white shadow-[0_8px_30px_oklch(0.12_0.1_285/0.16)]">
+    <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/95 text-foreground shadow-[0_4px_20px_oklch(0.15_0.05_285/0.06)] backdrop-blur-xl">
       <div className="container-page flex h-[72px] items-center justify-between gap-6">
         <Link to="/" className="flex min-w-0 items-center" aria-label="Kejar Prestasi">
           <img src={headerLogo} alt="Logo Kejar Prestasi" className="h-10 w-auto max-w-[190px] object-contain" />
@@ -33,48 +33,47 @@ export function SiteHeader() {
             <Link
               key={n.to}
               to={n.to}
-              className="group relative rounded-full px-4 py-2.5 text-sm font-medium text-white/75 transition hover:bg-white/8 hover:text-white"
-              activeProps={{ className: "group relative rounded-full px-4 py-2.5 text-sm font-semibold text-white bg-white/8" }}
+              className="group relative rounded-full px-4 py-2.5 text-sm font-medium text-foreground/65 transition hover:bg-secondary hover:text-primary"
+              activeProps={{ className: "group relative rounded-full px-4 py-2.5 text-sm font-semibold text-primary bg-primary-soft" }}
               activeOptions={{ exact: n.to === "/" }}
             >
               {n.label}
-              {n.to === "/" ? null : n.label === "Tentang Kami" ? null : null}
             </Link>
           ))}
-          <button type="button" onClick={goToTimeline} className="group inline-flex items-center gap-1 rounded-full px-4 py-2.5 text-sm font-medium text-white/75 transition hover:bg-white/8 hover:text-white">
+          <button type="button" onClick={goToTimeline} className="group inline-flex items-center gap-1 rounded-full px-4 py-2.5 text-sm font-medium text-foreground/65 transition hover:bg-secondary hover:text-primary">
             Timeline <ChevronDown size={14} className="rotate-[-90deg] opacity-50" />
           </button>
         </nav>
 
         <div className="hidden lg:flex items-center gap-2.5">
-          <button type="button" onClick={() => navigate({ to: "/cek-status" })} className="rounded-full border border-white/25 px-5 py-2.5 text-sm font-semibold text-white transition hover:border-white/50 hover:bg-white/8">
+          <button type="button" onClick={() => navigate({ to: "/cek-status" })} className="rounded-full border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground transition hover:border-primary/30 hover:bg-secondary hover:text-primary">
             Masuk
           </button>
-          <button type="button" onClick={goToTimeline} className="rounded-full bg-[oklch(0.78_0.17_82)] px-5 py-2.5 text-sm font-bold text-[oklch(0.18_0.12_285)] shadow-[0_8px_24px_oklch(0.78_0.17_82/0.18)] transition hover:-translate-y-0.5 hover:brightness-105">
+          <button type="button" onClick={goToTimeline} className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-soft transition hover:-translate-y-0.5 hover:opacity-95">
             Daftar Sekarang
           </button>
         </div>
 
-        <button aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open} className="lg:hidden rounded-xl border border-white/15 bg-white/8 p-2.5 text-white" onClick={() => setOpen((v) => !v)}>
+        <button aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open} className="lg:hidden rounded-xl border border-border bg-background p-2.5 text-foreground shadow-card" onClick={() => setOpen((v) => !v)}>
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
       {open && (
-        <div className="lg:hidden border-t border-white/10 bg-[oklch(0.15_0.12_285)]">
+        <div className="lg:hidden border-t border-border bg-background">
           <div className="container-page py-4">
             <nav className="flex flex-col gap-1" aria-label="Navigasi mobile">
               {nav.map((n) => (
-                <Link key={n.to} to={n.to} onClick={() => setOpen(false)} className="rounded-xl px-4 py-3 text-sm font-medium text-white/80 hover:bg-white/8 hover:text-white">
+                <Link key={n.to} to={n.to} onClick={() => setOpen(false)} className="rounded-xl px-4 py-3 text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-primary">
                   {n.label}
                 </Link>
               ))}
-              <button type="button" onClick={goToTimeline} className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm font-medium text-white/80 hover:bg-white/8 hover:text-white">
+              <button type="button" onClick={goToTimeline} className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-primary">
                 Timeline <ChevronDown size={16} className="rotate-[-90deg] opacity-50" />
               </button>
-              <div className="mt-2 grid grid-cols-2 gap-2 border-t border-white/10 pt-3">
-                <button type="button" onClick={() => { setOpen(false); navigate({ to: "/cek-status" }); }} className="rounded-full border border-white/20 px-4 py-3 text-sm font-semibold text-white">Masuk</button>
-                <button type="button" onClick={goToTimeline} className="rounded-full bg-[oklch(0.78_0.17_82)] px-4 py-3 text-sm font-bold text-[oklch(0.18_0.12_285)]">Daftar Sekarang</button>
+              <div className="mt-2 grid grid-cols-2 gap-2 border-t border-border pt-3">
+                <button type="button" onClick={() => { setOpen(false); navigate({ to: "/cek-status" }); }} className="rounded-full border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground">Masuk</button>
+                <button type="button" onClick={goToTimeline} className="rounded-full bg-primary px-4 py-3 text-sm font-bold text-primary-foreground">Daftar Sekarang</button>
               </div>
             </nav>
           </div>
