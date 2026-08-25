@@ -6,80 +6,128 @@ import {
 } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
 
-const faqVisual = "data:image/webp;base64,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";
-
 const faqs = [
-  {
-    q: "Apakah pendaftaran beasiswa ini berbayar?",
-    a: "Tidak. Beasiswa Kejar Prestasi 100% gratis. Tidak ada biaya pendaftaran maupun biaya seleksi dalam bentuk apa pun.",
-  },
-  {
-    q: "Siapa saja yang boleh mendaftar?",
-    a: "Pelajar SD, SMP, SMA/SMK/MA, dan Mahasiswa aktif di Indonesia, baik untuk jalur Prestasi maupun Ekonomi.",
-  },
-  {
-    q: "Apakah ada minimal nilai rapor atau IPK?",
-    a: "Tidak ada minimal nilai rapor maupun IPK. Seleksi mempertimbangkan prestasi, kebutuhan, dan kelengkapan berkas.",
-  },
-  {
-    q: "Berapa total beasiswa yang akan diterima?",
-    a: "Total beasiswa hingga Rp17.000.000 per semester untuk penerima yang lolos seluruh tahapan seleksi.",
-  },
-  {
-    q: "Bagaimana cara mengetahui hasil seleksi?",
-    a: "Pengumuman akan diinformasikan melalui email pendaftar dan diumumkan resmi pada laman ini sesuai timeline seleksi.",
-  },
-  {
-    q: "Apakah saya bisa mendaftar di dua jalur sekaligus?",
-    a: "Pendaftar hanya diperbolehkan memilih satu jalur, baik Beasiswa Prestasi atau Beasiswa Ekonomi.",
-  },
-  {
-    q: "Bagaimana jika ada kendala saat mendaftar?",
-    a: "Silakan hubungi tim Kejar Prestasi melalui kontak resmi yang tertera pada footer halaman.",
-  },
+  { q: "Apakah pendaftaran beasiswa ini berbayar?", a: "Tidak. Jalur Reguler tersedia tanpa biaya pendaftaran. Jalur Akselerasi dan Platinum memiliki biaya layanan sesuai pilihan peserta." },
+  { q: "Siapa saja yang boleh mendaftar?", a: "Pelajar SD, SMP, SMA/SMK/MA, dan mahasiswa aktif di Indonesia dapat mengikuti program sesuai ketentuan yang berlaku." },
+  { q: "Apakah ada minimal nilai rapor atau IPK?", a: "Tidak ada batas minimum nilai rapor maupun IPK pada tahap pendaftaran awal." },
+  { q: "Berapa total beasiswa yang akan diterima?", a: "Dukungan pendidikan dapat mencapai Rp17.000.000 per semester sesuai hasil seleksi dan ketentuan program." },
+  { q: "Bagaimana cara mengetahui hasil seleksi?", a: "Status tahapan dan pengumuman dapat dipantau melalui Portal Pendaftar menggunakan kode pendaftaran masing-masing." },
+  { q: "Apakah saya bisa mendaftar di dua jalur sekaligus?", a: "Setiap peserta memilih satu kategori dan satu jalur pendaftaran untuk satu proses seleksi." },
+  { q: "Bagaimana jika ada kendala saat mendaftar?", a: "Hubungi tim Kejar Prestasi melalui kanal resmi yang tercantum pada website." },
 ];
+
+function ProfessionalFaqIllustration() {
+  return (
+    <div className="relative mx-auto w-full max-w-[520px]" aria-hidden="true">
+      <svg viewBox="0 0 620 520" className="h-auto w-full overflow-visible" role="img">
+        <defs>
+          <linearGradient id="faqBg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#EEF2FF" />
+            <stop offset="55%" stopColor="#F8FAFC" />
+            <stop offset="100%" stopColor="#FFF7ED" />
+          </linearGradient>
+          <linearGradient id="faqCard" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#FFFFFF" />
+            <stop offset="100%" stopColor="#F8FAFC" />
+          </linearGradient>
+          <linearGradient id="faqPurple" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#6D28D9" />
+            <stop offset="100%" stopColor="#4F46E5" />
+          </linearGradient>
+          <linearGradient id="faqGold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#FBBF24" />
+            <stop offset="100%" stopColor="#F59E0B" />
+          </linearGradient>
+          <filter id="faqShadow" x="-30%" y="-30%" width="160%" height="180%">
+            <feDropShadow dx="0" dy="18" stdDeviation="18" floodColor="#0F172A" floodOpacity="0.12" />
+          </filter>
+          <filter id="softShadow" x="-30%" y="-30%" width="160%" height="180%">
+            <feDropShadow dx="0" dy="8" stdDeviation="10" floodColor="#312E81" floodOpacity="0.14" />
+          </filter>
+        </defs>
+
+        <rect x="38" y="30" width="544" height="438" rx="54" fill="url(#faqBg)" />
+        <circle cx="108" cy="112" r="54" fill="#DDD6FE" opacity="0.65" />
+        <circle cx="510" cy="98" r="32" fill="#FDE68A" opacity="0.55" />
+        <circle cx="500" cy="398" r="58" fill="#DBEAFE" opacity="0.55" />
+
+        <g filter="url(#faqShadow)">
+          <rect x="118" y="118" width="384" height="254" rx="30" fill="url(#faqCard)" stroke="#E2E8F0" strokeWidth="2" />
+          <rect x="150" y="150" width="320" height="48" rx="16" fill="#F8FAFC" />
+          <circle cx="177" cy="174" r="11" fill="url(#faqPurple)" />
+          <path d="M174 171c0-4 6-5 8-1 2 4-4 5-4 8" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" />
+          <circle cx="178" cy="183" r="1.5" fill="white" />
+          <rect x="204" y="165" width="154" height="8" rx="4" fill="#1E293B" opacity="0.88" />
+          <rect x="204" y="179" width="108" height="6" rx="3" fill="#94A3B8" opacity="0.75" />
+          <circle cx="438" cy="174" r="13" fill="#EEF2FF" />
+          <path d="m433 171 5 5 5-5" fill="none" stroke="#4F46E5" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+
+          {[0,1,2].map((i)=><g key={i} transform={`translate(0 ${i*54})`}>
+            <line x1="151" y1="218" x2="468" y2="218" stroke="#E2E8F0" />
+            <rect x="160" y="234" width={210-i*24} height="7" rx="3.5" fill="#475569" opacity="0.8" />
+            <rect x="160" y="247" width={128+i*18} height="5" rx="2.5" fill="#CBD5E1" />
+            <circle cx="441" cy="241" r="12" fill="#F8FAFC" />
+            <path d="m436 238 5 5 5-5" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+          </g>)}
+        </g>
+
+        <g filter="url(#softShadow)">
+          <path d="M72 184c0-36 29-65 65-65s65 29 65 65c0 29-19 54-46 62l-10 28-22-24c-30-6-52-33-52-66Z" fill="url(#faqPurple)" />
+          <text x="137" y="207" textAnchor="middle" fontSize="72" fontWeight="800" fill="white" fontFamily="Arial, sans-serif">?</text>
+        </g>
+
+        <g filter="url(#softShadow)">
+          <rect x="430" y="68" width="108" height="62" rx="22" fill="white" stroke="#E2E8F0" />
+          <circle cx="458" cy="99" r="15" fill="url(#faqGold)" />
+          <path d="M458 88v5m0 12v5m-11-11h5m12 0h5" stroke="white" strokeWidth="2.4" strokeLinecap="round" />
+          <rect x="482" y="89" width="36" height="7" rx="3.5" fill="#1E293B" />
+          <rect x="482" y="103" width="26" height="5" rx="2.5" fill="#CBD5E1" />
+        </g>
+
+        <g filter="url(#softShadow)">
+          <path d="M94 355h136c17 0 30 13 30 30v18c0 17-13 30-30 30h-73l-25 22 4-22H94c-17 0-30-13-30-30v-18c0-17 13-30 30-30Z" fill="#0F172A" />
+          <circle cx="112" cy="394" r="6" fill="#A78BFA" />
+          <circle cx="137" cy="394" r="6" fill="#FBBF24" />
+          <circle cx="162" cy="394" r="6" fill="#60A5FA" />
+          <rect x="183" y="386" width="49" height="7" rx="3.5" fill="#E2E8F0" opacity="0.9" />
+          <rect x="183" y="401" width="32" height="5" rx="2.5" fill="#94A3B8" />
+        </g>
+
+        <g transform="translate(393 356)" filter="url(#softShadow)">
+          <rect x="0" y="0" width="124" height="78" rx="20" fill="white" stroke="#E2E8F0" />
+          <rect x="18" y="18" width="52" height="42" rx="8" fill="#EEF2FF" />
+          <path d="M27 32h34M27 41h25M27 50h19" stroke="#6366F1" strokeWidth="4" strokeLinecap="round" />
+          <circle cx="92" cy="39" r="17" fill="#F1F5F9" />
+          <path d="M85 39l5 5 9-11" fill="none" stroke="#16A34A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+
+        <path d="M88 85c24-35 59-51 103-49" fill="none" stroke="#C4B5FD" strokeWidth="3" strokeLinecap="round" strokeDasharray="6 12" />
+        <path d="M527 164c25 24 35 52 28 84" fill="none" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" strokeDasharray="6 12" />
+      </svg>
+    </div>
+  );
+}
 
 export function FAQSection() {
   return (
     <section className="border-y border-border bg-secondary/30">
       <div className="container-page py-16 md:py-20">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-primary-soft px-3.5 py-1.5 text-xs font-bold text-primary shadow-sm">
             <HelpCircle size={14} /> FAQ
           </span>
-          <h2 className="mt-4 text-3xl font-extrabold text-foreground md:text-4xl">
-            Pertanyaan yang Sering Diajukan
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            Jawaban singkat untuk pertanyaan paling umum seputar program Beasiswa Kejar Prestasi.
-          </p>
+          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground md:text-4xl">Pertanyaan yang Sering Diajukan</h2>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground md:text-base">Jawaban singkat untuk pertanyaan paling umum seputar program Beasiswa Kejar Prestasi.</p>
         </div>
 
-        <div className="mx-auto mt-10 grid max-w-6xl items-center gap-8 lg:grid-cols-[0.9fr_1.35fr] lg:gap-12">
-          <div className="flex justify-center">
-            <div className="relative w-full max-w-[440px] overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-[0_24px_70px_rgba(15,23,42,.10)]">
-              <img
-                src={faqVisual}
-                alt="Visual profesional FAQ dan pendidikan Kejar Prestasi"
-                loading="lazy"
-                width={560}
-                height={373}
-                className="aspect-[3/2] w-full object-cover object-left"
-              />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/15 via-transparent to-transparent" />
-            </div>
-          </div>
-
-          <div className="rounded-[1.75rem] border border-border bg-card p-3 shadow-card md:p-4">
+        <div className="mx-auto mt-10 grid max-w-6xl gap-8 lg:grid-cols-[0.95fr_1.35fr] lg:items-center lg:gap-12">
+          <ProfessionalFaqIllustration />
+          <div className="overflow-hidden rounded-[1.75rem] border border-border bg-card p-2 shadow-[0_18px_50px_rgba(15,23,42,.08)] md:p-4">
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((f, i) => (
-                <AccordionItem key={i} value={`item-${i}`} className="border-border/80">
-                  <AccordionTrigger className="px-3 text-left text-sm font-semibold text-foreground hover:no-underline md:text-base">
-                    {f.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="px-3 text-sm leading-6 text-muted-foreground">
-                    {f.a}
-                  </AccordionContent>
+                <AccordionItem key={i} value={`item-${i}`} className="border-border/80 last:border-b-0">
+                  <AccordionTrigger className="px-3 py-5 text-left text-sm font-bold text-foreground hover:no-underline md:px-4 md:text-base">{f.q}</AccordionTrigger>
+                  <AccordionContent className="px-3 pb-5 text-sm leading-6 text-muted-foreground md:px-4">{f.a}</AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>
