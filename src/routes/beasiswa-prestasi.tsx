@@ -4,18 +4,18 @@ import { CategoryPage } from "@/components/CategoryPage";
 export const Route = createFileRoute("/beasiswa-prestasi")({
   head: () => ({
     meta: [
-      { title: "Beasiswa Prestasi — Kejar Prestasi Section #3" },
-      { name: "description", content: "Beasiswa untuk pelajar dan mahasiswa berprestasi akademik maupun non-akademik. Total Rp17.000.000/semester." },
-      { property: "og:title", content: "Beasiswa Prestasi — Kejar Prestasi Section #3" },
-      { property: "og:description", content: "Program beasiswa bagi pelajar dan mahasiswa berprestasi." },
+      { title: "Jalur Prestasi — Kejar Prestasi Section #3" },
+      { name: "description", content: "Jalur apresiasi pendidikan untuk pelajar dan mahasiswa yang aktif mengembangkan pencapaian akademik maupun non-akademik." },
+      { property: "og:title", content: "Jalur Prestasi — Kejar Prestasi Section #3" },
+      { property: "og:description", content: "Kenali manfaat, persiapan, dan tahapan untuk mengikuti jalur Prestasi Kejar Prestasi." },
     ],
   }),
   component: () => (
     <CategoryPage
       kind="prestasi"
-      tagline="Beasiswa Prestasi"
-      title="Beasiswa untuk Pelajar & Mahasiswa Berprestasi"
-      desc="Program beasiswa bagi pelajar dan mahasiswa yang memiliki prestasi akademik maupun non akademik. Tunjukkan pencapaianmu dan raih dukungan pendidikan terbaik."
+      tagline="Jalur Prestasi"
+      title="Ruang Tumbuh untuk Kamu yang Terus Berprestasi"
+      desc="Punya pencapaian di sekolah, kampus, kompetisi, organisasi, seni, atau bidang lainnya? Jadikan perjalananmu sebagai modal untuk memperoleh dukungan pendidikan dan membangun jejaring baru."
       registerTo="/pendaftaran/prestasi"
       shareTo="/bagikan-poster/prestasi"
     />
