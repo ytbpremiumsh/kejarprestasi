@@ -1,0 +1,64 @@
+/* Platinum benefit tablet mockup — intentionally brand/text free */
+article.border-emerald-200 > div[class*="from-emerald-700"][class*="to-teal-600"] {
+  position: relative;
+  min-height: 154px;
+  overflow: hidden;
+  padding-right: 46%;
+  isolation: isolate;
+}
+
+article.border-emerald-200 > div[class*="from-emerald-700"][class*="to-teal-600"]::before {
+  content: "";
+  position: absolute;
+  right: 7%;
+  bottom: 14px;
+  width: 33%;
+  aspect-ratio: 0.72;
+  border-radius: 11px;
+  border: 3px solid rgba(255,255,255,.88);
+  background:
+    radial-gradient(circle at 78% 18%, rgba(255,255,255,.7) 0 2px, transparent 3px),
+    linear-gradient(145deg, #806ff0 0%, #5a4bd6 27%, #ef7d65 58%, #f6ae62 76%, #4738a8 100%);
+  box-shadow:
+    -10px 10px 0 -4px #a7aaae,
+    -12px 12px 0 -3px rgba(255,255,255,.5),
+    0 20px 34px rgba(1,55,38,.38),
+    inset 0 0 0 1px rgba(0,0,0,.28);
+  transform: perspective(420px) rotateY(-8deg) rotateZ(1deg);
+  z-index: -1;
+}
+
+article.border-emerald-200 > div[class*="from-emerald-700"][class*="to-teal-600"]::after {
+  content: "";
+  position: absolute;
+  right: 3%;
+  bottom: -11px;
+  width: 42%;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(214,231,223,.88));
+  box-shadow: 0 12px 22px rgba(0,50,36,.35);
+  z-index: -2;
+}
+
+@media (max-width: 639px) {
+  article.border-emerald-200 > div[class*="from-emerald-700"][class*="to-teal-600"] {
+    min-height: 146px;
+    padding-right: 44%;
+  }
+  article.border-emerald-200 > div[class*="from-emerald-700"][class*="to-teal-600"]::before {
+    right: 6%;
+    width: 31%;
+  }
+}
+
+@media (max-width: 390px) {
+  article.border-emerald-200 > div[class*="from-emerald-700"][class*="to-teal-600"] {
+    padding-right: 38%;
+  }
+  article.border-emerald-200 > div[class*="from-emerald-700"][class*="to-teal-600"]::before {
+    opacity: .88;
+    right: 3%;
+    width: 29%;
+  }
+}
