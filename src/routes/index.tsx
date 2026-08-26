@@ -89,7 +89,7 @@ function FeaturedTabletBenefit() {
       <div className="relative grid items-center gap-7 lg:grid-cols-[1.05fr_.95fr] lg:gap-10">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-emerald-700 shadow-sm"><Crown size={14}/> Benefit Utama Platinum</div>
-          <h2 className="mt-4 max-w-xl text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl lg:text-4xl">Kesempatan memperoleh <span className="text-emerald-700">Tablet Pendidikan & Dana Pendidikan hingga Rp23 Juta / Semester</span> untuk Awardee</h2>
+          <h2 className="mt-4 max-w-xl text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl lg:text-4xl">Kesempatan memperoleh <span className="text-emerald-700">Tablet Pendidikan & Dana Pendidikan</span> untuk Awardee</h2>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Benefit perangkat belajar dan dukungan dana pendidikan hingga Rp23 juta per semester khusus peserta Jalur Akselerasi Platinum yang terpilih menjadi Awardee.</p>
           <div className="mt-5 grid max-w-xl gap-3 sm:grid-cols-3">
             <MiniBenefit icon={<Gift size={18}/>} title="Benefit Eksklusif" text="Khusus jalur Platinum" />
