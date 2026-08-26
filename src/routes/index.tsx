@@ -118,7 +118,7 @@ function FeaturedTabletBenefit() {
               <span className="tablet-home-podium"/>
             </div>
           </div>
-          <div className="mx-auto -mt-2 flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-white/90 px-4 py-2 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur"><ShieldCheck size={14}/> Mockup benefit perangkat pendidikan</div>
+          <div className="mx-auto -mt-2 flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-white/90 px-4 py-2 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur"><ShieldCheck size={14}/> Tablet Pendidikan untuk Awardee</div>
         </div>
       </div>
     </div>
