@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Beasiswa Pendidikan Kejar Prestasi Section #3" },
-      { name: "description", content: "Program beasiswa nasional untuk SD, SMP, SMA/SMK/MA, dan Mahasiswa. Total beasiswa Rp17.000.000/semester. Tidak dipungut biaya." },
+      { name: "description", content: "Program beasiswa nasional untuk SD, SMP, SMA/SMK/MA, dan Mahasiswa. Total dukungan pendidikan hingga Rp23.000.000/semester." },
     ],
   }),
   component: Index,
@@ -51,7 +51,7 @@ function Index() {
         <div className="container-page relative pb-8 sm:pb-12">
           <div className="overflow-hidden rounded-[1.7rem] bg-gradient-to-r from-[oklch(0.31_0.2_285)] via-primary to-[oklch(0.38_0.2_285)] p-1 shadow-[0_20px_50px_oklch(0.35_0.18_285/0.18)]">
             <div className="grid overflow-hidden rounded-[1.45rem] bg-[oklch(0.32_0.2_285)] sm:grid-cols-3">
-              <StatCard icon={<Wallet size={22} />} label="Total Beasiswa" value="Rp17.000.000" sub="per semester" />
+              <StatCard icon={<Wallet size={22} />} label="Dana Pendidikan" value="Hingga Rp23.000.000" sub="per semester" />
               <StatCard icon={<Trophy size={22} />} label="Beasiswa Prestasi" value="Akademik & Non-Akademik" sub="Untuk pelajar berprestasi" />
               <StatCard icon={<HeartHandshake size={22} />} label="Beasiswa Ekonomi" value="Dukungan Finansial" sub="Bagi yang membutuhkan" />
             </div>
@@ -89,11 +89,11 @@ function FeaturedTabletBenefit() {
       <div className="relative grid items-center gap-7 lg:grid-cols-[1.05fr_.95fr] lg:gap-10">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-emerald-700 shadow-sm"><Crown size={14}/> Benefit Utama Platinum</div>
-          <h2 className="mt-4 max-w-xl text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl lg:text-4xl">Kesempatan memperoleh <span className="text-emerald-700">Tablet Pendidikan & Dana Pendidikan</span> untuk Awardee</h2>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Benefit perangkat belajar dan dukungan dana pendidikan khusus peserta Jalur Akselerasi Platinum yang terpilih menjadi Awardee.</p>
+          <h2 className="mt-4 max-w-xl text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl lg:text-4xl">Kesempatan memperoleh <span className="text-emerald-700">Tablet Pendidikan & Dana Pendidikan hingga Rp23 Juta / Semester</span> untuk Awardee</h2>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Benefit perangkat belajar dan dukungan dana pendidikan hingga Rp23 juta per semester khusus peserta Jalur Akselerasi Platinum yang terpilih menjadi Awardee.</p>
           <div className="mt-5 grid max-w-xl gap-3 sm:grid-cols-3">
             <MiniBenefit icon={<Gift size={18}/>} title="Benefit Eksklusif" text="Khusus jalur Platinum" />
-            <MiniBenefit icon={<GraduationCap size={18}/>} title="Tablet & Dana Pendidikan" text="Dukungan untuk kebutuhan belajar" />
+            <MiniBenefit icon={<GraduationCap size={18}/>} title="Tablet & Dana Pendidikan" text="Hingga Rp23 juta / semester" />
             <MiniBenefit icon={<Sparkles size={18}/>} title="Khusus Awardee" text="Berlaku bagi penerima terpilih" />
           </div>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -110,7 +110,7 @@ function FeaturedTabletBenefit() {
               <span className="tablet-home-podium"/>
             </div>
           </div>
-          <div className="mx-auto -mt-2 flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-white/90 px-4 py-2 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur"><ShieldCheck size={14}/> Tablet Pendidikan untuk Awardee</div>
+          <div className="mx-auto -mt-2 flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-white/90 px-4 py-2 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur"><ShieldCheck size={14}/> Tablet Pendidikan + Dana hingga Rp23 Juta</div>
         </div>
       </div>
     </div>
