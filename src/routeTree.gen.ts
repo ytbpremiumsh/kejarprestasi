@@ -25,10 +25,10 @@ import { Route as BagikanPosterIndexRouteImport } from './routes/bagikan-poster.
 import { Route as ArtikelIndexRouteImport } from './routes/artikel.index'
 import { Route as AdministrasiIndexRouteImport } from './routes/administrasi.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as PendaftaranUmumRouteImport } from './routes/pendaftaran.umum'
 import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran.sukses'
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
 import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
-import { Route as PendaftaranUmumRouteImport } from './routes/pendaftaran.umum'
 import { Route as DonasiTerimaKasihRouteImport } from './routes/donasi.terima-kasih'
 import { Route as BerkasTerkirimRouteImport } from './routes/berkas.terkirim'
 import { Route as BerkasPrestasiRouteImport } from './routes/berkas.prestasi'
@@ -38,9 +38,9 @@ import { Route as BagikanprogramEkonomiRouteImport } from './routes/bagikanprogr
 import { Route as BagikanPosterPrestasiRouteImport } from './routes/bagikan-poster.prestasi'
 import { Route as BagikanPosterEkonomiRouteImport } from './routes/bagikan-poster.ekonomi'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
+import { Route as AdministrasiUmumRouteImport } from './routes/administrasi.umum'
 import { Route as AdministrasiPrestasiRouteImport } from './routes/administrasi.prestasi'
 import { Route as AdministrasiEkonomiRouteImport } from './routes/administrasi.ekonomi'
-import { Route as AdministrasiUmumRouteImport } from './routes/administrasi.umum'
 import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
 import { Route as AdminSistemUpdateRouteImport } from './routes/admin.sistem-update'
 import { Route as AdminPengaturanRouteImport } from './routes/admin.pengaturan'
@@ -149,6 +149,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const PendaftaranUmumRoute = PendaftaranUmumRouteImport.update({
+  id: '/pendaftaran/umum',
+  path: '/pendaftaran/umum',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PendaftaranSuksesRoute = PendaftaranSuksesRouteImport.update({
   id: '/pendaftaran/sukses',
   path: '/pendaftaran/sukses',
@@ -162,11 +167,6 @@ const PendaftaranPrestasiRoute = PendaftaranPrestasiRouteImport.update({
 const PendaftaranEkonomiRoute = PendaftaranEkonomiRouteImport.update({
   id: '/pendaftaran/ekonomi',
   path: '/pendaftaran/ekonomi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PendaftaranUmumRoute = PendaftaranUmumRouteImport.update({
-  id: '/pendaftaran/umum',
-  path: '/pendaftaran/umum',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DonasiTerimaKasihRoute = DonasiTerimaKasihRouteImport.update({
@@ -214,6 +214,11 @@ const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
   path: '/artikel/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdministrasiUmumRoute = AdministrasiUmumRouteImport.update({
+  id: '/administrasi/umum',
+  path: '/administrasi/umum',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdministrasiPrestasiRoute = AdministrasiPrestasiRouteImport.update({
   id: '/administrasi/prestasi',
   path: '/administrasi/prestasi',
@@ -222,11 +227,6 @@ const AdministrasiPrestasiRoute = AdministrasiPrestasiRouteImport.update({
 const AdministrasiEkonomiRoute = AdministrasiEkonomiRouteImport.update({
   id: '/administrasi/ekonomi',
   path: '/administrasi/ekonomi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdministrasiUmumRoute = AdministrasiUmumRouteImport.update({
-  id: '/administrasi/umum',
-  path: '/administrasi/umum',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
@@ -411,8 +411,8 @@ export interface FileRoutesByFullPath {
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
-  '/pendaftaran/umum': typeof PendaftaranUmumRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
+  '/pendaftaran/umum': typeof PendaftaranUmumRoute
   '/admin/': typeof AdminIndexRoute
   '/administrasi/': typeof AdministrasiIndexRoute
   '/artikel/': typeof ArtikelIndexRoute
@@ -469,8 +469,8 @@ export interface FileRoutesByTo {
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
-  '/pendaftaran/umum': typeof PendaftaranUmumRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
+  '/pendaftaran/umum': typeof PendaftaranUmumRoute
   '/admin': typeof AdminIndexRoute
   '/administrasi': typeof AdministrasiIndexRoute
   '/artikel': typeof ArtikelIndexRoute
@@ -531,8 +531,8 @@ export interface FileRoutesById {
   '/donasi/terima-kasih': typeof DonasiTerimaKasihRoute
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
-  '/pendaftaran/umum': typeof PendaftaranUmumRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
+  '/pendaftaran/umum': typeof PendaftaranUmumRoute
   '/admin/': typeof AdminIndexRoute
   '/administrasi/': typeof AdministrasiIndexRoute
   '/artikel/': typeof ArtikelIndexRoute
@@ -594,8 +594,8 @@ export interface FileRouteTypes {
     | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
-    | '/pendaftaran/umum'
     | '/pendaftaran/sukses'
+    | '/pendaftaran/umum'
     | '/admin/'
     | '/administrasi/'
     | '/artikel/'
@@ -652,8 +652,8 @@ export interface FileRouteTypes {
     | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
-    | '/pendaftaran/umum'
     | '/pendaftaran/sukses'
+    | '/pendaftaran/umum'
     | '/admin'
     | '/administrasi'
     | '/artikel'
@@ -713,8 +713,8 @@ export interface FileRouteTypes {
     | '/donasi/terima-kasih'
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
-    | '/pendaftaran/umum'
     | '/pendaftaran/sukses'
+    | '/pendaftaran/umum'
     | '/admin/'
     | '/administrasi/'
     | '/artikel/'
@@ -754,8 +754,8 @@ export interface RootRouteChildren {
   DonasiTerimaKasihRoute: typeof DonasiTerimaKasihRoute
   PendaftaranEkonomiRoute: typeof PendaftaranEkonomiRoute
   PendaftaranPrestasiRoute: typeof PendaftaranPrestasiRoute
-  PendaftaranUmumRoute: typeof PendaftaranUmumRoute
   PendaftaranSuksesRoute: typeof PendaftaranSuksesRoute
+  PendaftaranUmumRoute: typeof PendaftaranUmumRoute
   AdministrasiIndexRoute: typeof AdministrasiIndexRoute
   ArtikelIndexRoute: typeof ArtikelIndexRoute
   BagikanPosterIndexRoute: typeof BagikanPosterIndexRoute
@@ -877,6 +877,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/pendaftaran/umum': {
+      id: '/pendaftaran/umum'
+      path: '/pendaftaran/umum'
+      fullPath: '/pendaftaran/umum'
+      preLoaderRoute: typeof PendaftaranUmumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pendaftaran/sukses': {
       id: '/pendaftaran/sukses'
       path: '/pendaftaran/sukses'
@@ -896,13 +903,6 @@ declare module '@tanstack/react-router' {
       path: '/pendaftaran/ekonomi'
       fullPath: '/pendaftaran/ekonomi'
       preLoaderRoute: typeof PendaftaranEkonomiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pendaftaran/umum': {
-      id: '/pendaftaran/umum'
-      path: '/pendaftaran/umum'
-      fullPath: '/pendaftaran/umum'
-      preLoaderRoute: typeof PendaftaranUmumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/donasi/terima-kasih': {
@@ -968,6 +968,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArtikelSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/administrasi/umum': {
+      id: '/administrasi/umum'
+      path: '/administrasi/umum'
+      fullPath: '/administrasi/umum'
+      preLoaderRoute: typeof AdministrasiUmumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/administrasi/prestasi': {
       id: '/administrasi/prestasi'
       path: '/administrasi/prestasi'
@@ -980,13 +987,6 @@ declare module '@tanstack/react-router' {
       path: '/administrasi/ekonomi'
       fullPath: '/administrasi/ekonomi'
       preLoaderRoute: typeof AdministrasiEkonomiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/administrasi/umum': {
-      id: '/administrasi/umum'
-      path: '/administrasi/umum'
-      fullPath: '/administrasi/umum'
-      preLoaderRoute: typeof AdministrasiUmumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/whatsapp': {
@@ -1290,8 +1290,8 @@ const rootRouteChildren: RootRouteChildren = {
   DonasiTerimaKasihRoute: DonasiTerimaKasihRoute,
   PendaftaranEkonomiRoute: PendaftaranEkonomiRoute,
   PendaftaranPrestasiRoute: PendaftaranPrestasiRoute,
-  PendaftaranUmumRoute: PendaftaranUmumRoute,
   PendaftaranSuksesRoute: PendaftaranSuksesRoute,
+  PendaftaranUmumRoute: PendaftaranUmumRoute,
   AdministrasiIndexRoute: AdministrasiIndexRoute,
   ArtikelIndexRoute: ArtikelIndexRoute,
   BagikanPosterIndexRoute: BagikanPosterIndexRoute,
