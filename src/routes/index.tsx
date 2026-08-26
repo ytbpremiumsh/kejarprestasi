@@ -28,7 +28,7 @@ function Index() {
         <div aria-hidden="true" className="pointer-events-none absolute -left-32 bottom-0 h-72 w-72 rounded-full bg-gold/10 blur-3xl" />
         <div className="container-page relative grid items-center gap-8 py-10 sm:py-14 lg:min-h-[620px] lg:grid-cols-[0.92fr_1.08fr] lg:gap-4 lg:py-16">
           <div className="relative z-10 order-1 max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/75 px-4 py-2 text-xs font-bold text-primary shadow-card backdrop-blur"><GraduationCap size={15} /> Program Beasiswa Pendidikan Nasional</div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/75 px-4 py-2 text-xs font-bold text-primary shadow-card backdrop-blur"><GraduationCap size={15} /> Program Beasiswa Pendidikan Section #3</div>
             <h1 className="mt-5 text-[2.55rem] font-black leading-[0.98] tracking-[-0.04em] text-foreground sm:text-5xl md:text-6xl lg:text-[4.35rem]">Raih Pendidikan,<span className="block bg-gradient-to-r from-primary via-[oklch(0.58_0.23_290)] to-[oklch(0.48_0.2_285)] bg-clip-text text-transparent">Wujudkan Prestasi</span></h1>
             <p className="mt-5 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base md:text-lg">Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia. Tanpa minimal nilai, tanpa biaya pendaftaran.</p>
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:max-w-2xl">
