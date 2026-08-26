@@ -58,7 +58,7 @@ function DaftarSelector() {
               cta="Lihat Jalur Ekonomi"
             />
             <ProgramCard
-              to="/pendaftaran/umum"
+              to="/pendaftaran-umum"
               tone="primary"
               icon={<BookOpen size={24}/>}
               eyebrow="Kategori Umum"
@@ -81,7 +81,7 @@ function DaftarSelector() {
   );
 }
 
-function ProgramCard({to,tone,icon,eyebrow,title,desc,bullets,stats,cta}:{to:"/beasiswa-prestasi"|"/beasiswa-ekonomi"|"/pendaftaran/umum";tone:"primary"|"emerald";icon:React.ReactNode;eyebrow:string;title:string;desc:string;bullets:string[];stats:{icon:React.ReactNode;label:string;value:string}[];cta:string}) {
+function ProgramCard({to,tone,icon,eyebrow,title,desc,bullets,stats,cta}:{to:"/beasiswa-prestasi"|"/beasiswa-ekonomi"|"/pendaftaran-umum";tone:"primary"|"emerald";icon:React.ReactNode;eyebrow:string;title:string;desc:string;bullets:string[];stats:{icon:React.ReactNode;label:string;value:string}[];cta:string}) {
   const green=tone==="emerald";
   return <article className={`group relative overflow-hidden rounded-[2rem] border bg-card shadow-[0_20px_55px_rgba(15,23,42,.08)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_28px_70px_rgba(15,23,42,.12)] ${green?"border-emerald-200":"border-primary/15"}`}>
     <div className={`absolute inset-x-0 top-0 h-1.5 ${green?"bg-gradient-to-r from-emerald-500 via-emerald-400 to-teal-400":"bg-gradient-to-r from-primary via-violet-500 to-indigo-500"}`} />
