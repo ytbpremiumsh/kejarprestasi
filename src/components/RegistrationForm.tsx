@@ -8,8 +8,8 @@ import { AdSlot } from "@/components/ads/AdSlot";
 
 type Kind="prestasi"|"ekonomi";
 type Jalur="reguler"|"akselerasi"|"platinum";
-type FormState={full_name:string;birth_place:string;birth_date:string;gender:string;address:string;whatsapp:string;email:string;education_level:string;school_name:string;grade:string};
-const initial:FormState={full_name:"",birth_place:"",birth_date:"",gender:"",address:"",whatsapp:"",email:"",education_level:"",school_name:"",grade:""};
+type FormState={full_name:string;birth_place:string;birth_date:string;gender:string;whatsapp:string;email:string;education_level:string;school_name:string;grade:string};
+const initial:FormState={full_name:"",birth_place:"",birth_date:"",gender:"",whatsapp:"",email:"",education_level:"",school_name:"",grade:""};
 
 export function RegistrationForm({kind}:{kind:Kind}){
   const navigate=useNavigate();
@@ -28,7 +28,7 @@ export function RegistrationForm({kind}:{kind:Kind}){
     if(!/^[+\d\s-]{8,25}$/.test(form.whatsapp))return toast.error("Nomor WhatsApp tidak valid");
     setSubmitting(true);
     try{
-      const payload={...form,kind,status:jalur==="reguler"?"pending":"approved",extra:{jalur_pendaftaran:jalur}};
+      const payload={...form,address:"-",kind,status:jalur==="reguler"?"pending":"approved",extra:{jalur_pendaftaran:jalur}};
       const{token}=await submitRegistrationFn({data:payload as never});
       supabase.functions.invoke("send-whatsapp",{body:{type:"pendaftaran",full_name:form.full_name,email:form.email,whatsapp:form.whatsapp,kind,token}}).catch(()=>{});
       sendAppEmail({data:{templateName:"registration-confirmation",recipientEmail:form.email,idempotencyKey:`reg-${token}`,templateData:{fullName:form.full_name,token,kind,whatsapp:form.whatsapp}}}).catch(()=>{});
@@ -102,7 +102,6 @@ export function RegistrationForm({kind}:{kind:Kind}){
               <Select icon={<GraduationCap size={16}/>} label="Jenjang Pendidikan" placeholder="Pilih jenjang pendidikan" value={form.education_level} onChange={v=>set("education_level",v)} options={["SD/MI","SMP/MTs","SMA/SMK/MA","D3","D4/S1","S2"]}/>
               <Field icon={<School size={16}/>} label="Sekolah / Kampus" placeholder="Contoh: SMA Negeri 1 / Universitas Indonesia" value={form.school_name} onChange={v=>set("school_name",v)}/>
               <Field icon={<GraduationCap size={16}/>} label="Kelas / Semester" placeholder="Contoh: XII IPA 1 / Semester 4" value={form.grade} onChange={v=>set("grade",v)}/>
-              <label className="sm:col-span-2"><span className="flex items-center gap-2 text-xs font-semibold text-foreground"><MapPin size={15} className="text-primary"/>Alamat Domisili</span><textarea required value={form.address} onChange={e=>set("address",e.target.value)} rows={4} className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3.5 text-sm outline-none transition placeholder:text-muted-foreground/55 focus:border-primary focus:ring-4 focus:ring-primary/10" placeholder="Contoh: Jl. Pendidikan No. 10, Kecamatan ..., Kabupaten/Kota ..., Provinsi ..."/></label>
             </div>
           </div>
         </div>
