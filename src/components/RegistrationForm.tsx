@@ -102,8 +102,8 @@ export function RegistrationForm({kind}:{kind:Kind}){
 
           <div className="p-5 sm:p-7">
             <div className="grid gap-x-5 gap-y-5 sm:grid-cols-2">
-              <Field icon={<UserRound size={16}/>} label="Nama Lengkap" placeholder="Contoh: Rizky Pratama" value={form.full_name} onChange={v=>set("full_name",v)}/>
-              <Field icon={<MapPin size={16}/>} label="Tempat Lahir" placeholder="Contoh: Purwokerto" value={form.birth_place} onChange={v=>set("birth_place",v)}/>
+              <Field icon={<UserRound size={16}/>} label="Nama Lengkap" placeholder="Contoh: Andi Saputra" value={form.full_name} onChange={v=>set("full_name",v)}/>
+              <Field icon={<MapPin size={16}/>} label="Tempat Lahir" placeholder="Contoh: Bandung" value={form.birth_place} onChange={v=>set("birth_place",v)}/>
               <Field icon={<CalendarDays size={16}/>} label="Tanggal Lahir" type="date" value={form.birth_date} onChange={v=>set("birth_date",v)}/>
               <Select icon={<VenetianMask size={16}/>} label="Jenis Kelamin" placeholder="Pilih jenis kelamin" value={form.gender} onChange={v=>set("gender",v)} options={["Laki-laki","Perempuan"]}/>
               <Field icon={<Phone size={16}/>} label="Nomor WhatsApp Aktif" type="tel" placeholder="Contoh: 081234567890" value={form.whatsapp} onChange={v=>set("whatsapp",v)}/>
