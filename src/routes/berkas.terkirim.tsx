@@ -3,7 +3,7 @@ import { CheckCircle2, Home, FileText } from "lucide-react";
 import { z } from "zod";
 
 const searchSchema = z.object({
-  kind: z.enum(["prestasi", "ekonomi"]).optional(),
+  kind: z.enum(["prestasi", "ekonomi", "umum"]).optional(),
   count: z.number().optional(),
 });
 
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/berkas/terkirim")({
 
 function BerkasTerkirim() {
   const { kind, count } = useSearch({ from: "/berkas/terkirim" });
-  const jenis = kind === "prestasi" ? "Beasiswa Prestasi" : kind === "ekonomi" ? "Beasiswa Ekonomi" : "Beasiswa";
+  const jenis = kind === "prestasi" ? "Beasiswa Prestasi" : kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "umum" ? "Beasiswa Umum" : "Beasiswa";
 
   return (
     <section className="container-page py-16 md:py-24">

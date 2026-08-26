@@ -8,7 +8,7 @@ type Search = {
   name?: string;
   email?: string;
   whatsapp?: string;
-  kind?: "prestasi" | "ekonomi";
+  kind?: "prestasi" | "ekonomi" | "umum";
   token?: string;
 };
 
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/pendaftaran/sukses")({
     name: typeof s.name === "string" ? s.name : undefined,
     email: typeof s.email === "string" ? s.email : undefined,
     whatsapp: typeof s.whatsapp === "string" ? s.whatsapp : undefined,
-    kind: s.kind === "prestasi" || s.kind === "ekonomi" ? s.kind : undefined,
+    kind: s.kind === "prestasi" || s.kind === "ekonomi" || s.kind === "umum" ? s.kind : undefined,
     token: typeof s.token === "string" ? s.token : undefined,
   }),
   component: SuksesPage,
@@ -31,8 +31,8 @@ export const Route = createFileRoute("/pendaftaran/sukses")({
 
 function SuksesPage() {
   const { name, email, whatsapp, kind, token } = useSearch({ from: "/pendaftaran/sukses" });
-  const berkasTo = kind === "ekonomi" ? "/berkas/ekonomi/upload" : "/berkas/prestasi/upload";
-  const jenis = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "prestasi" ? "Beasiswa Prestasi" : "Beasiswa";
+  const berkasTo = kind === "umum" ? "/administrasi/umum" : kind === "ekonomi" ? "/berkas/ekonomi/upload" : "/berkas/prestasi/upload";
+  const jenis = kind === "ekonomi" ? "Beasiswa Ekonomi" : kind === "prestasi" ? "Beasiswa Prestasi" : "Beasiswa Umum";
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -97,17 +97,17 @@ function SuksesPage() {
             </div>
             <div className="flex-1">
               <div className="text-xs font-bold uppercase tracking-wide text-primary">Langkah 2 dari 3</div>
-              <h2 className="mt-0.5 text-lg font-extrabold text-foreground">Bagikan Poster Beasiswa</h2>
+              <h2 className="mt-0.5 text-lg font-extrabold text-foreground">{kind==="umum"?"Selesaikan Studi Kasus":"Bagikan Poster Beasiswa"}</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Sebelum kirim berkas, bantu sebarkan informasi beasiswa ini dengan membagikan poster ke media sosial atau grup WhatsApp. Lalu kirim bukti share via WhatsApp admin.
+                {kind==="umum"?"Jawab lima studi kasus menggunakan kode pendaftaran sebelum melanjutkan ke Administrasi Program.":"Sebelum kirim berkas, bantu sebarkan informasi beasiswa ini dengan membagikan poster ke media sosial atau grup WhatsApp. Lalu kirim bukti share via WhatsApp admin."}
               </p>
             </div>
           </div>
           <Link
-            to={kind === "ekonomi" ? "/bagikan-poster/ekonomi" : "/bagikan-poster/prestasi"}
+            to={kind === "umum" ? "/studi-kasus" : kind === "ekonomi" ? "/bagikan-poster/ekonomi" : "/bagikan-poster/prestasi"}
             className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 transition"
           >
-            Bagikan Poster Sekarang <ArrowRight size={16} />
+            {kind==="umum"?"Buka Studi Kasus":"Bagikan Poster Sekarang"} <ArrowRight size={16} />
           </Link>
         </div>
 
@@ -126,7 +126,7 @@ function SuksesPage() {
             </div>
           </div>
           <Link
-            to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload"}
+            to={berkasTo as "/berkas/prestasi/upload" | "/berkas/ekonomi/upload" | "/administrasi/umum"}
             search={token ? { token } : undefined}
             className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground hover:bg-muted transition"
           >

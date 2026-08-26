@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BadgeCheck, GraduationCap, HeartHandshake, ShieldCheck, Sparkles, Trophy, Users, Wallet } from "lucide-react";
+import { ArrowRight, BadgeCheck, BookOpen, GraduationCap, HeartHandshake, ShieldCheck, Sparkles, Trophy, Users, Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/daftar")({
   head: () => ({
@@ -27,13 +27,13 @@ function DaftarSelector() {
             </header>
 
             <div className="grid grid-cols-3 gap-2 rounded-2xl border border-border bg-white/75 p-2 shadow-card backdrop-blur sm:min-w-[360px]">
-              <InfoPill value="2" label="Kategori" />
+              <InfoPill value="3" label="Kategori" />
               <InfoPill value="3" label="Jalur" />
               <InfoPill value="Rp0" label="Reguler" />
             </div>
           </div>
 
-          <section className="mt-9 grid gap-5 lg:grid-cols-2">
+          <section className="mt-9 grid gap-5 lg:grid-cols-3">
             <ProgramCard
               to="/beasiswa-prestasi"
               tone="primary"
@@ -57,6 +57,17 @@ function DaftarSelector() {
               stats={[{icon:<Wallet size={15}/>,label:"Fokus",value:"Dukungan"},{icon:<BadgeCheck size={15}/>,label:"Reguler",value:"Gratis"}]}
               cta="Lihat Jalur Ekonomi"
             />
+            <ProgramCard
+              to="/pendaftaran/umum"
+              tone="primary"
+              icon={<BookOpen size={24}/>}
+              eyebrow="Kategori Umum"
+              title="Beasiswa Umum"
+              desc="Kategori terbuka bagi mahasiswa yang ingin memperoleh dukungan pendidikan dan pengembangan diri."
+              bullets={["Terbuka untuk mahasiswa", "Seleksi studi kasus", "Administrasi berbasis portofolio"]}
+              stats={[{icon:<Users size={15}/>,label:"Kategori",value:"Umum"},{icon:<BadgeCheck size={15}/>,label:"Reguler",value:"Gratis"}]}
+              cta="Daftar Beasiswa Umum"
+            />
           </section>
 
           <div className="mt-7 grid gap-3 rounded-[1.6rem] border border-border bg-white/75 p-4 shadow-card backdrop-blur sm:grid-cols-3 sm:p-5">
@@ -70,7 +81,7 @@ function DaftarSelector() {
   );
 }
 
-function ProgramCard({to,tone,icon,eyebrow,title,desc,bullets,stats,cta}:{to:"/beasiswa-prestasi"|"/beasiswa-ekonomi";tone:"primary"|"emerald";icon:React.ReactNode;eyebrow:string;title:string;desc:string;bullets:string[];stats:{icon:React.ReactNode;label:string;value:string}[];cta:string}) {
+function ProgramCard({to,tone,icon,eyebrow,title,desc,bullets,stats,cta}:{to:"/beasiswa-prestasi"|"/beasiswa-ekonomi"|"/pendaftaran/umum";tone:"primary"|"emerald";icon:React.ReactNode;eyebrow:string;title:string;desc:string;bullets:string[];stats:{icon:React.ReactNode;label:string;value:string}[];cta:string}) {
   const green=tone==="emerald";
   return <article className={`group relative overflow-hidden rounded-[2rem] border bg-card shadow-[0_20px_55px_rgba(15,23,42,.08)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_28px_70px_rgba(15,23,42,.12)] ${green?"border-emerald-200":"border-primary/15"}`}>
     <div className={`absolute inset-x-0 top-0 h-1.5 ${green?"bg-gradient-to-r from-emerald-500 via-emerald-400 to-teal-400":"bg-gradient-to-r from-primary via-violet-500 to-indigo-500"}`} />

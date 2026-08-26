@@ -6,7 +6,7 @@ import { submitRegistrationFn,sendAppEmail } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 import { AdSlot } from "@/components/ads/AdSlot";
 
-type Kind="prestasi"|"ekonomi";
+type Kind="prestasi"|"ekonomi"|"umum";
 type Jalur="reguler"|"akselerasi"|"platinum";
 type FormState={full_name:string;birth_place:string;birth_date:string;gender:string;whatsapp:string;email:string;education_level:string;school_name:string;grade:string};
 const initial:FormState={full_name:"",birth_place:"",birth_date:"",gender:"",whatsapp:"",email:"",education_level:"",school_name:"",grade:""};
@@ -25,7 +25,7 @@ export function RegistrationForm({kind}:{kind:Kind}){
   const jalur:Jalur=search.jalur==="akselerasi"||search.jalur==="platinum"?search.jalur:"reguler";
   const[form,setForm]=useState<FormState>(initial),[submitting,setSubmitting]=useState(false);
   const isPrestasi=kind==="prestasi";
-  const kategoriLabel=isPrestasi?"Prestasi":"Ekonomi";
+  const kategoriLabel=isPrestasi?"Prestasi":kind==="ekonomi"?"Ekonomi":"Umum";
   const jalurLabel=jalur==="platinum"?"Akselerasi Platinum":jalur==="akselerasi"?"Akselerasi":"Reguler";
   const set=(k:keyof FormState,v:string)=>setForm(s=>({...s,[k]:v}));
   const setEducationLevel=(education_level:string)=>setForm(s=>({...s,education_level,grade:""}));
@@ -68,7 +68,7 @@ export function RegistrationForm({kind}:{kind:Kind}){
       <div className="pointer-events-none absolute -left-20 -top-28 h-72 w-72 rounded-full bg-primary/10 blur-3xl"/>
       <div className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full bg-primary/5 blur-3xl"/>
       <div className="container-page relative py-9 md:py-12">
-        <Link to={isPrestasi?"/beasiswa-prestasi":"/beasiswa-ekonomi"} className="inline-flex text-xs font-semibold text-primary">← Kembali ke halaman beasiswa</Link>
+        <Link to={isPrestasi?"/beasiswa-prestasi":kind==="ekonomi"?"/beasiswa-ekonomi":"/daftar"} className="inline-flex text-xs font-semibold text-primary">← Kembali ke halaman beasiswa</Link>
         <div className="mt-6 overflow-hidden rounded-[2rem] border border-border bg-card shadow-card">
           <div className="grid lg:grid-cols-[1fr_360px]">
             <div className="p-6 md:p-8 lg:p-9">

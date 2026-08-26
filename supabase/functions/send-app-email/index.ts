@@ -49,7 +49,9 @@ function kindLabel(k?: string) {
     ? "Beasiswa Prestasi"
     : k === "ekonomi"
       ? "Beasiswa Ekonomi"
-      : "Beasiswa";
+      : k === "umum"
+        ? "Beasiswa Umum"
+        : "Beasiswa";
 }
 
 function buildPlaceholders(props: Record<string, unknown>) {

@@ -20,8 +20,8 @@ const Input = z.object({
     .string()
     .trim()
     .transform((v) => v.toUpperCase())
-    .pipe(z.string().regex(/^KP-(PRE|EKO)-[A-Z0-9]{4,10}$/)),
-  kind: z.enum(["prestasi", "ekonomi"]),
+    .pipe(z.string().regex(/^KP-(PRE|EKO|UMM)-[A-Z0-9]{4,10}$/)),
+  kind: z.enum(["prestasi", "ekonomi", "umum"]),
   documents: z
     .array(
       z.object({
@@ -32,6 +32,7 @@ const Input = z.object({
     )
     .min(1)
     .max(20),
+  responses: z.record(z.string(), z.string().max(1500)).optional().default({}),
 });
 
 serve(async (req) => {
@@ -50,7 +51,7 @@ serve(async (req) => {
     }
     const data = parsed.data;
 
-    const expectedPrefix = data.kind === "prestasi" ? "KP-PRE-" : "KP-EKO-";
+    const expectedPrefix = data.kind === "prestasi" ? "KP-PRE-" : data.kind === "ekonomi" ? "KP-EKO-" : "KP-UMM-";
     if (!data.token.startsWith(expectedPrefix)) {
       return new Response(JSON.stringify({ error: "Kode pendaftar tidak sesuai kategori." }), {
         status: 400,
@@ -60,7 +61,7 @@ serve(async (req) => {
 
     const { data: reg, error: regErr } = await supabaseAdmin
       .from("registrations")
-      .select("id, email, full_name")
+      .select("id, email, full_name, extra")
       .eq("token", data.token)
       .eq("kind", data.kind)
       .maybeSingle();
@@ -90,6 +91,14 @@ serve(async (req) => {
       .upsert(rows, { onConflict: "email_key,kind,doc_key" });
 
     if (error) throw new Error(error.message);
+
+    if (Object.keys(data.responses).length) {
+      const { error: responseError } = await supabaseAdmin
+        .from("registrations")
+        .update({ extra: { ...(reg.extra || {}), administrasi_umum: data.responses } })
+        .eq("id", reg.id);
+      if (responseError) throw new Error(responseError.message);
+    }
 
     return new Response(JSON.stringify({ count: rows.length }), {
       status: 200,

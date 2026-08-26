@@ -20,7 +20,7 @@ type RecentRow = {
   id: string;
   full_name: string;
   email: string;
-  kind: "prestasi" | "ekonomi";
+  kind: "prestasi" | "ekonomi" | "umum";
   status: string;
   school_name: string;
   education_level: string;
@@ -28,7 +28,7 @@ type RecentRow = {
 };
 
 type LiteRow = {
-  kind: "prestasi" | "ekonomi";
+  kind: "prestasi" | "ekonomi" | "umum";
   education_level: string;
   created_at: string;
 };
@@ -57,7 +57,7 @@ function ChartFallback() {
 function AdminOverview() {
   const [recent, setRecent] = useState<RecentRow[]>([]);
   const [lite, setLite] = useState<LiteRow[]>([]);
-  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, pending: 0, today: 0, docs: 0 });
+  const [counts, setCounts] = useState({ total: 0, prestasi: 0, ekonomi: 0, umum: 0, pending: 0, today: 0, docs: 0 });
   const [loading, setLoading] = useState(true);
   const [notif, setNotif] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
@@ -80,6 +80,7 @@ function AdminOverview() {
         totalRes,
         prestasiRes,
         ekonomiRes,
+        umumRes,
         pendingRes,
         todayRes,
         docsRes,
@@ -95,6 +96,7 @@ function AdminOverview() {
         supabase.from("registrations").select("id", { count: "exact", head: true }),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "prestasi"),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "ekonomi"),
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("kind", "umum"),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("registrations").select("id", { count: "exact", head: true }).gte("created_at", startToday.toISOString()),
         supabase.from("documents").select("id", { count: "exact", head: true }),
@@ -107,6 +109,7 @@ function AdminOverview() {
         total: totalRes.count ?? 0,
         prestasi: prestasiRes.count ?? 0,
         ekonomi: ekonomiRes.count ?? 0,
+        umum: umumRes.count ?? 0,
         pending: pendingRes.count ?? 0,
         today: todayRes.count ?? 0,
         docs: docsRes.count ?? 0,
@@ -134,10 +137,11 @@ function AdminOverview() {
             today: c.today + 1,
             prestasi: c.prestasi + (newRow.kind === "prestasi" ? 1 : 0),
             ekonomi: c.ekonomi + (newRow.kind === "ekonomi" ? 1 : 0),
+            umum: c.umum + (newRow.kind === "umum" ? 1 : 0),
           }));
           if (notif) {
             toast.success(`Pendaftar baru: ${newRow.full_name}`, {
-              description: `${newRow.kind === "prestasi" ? "Beasiswa Prestasi" : "Beasiswa Ekonomi"} · ${newRow.school_name}`,
+              description: `${newRow.kind === "prestasi" ? "Beasiswa Prestasi" : newRow.kind === "ekonomi" ? "Beasiswa Ekonomi" : "Beasiswa Umum"} · ${newRow.school_name}`,
               duration: 8000,
             });
             try { audioRef.current?.play().catch(() => {}); } catch { /* ignore */ }
@@ -167,7 +171,7 @@ function AdminOverview() {
     for (const r of lite) {
       const j = normalizeJenjang(r.education_level);
       const cur = map.get(j) ?? { name: j, prestasi: 0, ekonomi: 0, total: 0 };
-      if (r.kind === "prestasi") cur.prestasi++; else cur.ekonomi++;
+      if (r.kind === "prestasi") cur.prestasi++; else if (r.kind === "ekonomi") cur.ekonomi++;
       cur.total++;
       map.set(j, cur);
     }
@@ -177,6 +181,7 @@ function AdminOverview() {
   const byKind = useMemo(() => [
     { name: "Prestasi", value: counts.prestasi },
     { name: "Ekonomi", value: counts.ekonomi },
+    { name: "Umum", value: counts.umum },
   ], [counts]);
 
   const last14 = useMemo(() => {
@@ -204,6 +209,7 @@ function AdminOverview() {
     { label: "Hari Ini", value: counts.today, icon: Clock, color: "text-emerald-700", bg: "bg-emerald-100" },
     { label: "Beasiswa Prestasi", value: counts.prestasi, icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
     { label: "Beasiswa Ekonomi", value: counts.ekonomi, icon: HeartHandshake, color: "text-accent-foreground", bg: "bg-accent/30" },
+    { label: "Beasiswa Umum", value: counts.umum, icon: GraduationCap, color: "text-sky-700", bg: "bg-sky-100" },
     { label: "Berkas Diunggah", value: counts.docs, icon: FileText, color: "text-blue-700", bg: "bg-blue-100" },
   ];
 
@@ -228,7 +234,7 @@ function AdminOverview() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {items.map((it) => (
           <Card key={it.label} className="rounded-2xl p-5 shadow-soft">
             <div className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg ${it.bg} ${it.color}`}>
