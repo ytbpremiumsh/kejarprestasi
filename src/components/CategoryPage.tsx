@@ -10,7 +10,7 @@ type PathId="reguler"|"akselerasi"|"platinum";
 
 const quickFacts=[
   {icon:Users,label:"Jenjang",value:"SD – Mahasiswa"},
-  {icon:Wallet,label:"Dukungan",value:"hingga Rp17 Juta"},
+  {icon:Wallet,label:"Dana Pendidikan",value:"hingga Rp23 Juta / Semester"},
   {icon:BadgeCheck,label:"Reguler",value:"Gratis"},
 ];
 
@@ -41,23 +41,19 @@ export function CategoryPage({kind,title,tagline,desc,registerTo,shareTo}:{kind:
 
           <aside className={`rounded-[1.8rem] border p-5 shadow-soft ${isGold?"border-gold/20 bg-gold/8":"border-primary/15 bg-primary-soft/60"}`}>
             <div className="flex items-center gap-4"><span className={`grid h-12 w-12 place-items-center rounded-2xl ${isGold?"bg-gold text-white":"bg-primary text-primary-foreground"}`}><MainIcon size={22}/></span><div><p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Ringkasan Program</p><p className="mt-1 text-xl font-extrabold">{isGold?"Jalur Ekonomi":"Jalur Prestasi"}</p></div></div>
-            <div className="mt-5 grid gap-2">{quickFacts.map(({icon:FactIcon,label,value})=><div key={label} className="flex items-center justify-between rounded-xl border border-border/70 bg-background/80 px-3.5 py-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><FactIcon size={15}/>{label}</div><b className="text-sm">{value}</b></div>)}</div>
+            <div className="mt-5 grid gap-2">{quickFacts.map(({icon:FactIcon,label,value})=><div key={label} className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-background/80 px-3.5 py-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><FactIcon size={15}/>{label}</div><b className="text-right text-sm">{value}</b></div>)}</div>
           </aside>
         </div>
       </div>
     </section>
 
     <AdSlot placement="category_top"/>
-
     <section className="container-page py-10 md:py-14">
       <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between"><div><span className="text-[10px] font-bold uppercase tracking-widest text-primary">Yang perlu diketahui</span><h2 className="mt-1 text-2xl font-extrabold md:text-3xl">Singkat, jelas, langsung ke inti</h2></div><p className="max-w-xl text-sm text-muted-foreground">Informasi utama program diringkas agar kamu tidak perlu membaca terlalu banyak teks sebelum mendaftar.</p></div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{benefits.map(({icon:BenefitIcon,title:benefitTitle})=><div key={benefitTitle} className="rounded-2xl border border-border bg-card p-4 shadow-card"><span className={`grid h-10 w-10 place-items-center rounded-xl ${isGold?"bg-gold/10 text-[oklch(0.55_0.16_75)]":"bg-primary-soft text-primary"}`}><BenefitIcon size={18}/></span><h3 className="mt-4 text-sm font-extrabold">{benefitTitle}</h3></div>)}</div>
     </section>
-
     <AdSlot placement="category_middle"/>
-
     <section className="container-page py-6 md:py-10"><div className="rounded-[1.8rem] border border-border bg-card p-5 shadow-card md:p-7"><div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-center"><div><span className="text-[10px] font-bold uppercase tracking-widest text-primary">Pendaftaran</span><h2 className="mt-1 text-2xl font-extrabold">Pilih jalur yang paling sesuai</h2><p className="mt-1.5 text-sm text-muted-foreground">Reguler, Akselerasi, atau Platinum dapat dibandingkan dalam satu tampilan.</p></div><div className="grid w-full grid-cols-2 gap-3 md:w-[360px]"><button type="button" onClick={()=>setShowPaths(true)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground">Pilih Jalur <ArrowRight size={16}/></button><Link to={shareTo} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold">Bagikan <Share2 size={15}/></Link></div></div></div></section>
-
     <AdSlot placement="category_bottom"/>
     {showPaths&&<RegistrationPathModal registerTo={registerTo} kind={kind} onClose={()=>setShowPaths(false)}/>} 
   </>;
@@ -68,8 +64,8 @@ function RegistrationPathModal({registerTo,kind,onClose}:{registerTo:Registratio
   const programName=kind==="prestasi"?"Prestasi":"Ekonomi";
   const paths=[
     {id:"reguler" as PathId,name:"Reguler",price:"Gratis",icon:Clock3,theme:"regular" as const,desc:"Tanpa biaya",features:["Bagikan Twibbon","Bagikan Poster","Follow Instagram resmi"]},
-    {id:"akselerasi" as PathId,name:"Akselerasi",price:"Rp15.000",icon:Zap,theme:"accent" as const,badge:"REKOMENDASI",desc:"Proses lebih cepat",highlight:"Lolos administrasi otomatis",features:["Peluang dana pendidikan","Proses dipercepat","E-Sertifikat","E-Book & E-Sheet"]},
-    {id:"platinum" as PathId,name:"Platinum",price:"Rp45.000",icon:Crown,theme:"premium" as const,badge:"PREMIUM",desc:"Benefit eksklusif",highlight:"Lolos administrasi otomatis",features:["Peluang dana + Tablet Awardee","Prioritas proses","E-Sertifikat","E-Book & E-Sheet"]},
+    {id:"akselerasi" as PathId,name:"Akselerasi",price:"Rp15.000",icon:Zap,theme:"accent" as const,badge:"REKOMENDASI",desc:"Proses lebih cepat",highlight:"Lolos administrasi otomatis",features:["Peluang dana pendidikan hingga Rp23 juta / semester","Proses dipercepat","E-Sertifikat","E-Book & E-Sheet"]},
+    {id:"platinum" as PathId,name:"Platinum",price:"Rp45.000",icon:Crown,theme:"premium" as const,badge:"PREMIUM",desc:"Benefit eksklusif",highlight:"Lolos administrasi otomatis",features:["Peluang dana hingga Rp23 juta / semester + Tablet Awardee","Prioritas proses","E-Sertifikat","E-Book & E-Sheet"]},
   ];
   const renderCard=(path:typeof paths[number])=>{const I=path.icon;const premium=path.theme==="premium";const accent=path.theme==="accent";const target=`${registerTo}?jalur=${path.id}` as RegistrationPath;return <article key={path.id} className={`relative flex h-full flex-col rounded-[1.5rem] border bg-card p-5 shadow-card ${premium?"border-emerald-200":accent?"border-amber-300":"border-border"}`}>
     {path.badge&&<span className={`absolute right-0 top-0 rounded-bl-xl px-3 py-2 text-[9px] font-black tracking-wider text-white ${premium?"bg-emerald-600":"bg-orange-500"}`}>{path.badge}</span>}
