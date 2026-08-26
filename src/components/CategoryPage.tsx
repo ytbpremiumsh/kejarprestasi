@@ -8,52 +8,55 @@ type RegistrationPath="/pendaftaran/prestasi"|"/pendaftaran/ekonomi";
 type SharePath="/bagikan-poster/prestasi"|"/bagikan-poster/ekonomi";
 type PathId="reguler"|"akselerasi"|"platinum";
 
-const quickFacts=[
-  {icon:Users,label:"Jenjang",value:"SD – Mahasiswa"},
-  {icon:Wallet,label:"Dana Pendidikan",value:"hingga Rp23 Juta / Semester"},
-  {icon:BadgeCheck,label:"Reguler",value:"Gratis"},
-];
-
 export function CategoryPage({kind,title,tagline,desc,registerTo,shareTo}:{kind:CategoryKind;title:string;tagline:string;desc:string;registerTo:RegistrationPath;shareTo:SharePath}){
   const isGold=kind==="ekonomi";
   const MainIcon=isGold?HeartHandshake:Trophy;
   const[showPaths,setShowPaths]=useState(false);
-  const points=isGold?
-    ["Terbuka untuk pelajar & mahasiswa","Tidak ada minimal nilai/IPK","Fokus pada kebutuhan pendidikan","Seleksi dilakukan bertahap"]:
-    ["Terbuka untuk pelajar & mahasiswa","Tidak ada minimal nilai/IPK","Prestasi akademik/non-akademik diterima","Seleksi dilakukan bertahap"];
-  const benefits=isGold?
-    [{icon:Wallet,title:"Dukungan Pendidikan"},{icon:HeartHandshake,title:"Akses Lebih Terbuka"},{icon:Users,title:"Komunitas Peserta"},{icon:ShieldCheck,title:"Sertifikat Program"}]:
-    [{icon:Trophy,title:"Apresiasi Prestasi"},{icon:Sparkles,title:"Dukungan Semester"},{icon:Users,title:"Komunitas Peserta"},{icon:ShieldCheck,title:"Sertifikat Program"}];
+  const facts=[
+    {label:"Dana Pendidikan",value:"Hingga Rp23 Juta",sub:"per semester",icon:Wallet},
+    {label:"Jenjang",value:"SD – Mahasiswa",sub:"cakupan nasional",icon:Users},
+    {label:"Reguler",value:"Gratis",sub:"tanpa biaya",icon:BadgeCheck},
+  ];
+  const highlights=isGold?
+    [{icon:Wallet,title:"Dukungan Finansial",text:"Untuk membantu kebutuhan pendidikan."},{icon:HeartHandshake,title:"Akses Terbuka",text:"Tanpa minimal nilai atau IPK."},{icon:ShieldCheck,title:"Proses Terarah",text:"Tahapan seleksi jelas dan terukur."},{icon:Users,title:"Komunitas",text:"Terhubung dengan peserta lainnya."}]:
+    [{icon:Trophy,title:"Prestasi Diapresiasi",text:"Akademik maupun non-akademik."},{icon:Sparkles,title:"Dukungan Semester",text:"Dana pendidikan hingga Rp23 juta."},{icon:ShieldCheck,title:"Proses Terarah",text:"Tahapan seleksi jelas dan terukur."},{icon:Users,title:"Komunitas",text:"Terhubung dengan peserta lainnya."}];
 
   return <>
-    <section className="relative overflow-hidden border-b border-border bg-background">
-      <div className={`absolute inset-x-0 top-0 h-56 opacity-60 blur-3xl ${isGold?"bg-gold/10":"bg-primary/10"}`}/>
-      <div className="container-page relative py-10 md:py-14 lg:py-16">
-        <Link to="/" className="text-xs font-semibold text-muted-foreground hover:text-primary">← Kembali ke Beranda</Link>
-        <div className="mt-7 grid gap-8 lg:grid-cols-[1fr_360px] lg:items-center">
-          <div className="max-w-3xl">
-            <span className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-bold ${isGold?"border-gold/25 bg-gold/10 text-[oklch(0.55_0.16_75)]":"border-primary/15 bg-primary-soft text-primary"}`}><MainIcon size={16}/>{tagline}</span>
-            <h1 className="mt-4 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{title}</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">{desc}</p>
-            <div className="mt-6 grid max-w-2xl gap-2 sm:grid-cols-2">{points.map(p=><div key={p} className="flex items-center gap-2 rounded-xl border border-border bg-card px-3.5 py-3 text-sm"><span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${isGold?"bg-gold/10 text-[oklch(0.55_0.16_75)]":"bg-primary-soft text-primary"}`}><Check size={13}/></span><span>{p}</span></div>)}</div>
-            <div className="mt-6 grid max-w-md grid-cols-2 gap-3"><button type="button" onClick={()=>setShowPaths(true)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-soft transition hover:-translate-y-0.5">Daftar Sekarang <ArrowRight size={16}/></button><Link to={shareTo} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold hover:border-primary/30 hover:text-primary"><Share2 size={16}/> Bagikan Program</Link></div>
+    <section className={`relative overflow-hidden border-b border-border/70 ${isGold?"bg-[radial-gradient(circle_at_85%_15%,rgba(245,158,11,.12),transparent_30%),linear-gradient(180deg,#fffdfa,#fff)]":"bg-[radial-gradient(circle_at_85%_15%,rgba(109,40,217,.12),transparent_30%),linear-gradient(180deg,#fcfbff,#fff)]"}`}>
+      <div className="container-page py-8 md:py-12 lg:py-14">
+        <div className="mb-6 flex items-center justify-between gap-4"><Link to="/" className="text-xs font-bold text-muted-foreground transition hover:text-primary">← Beranda</Link><span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[.16em] ${isGold?"border-amber-200 bg-amber-50 text-amber-700":"border-primary/15 bg-primary-soft text-primary"}`}>{tagline}</span></div>
+        <div className="grid gap-5 lg:grid-cols-[1.15fr_.85fr] lg:items-stretch">
+          <div className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-white p-6 shadow-[0_22px_65px_rgba(15,23,42,.08)] sm:p-8 lg:p-10">
+            <div className={`absolute right-0 top-0 h-40 w-40 rounded-bl-[7rem] ${isGold?"bg-amber-100/70":"bg-primary/8"}`}/>
+            <div className={`relative grid h-14 w-14 place-items-center rounded-2xl border shadow-[0_10px_20px_rgba(15,23,42,.12),inset_0_2px_2px_rgba(255,255,255,.9)] ${isGold?"border-amber-200 bg-gradient-to-br from-amber-50 to-amber-200 text-amber-700":"border-primary/15 bg-gradient-to-br from-white to-primary-soft text-primary"}`}><MainIcon size={25}/></div>
+            <h1 className="relative mt-7 max-w-3xl text-3xl font-black leading-[1.05] tracking-[-.035em] text-foreground sm:text-4xl lg:text-5xl">{title}</h1>
+            <p className="relative mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">{desc}</p>
+            <div className="relative mt-6 flex flex-wrap gap-2">{["Tanpa minimal nilai/IPK","Pelajar & mahasiswa","Seleksi bertahap"].map(x=><span key={x} className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/40 px-3 py-2 text-xs font-semibold text-foreground/80"><Check size={13} className={isGold?"text-amber-600":"text-primary"}/>{x}</span>)}</div>
+            <div className="relative mt-7 grid max-w-lg grid-cols-2 gap-3"><button type="button" onClick={()=>setShowPaths(true)} className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-black text-white shadow-soft transition hover:-translate-y-0.5 ${isGold?"bg-amber-600 hover:bg-amber-700":"bg-primary"}`}>Pilih Jalur <ArrowRight size={16}/></button><Link to={shareTo} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-white px-5 py-3 text-sm font-bold transition hover:-translate-y-0.5 hover:border-primary/30"><Share2 size={16}/> Bagikan Program</Link></div>
           </div>
 
-          <aside className={`rounded-[1.8rem] border p-5 shadow-soft ${isGold?"border-gold/20 bg-gold/8":"border-primary/15 bg-primary-soft/60"}`}>
-            <div className="flex items-center gap-4"><span className={`grid h-12 w-12 place-items-center rounded-2xl ${isGold?"bg-gold text-white":"bg-primary text-primary-foreground"}`}><MainIcon size={22}/></span><div><p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Ringkasan Program</p><p className="mt-1 text-xl font-extrabold">{isGold?"Jalur Ekonomi":"Jalur Prestasi"}</p></div></div>
-            <div className="mt-5 grid gap-2">{quickFacts.map(({icon:FactIcon,label,value})=><div key={label} className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-background/80 px-3.5 py-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><FactIcon size={15}/>{label}</div><b className="text-right text-sm">{value}</b></div>)}</div>
+          <aside className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            {facts.map(({label,value,sub,icon:FactIcon},i)=><div key={label} className={`group relative overflow-hidden rounded-[1.55rem] border p-5 shadow-card transition hover:-translate-y-1 hover:shadow-soft ${i===0?isGold?"border-amber-200 bg-amber-50":"border-primary/15 bg-primary-soft/60":"border-border bg-card"}`}><div className="flex items-center justify-between gap-4"><div><p className="text-[9px] font-black uppercase tracking-[.16em] text-muted-foreground">{label}</p><p className="mt-1.5 text-xl font-black leading-tight text-foreground">{value}</p><p className="mt-1 text-xs text-muted-foreground">{sub}</p></div><span className={`grid h-11 w-11 shrink-0 place-items-center rounded-2xl border bg-white shadow-sm ${isGold?"border-amber-100 text-amber-600":"border-primary/10 text-primary"}`}><FactIcon size={19}/></span></div></div>)}
           </aside>
         </div>
       </div>
     </section>
 
     <AdSlot placement="category_top"/>
+
     <section className="container-page py-10 md:py-14">
-      <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between"><div><span className="text-[10px] font-bold uppercase tracking-widest text-primary">Yang perlu diketahui</span><h2 className="mt-1 text-2xl font-extrabold md:text-3xl">Singkat, jelas, langsung ke inti</h2></div><p className="max-w-xl text-sm text-muted-foreground">Informasi utama program diringkas agar kamu tidak perlu membaca terlalu banyak teks sebelum mendaftar.</p></div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{benefits.map(({icon:BenefitIcon,title:benefitTitle})=><div key={benefitTitle} className="rounded-2xl border border-border bg-card p-4 shadow-card"><span className={`grid h-10 w-10 place-items-center rounded-xl ${isGold?"bg-gold/10 text-[oklch(0.55_0.16_75)]":"bg-primary-soft text-primary"}`}><BenefitIcon size={18}/></span><h3 className="mt-4 text-sm font-extrabold">{benefitTitle}</h3></div>)}</div>
+      <div className="grid gap-5 lg:grid-cols-[.78fr_1.22fr]">
+        <div className={`relative overflow-hidden rounded-[1.8rem] p-6 text-white shadow-[0_22px_55px_rgba(15,23,42,.12)] sm:p-7 ${isGold?"bg-gradient-to-br from-amber-700 via-amber-600 to-orange-500":"bg-gradient-to-br from-violet-800 via-primary to-fuchsia-700"}`}>
+          <span className="text-[10px] font-black uppercase tracking-[.16em] text-white/65">Inti Program</span><h2 className="mt-3 text-2xl font-black leading-tight sm:text-3xl">Tidak perlu membaca panjang untuk memahami program.</h2><p className="mt-3 max-w-md text-sm leading-6 text-white/75">Lihat empat hal utama, lalu pilih jalur pendaftaran yang paling sesuai.</p><button type="button" onClick={()=>setShowPaths(true)} className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-slate-900 shadow-lg">Bandingkan Jalur <ArrowRight size={15}/></button>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">{highlights.map(({icon:BenefitIcon,title:benefitTitle,text},i)=><div key={benefitTitle} className="group rounded-[1.5rem] border border-border bg-card p-5 shadow-card transition hover:-translate-y-1 hover:shadow-soft"><div className="flex items-start justify-between gap-4"><span className={`grid h-11 w-11 place-items-center rounded-2xl border shadow-sm ${isGold?"border-amber-100 bg-amber-50 text-amber-600":"border-primary/10 bg-primary-soft text-primary"}`}><BenefitIcon size={19}/></span><span className="text-[10px] font-black text-muted-foreground/55">0{i+1}</span></div><h3 className="mt-5 text-base font-extrabold">{benefitTitle}</h3><p className="mt-1.5 text-sm leading-5 text-muted-foreground">{text}</p></div>)}</div>
+      </div>
     </section>
+
     <AdSlot placement="category_middle"/>
-    <section className="container-page py-6 md:py-10"><div className="rounded-[1.8rem] border border-border bg-card p-5 shadow-card md:p-7"><div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-center"><div><span className="text-[10px] font-bold uppercase tracking-widest text-primary">Pendaftaran</span><h2 className="mt-1 text-2xl font-extrabold">Pilih jalur yang paling sesuai</h2><p className="mt-1.5 text-sm text-muted-foreground">Reguler, Akselerasi, atau Platinum dapat dibandingkan dalam satu tampilan.</p></div><div className="grid w-full grid-cols-2 gap-3 md:w-[360px]"><button type="button" onClick={()=>setShowPaths(true)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground">Pilih Jalur <ArrowRight size={16}/></button><Link to={shareTo} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold">Bagikan <Share2 size={15}/></Link></div></div></div></section>
+
+    <section className="container-page py-6 md:py-10"><div className="overflow-hidden rounded-[1.8rem] border border-border bg-foreground text-background shadow-[0_20px_60px_rgba(15,23,42,.15)]"><div className="grid gap-0 md:grid-cols-[1fr_auto]"><div className="p-6 md:p-8"><span className="text-[10px] font-black uppercase tracking-[.16em] text-background/45">Siap melanjutkan?</span><h2 className="mt-2 text-2xl font-black md:text-3xl">Pilih jalur pendaftaranmu.</h2><p className="mt-2 text-sm text-background/60">Reguler, Akselerasi, atau Platinum tersedia dalam satu tampilan perbandingan.</p></div><div className="grid min-w-[320px] grid-cols-2 gap-3 border-t border-background/10 bg-background/5 p-5 md:border-l md:border-t-0 md:p-6"><button type="button" onClick={()=>setShowPaths(true)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-background px-4 py-3 text-sm font-black text-foreground">Pilih Jalur <ArrowRight size={15}/></button><Link to={shareTo} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-background/20 px-4 py-3 text-sm font-bold text-background">Bagikan <Share2 size={15}/></Link></div></div></div></section>
+
     <AdSlot placement="category_bottom"/>
     {showPaths&&<RegistrationPathModal registerTo={registerTo} kind={kind} onClose={()=>setShowPaths(false)}/>} 
   </>;
@@ -76,6 +79,5 @@ function RegistrationPathModal({registerTo,kind,onClose}:{registerTo:Registratio
     <div className="mt-4 grid gap-2.5">{path.features.map(f=><div key={f} className="flex items-start gap-2.5 text-sm"><span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full text-white ${premium?"bg-emerald-500":accent?"bg-amber-500":"bg-primary"}`}><Check size={11}/></span><span>{f}</span></div>)}</div>
     <Link to={target} onClick={onClose} className={`mt-auto flex min-h-12 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-black ${premium?"bg-emerald-600 text-white":accent?"bg-orange-500 text-white":"border-2 border-primary text-primary"}`}>{path.id==="reguler"?"Pilih Reguler":path.id==="akselerasi"?"Pilih Akselerasi":"Pilih Platinum"}<ArrowRight size={15}/></Link>
   </article>};
-
   return <div className="fixed inset-0 z-[100] overflow-y-auto bg-foreground/55 p-2 backdrop-blur-sm sm:p-4" role="dialog" aria-modal="true"><div className="relative mx-auto my-3 w-full max-w-[1240px] rounded-[1.7rem] border border-border bg-background p-4 shadow-2xl sm:p-5 lg:p-7"><button onClick={onClose} className="absolute right-3 top-3 rounded-full border border-border bg-card p-2"><X size={18}/></button><div className="pr-10 text-center"><span className="text-[10px] font-black uppercase tracking-widest text-primary">Pilih Jalur</span><h2 className="mt-1 text-2xl font-extrabold">Beasiswa {programName}</h2></div><div className="sticky top-2 z-20 mt-5 grid grid-cols-3 gap-2 rounded-2xl bg-background/95 p-1.5 shadow-sm backdrop-blur lg:hidden">{paths.map(p=><button key={p.id} onClick={()=>setSelected(p.id)} className={`rounded-xl border px-2 py-2.5 text-xs font-extrabold ${selected===p.id?p.theme==="premium"?"border-emerald-500 bg-emerald-50 text-emerald-700":p.theme==="accent"?"border-amber-500 bg-amber-50 text-amber-700":"border-primary bg-primary-soft text-primary":"border-border bg-card text-muted-foreground"}`}>{p.name}<span className="block text-[10px] font-semibold">{p.price}</span></button>)}</div><div className="mt-5 lg:grid lg:grid-cols-3 lg:items-stretch lg:gap-5"><div className="lg:hidden">{renderCard(paths.find(p=>p.id===selected)??paths[1])}</div><div className="hidden lg:contents">{paths.map(renderCard)}</div></div></div></div>;
 }
