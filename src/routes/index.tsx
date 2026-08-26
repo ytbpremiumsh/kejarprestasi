@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, GraduationCap, HeartHandshake, ShieldCheck, Trophy, Users, Wallet } from "lucide-react";
+import { ArrowRight, CheckCircle2, Crown, Gift, GraduationCap, HeartHandshake, ShieldCheck, Sparkles, Trophy, Users, Wallet } from "lucide-react";
 import heroImg from "@/assets/students-hero.png";
 import { Countdown } from "@/components/Countdown";
 import { AboutMockup } from "@/components/AboutMockup";
@@ -78,6 +78,7 @@ function Index() {
       <AdSlot placement="after_categories" />
       <AboutMockup />
       <BenefitsSection />
+      <FeaturedTabletBenefit />
       <AdSlot placement="after_benefits" />
       <AlumniSection />
       <AdSlot placement="after_alumni" />
@@ -86,6 +87,46 @@ function Index() {
       <AdSlot placement="after_faq" />
     </>
   );
+}
+
+function FeaturedTabletBenefit() {
+  return <section className="container-page pb-14 pt-4 sm:pb-16 sm:pt-8">
+    <div className="relative overflow-hidden rounded-[2rem] border border-emerald-200 bg-[linear-gradient(135deg,oklch(0.985_0.025_155),oklch(0.965_0.055_160),white)] p-5 shadow-[0_22px_60px_rgba(5,150,105,.12)] sm:p-7 lg:p-9">
+      <div aria-hidden="true" className="absolute -right-16 -top-20 h-72 w-72 rounded-full bg-emerald-300/25 blur-3xl" />
+      <div aria-hidden="true" className="absolute -bottom-24 left-1/3 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+      <div className="relative grid items-center gap-7 lg:grid-cols-[1.05fr_.95fr] lg:gap-10">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-emerald-700 shadow-sm"><Crown size={14}/> Benefit Utama Platinum</div>
+          <h2 className="mt-4 max-w-xl text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl lg:text-4xl">Kesempatan memperoleh <span className="text-emerald-700">Tablet Pendidikan</span> untuk Awardee</h2>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Benefit perangkat belajar khusus peserta Jalur Akselerasi Platinum yang terpilih menjadi Awardee.</p>
+          <div className="mt-5 grid max-w-xl gap-3 sm:grid-cols-3">
+            <MiniBenefit icon={<Gift size={18}/>} title="Benefit Eksklusif" text="Khusus jalur Platinum" />
+            <MiniBenefit icon={<GraduationCap size={18}/>} title="Untuk Belajar" text="Mendukung aktivitas pendidikan" />
+            <MiniBenefit icon={<Sparkles size={18}/>} title="Khusus Awardee" text="Berlaku bagi penerima terpilih" />
+          </div>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <Link to="/beasiswa-prestasi" className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-6 py-3.5 text-sm font-black text-white shadow-[0_12px_28px_rgba(5,150,105,.22)] transition hover:-translate-y-0.5 hover:bg-emerald-700">Lihat Jalur Prestasi <ArrowRight size={16}/></Link>
+            <Link to="/beasiswa-ekonomi" className="inline-flex items-center justify-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-6 py-3.5 text-sm font-bold text-emerald-800 transition hover:-translate-y-0.5 hover:bg-white">Lihat Jalur Ekonomi <ArrowRight size={16}/></Link>
+          </div>
+        </div>
+        <div className="relative mx-auto w-full max-w-[520px]">
+          <div className="absolute inset-x-[12%] bottom-[7%] h-20 rounded-full bg-emerald-600/15 blur-2xl" />
+          <div className="relative min-h-[280px] sm:min-h-[340px]">
+            <div className="tablet-home-stage" aria-hidden="true">
+              <div className="tablet-home-back"><span className="tablet-home-camera"/></div>
+              <div className="tablet-home-front"><span className="tablet-home-screen"><span className="tablet-home-glow"/></span></div>
+              <span className="tablet-home-podium"/>
+            </div>
+          </div>
+          <div className="mx-auto -mt-2 flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-white/90 px-4 py-2 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur"><ShieldCheck size={14}/> Mockup benefit perangkat pendidikan</div>
+        </div>
+      </div>
+    </div>
+  </section>;
+}
+
+function MiniBenefit({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
+  return <div className="rounded-2xl border border-emerald-100 bg-white/75 p-3.5 shadow-sm backdrop-blur"><div className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-50 text-emerald-700">{icon}</div><p className="mt-2 text-xs font-extrabold text-foreground">{title}</p><p className="mt-1 text-[11px] leading-4 text-muted-foreground">{text}</p></div>;
 }
 
 function HeroFeature({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
