@@ -72,7 +72,7 @@ function DaftarSelector() {
 
           <div className="mt-7 grid gap-3 rounded-[1.6rem] border border-border bg-white/75 p-4 shadow-card backdrop-blur sm:grid-cols-3 sm:p-5">
             <BottomPoint icon={<ShieldCheck size={18}/>} title="Pilih satu kategori" text="Kategori dipilih sebelum masuk ke jalur pendaftaran." />
-            <BottomPoint icon={<Users size={18}/>} title="Terbuka luas" text="Pelajar dan mahasiswa dapat mengikuti sesuai ketentuan." />
+            <BottomPoint icon={<Users size={18}/>} title="Terbuka Bagi Pelajar & Mahasiswa" text="Pelajar dan mahasiswa dapat mengikuti sesuai ketentuan." />
             <BottomPoint icon={<Sparkles size={18}/>} title="Jalur fleksibel" text="Reguler, Akselerasi, dan Platinum tersedia pada tiap kategori." />
           </div>
         </div>
