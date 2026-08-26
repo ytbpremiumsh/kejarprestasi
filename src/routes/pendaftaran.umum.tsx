@@ -1,10 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { RegistrationForm } from "@/components/RegistrationForm";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/pendaftaran/umum")({
-  head: () => ({ meta: [
-    { title: "Pendaftaran Beasiswa Umum — Kejar Prestasi" },
-    { name: "description", content: "Formulir pendaftaran Beasiswa Umum Kejar Prestasi." },
-  ] }),
-  component: () => <RegistrationForm kind="umum" />,
+  beforeLoad: () => { throw redirect({ to: "/pendaftaran-umum" }); },
 });
