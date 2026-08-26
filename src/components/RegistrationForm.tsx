@@ -10,6 +10,14 @@ type Kind="prestasi"|"ekonomi";
 type Jalur="reguler"|"akselerasi"|"platinum";
 type FormState={full_name:string;birth_place:string;birth_date:string;gender:string;whatsapp:string;email:string;education_level:string;school_name:string;grade:string};
 const initial:FormState={full_name:"",birth_place:"",birth_date:"",gender:"",whatsapp:"",email:"",education_level:"",school_name:"",grade:""};
+const gradeOptions:Record<string,string[]>={
+  "SD/MI":["Kelas 1","Kelas 2","Kelas 3","Kelas 4","Kelas 5","Kelas 6"],
+  "SMP/MTs":["Kelas 7","Kelas 8","Kelas 9"],
+  "SMA/SMK/MA":["Kelas 10","Kelas 11","Kelas 12"],
+  "D3":["Semester 1","Semester 2","Semester 3","Semester 4","Semester 5","Semester 6"],
+  "D4/S1":["Semester 1","Semester 2","Semester 3","Semester 4","Semester 5","Semester 6","Semester 7","Semester 8"],
+  "S2":["Semester 1","Semester 2","Semester 3","Semester 4"],
+};
 
 export function RegistrationForm({kind}:{kind:Kind}){
   const navigate=useNavigate();
@@ -20,6 +28,7 @@ export function RegistrationForm({kind}:{kind:Kind}){
   const kategoriLabel=isPrestasi?"Prestasi":"Ekonomi";
   const jalurLabel=jalur==="platinum"?"Akselerasi Platinum":jalur==="akselerasi"?"Akselerasi":"Reguler";
   const set=(k:keyof FormState,v:string)=>setForm(s=>({...s,[k]:v}));
+  const setEducationLevel=(education_level:string)=>setForm(s=>({...s,education_level,grade:""}));
 
   const submit=async(e:React.FormEvent)=>{
     e.preventDefault();
@@ -99,9 +108,9 @@ export function RegistrationForm({kind}:{kind:Kind}){
               <Select icon={<VenetianMask size={16}/>} label="Jenis Kelamin" placeholder="Pilih jenis kelamin" value={form.gender} onChange={v=>set("gender",v)} options={["Laki-laki","Perempuan"]}/>
               <Field icon={<Phone size={16}/>} label="Nomor WhatsApp Aktif" type="tel" placeholder="Contoh: 081234567890" value={form.whatsapp} onChange={v=>set("whatsapp",v)}/>
               <Field icon={<Mail size={16}/>} label="Email Aktif" type="email" placeholder="Contoh: nama@email.com" value={form.email} onChange={v=>set("email",v)}/>
-              <Select icon={<GraduationCap size={16}/>} label="Jenjang Pendidikan" placeholder="Pilih jenjang pendidikan" value={form.education_level} onChange={v=>set("education_level",v)} options={["SD/MI","SMP/MTs","SMA/SMK/MA","D3","D4/S1","S2"]}/>
+              <Select icon={<GraduationCap size={16}/>} label="Jenjang Pendidikan" placeholder="Pilih jenjang pendidikan" value={form.education_level} onChange={setEducationLevel} options={["SD/MI","SMP/MTs","SMA/SMK/MA","D3","D4/S1","S2"]}/>
               <Field icon={<School size={16}/>} label="Sekolah / Kampus" placeholder="Contoh: SMA Negeri 1 / Universitas Indonesia" value={form.school_name} onChange={v=>set("school_name",v)}/>
-              <Field icon={<GraduationCap size={16}/>} label="Kelas / Semester" placeholder="Contoh: XII IPA 1 / Semester 4" value={form.grade} onChange={v=>set("grade",v)}/>
+              <Select icon={<GraduationCap size={16}/>} label="Kelas / Semester" placeholder={form.education_level?"Pilih kelas / semester":"Pilih jenjang pendidikan dahulu"} value={form.grade} onChange={v=>set("grade",v)} options={gradeOptions[form.education_level]??[]} disabled={!form.education_level}/>
             </div>
           </div>
         </div>
@@ -125,4 +134,4 @@ function SummaryCard({icon,label,value}:{icon:React.ReactNode;label:string;value
 
 function Field({label,value,onChange,type="text",placeholder="",icon}:{label:string;value:string;onChange:(v:string)=>void;type?:string;placeholder?:string;icon?:React.ReactNode}){return <label><span className="flex items-center gap-2 text-xs font-semibold text-foreground">{icon&&<span className="text-primary">{icon}</span>}{label}</span><input required type={type} placeholder={placeholder} value={value} onChange={e=>onChange(e.target.value)} className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3.5 text-sm outline-none transition placeholder:text-muted-foreground/55 focus:border-primary focus:ring-4 focus:ring-primary/10"/></label>}
 
-function Select({label,value,onChange,options,placeholder="Pilih",icon}:{label:string;value:string;onChange:(v:string)=>void;options:string[];placeholder?:string;icon?:React.ReactNode}){return <label><span className="flex items-center gap-2 text-xs font-semibold text-foreground">{icon&&<span className="text-primary">{icon}</span>}{label}</span><select required value={value} onChange={e=>onChange(e.target.value)} className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3.5 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"><option value="">{placeholder}</option>{options.map(o=><option key={o}>{o}</option>)}</select></label>}
+function Select({label,value,onChange,options,placeholder="Pilih",icon,disabled=false}:{label:string;value:string;onChange:(v:string)=>void;options:string[];placeholder?:string;icon?:React.ReactNode;disabled?:boolean}){return <label><span className="flex items-center gap-2 text-xs font-semibold text-foreground">{icon&&<span className="text-primary">{icon}</span>}{label}</span><select required disabled={disabled} value={value} onChange={e=>onChange(e.target.value)} className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3.5 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:bg-secondary/50 disabled:text-muted-foreground"><option value="">{placeholder}</option>{options.map(o=><option key={o}>{o}</option>)}</select></label>}
