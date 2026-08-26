@@ -51,7 +51,7 @@ function Index() {
         <div className="container-page relative pb-8 sm:pb-12">
           <div className="overflow-hidden rounded-[1.7rem] bg-gradient-to-r from-[oklch(0.31_0.2_285)] via-primary to-[oklch(0.38_0.2_285)] p-1 shadow-[0_20px_50px_oklch(0.35_0.18_285/0.18)]">
             <div className="grid overflow-hidden rounded-[1.45rem] bg-[oklch(0.32_0.2_285)] sm:grid-cols-3">
-              <StatCard icon={<Wallet size={22} />} label="Dana Pendidikan" value="Hingga Rp23.000.000" sub="per semester" />
+              <StatCard icon={<Wallet size={22} />} label="TOTAL BEASISWA" value="Rp 23.000.000" sub="per semester" />
               <StatCard icon={<Trophy size={22} />} label="Beasiswa Prestasi" value="Akademik & Non-Akademik" sub="Untuk pelajar berprestasi" />
               <StatCard icon={<HeartHandshake size={22} />} label="Beasiswa Ekonomi" value="Dukungan Finansial" sub="Bagi yang membutuhkan" />
             </div>
