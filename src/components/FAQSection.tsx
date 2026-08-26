@@ -7,12 +7,13 @@ import {
 import { HelpCircle } from "lucide-react";
 
 const faqs = [
+  { q: "Apa saja kategori beasiswa yang tersedia?", a: "Terdapat tiga kategori beasiswa, yaitu Beasiswa Prestasi, Beasiswa Ekonomi, dan Beasiswa Umum. Pilih satu kategori yang paling sesuai dengan profil dan kebutuhanmu." },
   { q: "Apakah pendaftaran beasiswa ini berbayar?", a: "Tidak. Jalur Reguler tersedia tanpa biaya pendaftaran. Jalur Akselerasi dan Platinum memiliki biaya layanan sesuai pilihan peserta." },
   { q: "Siapa saja yang boleh mendaftar?", a: "Pelajar SD, SMP, SMA/SMK/MA, dan mahasiswa aktif di Indonesia dapat mengikuti program sesuai ketentuan yang berlaku." },
   { q: "Apakah ada minimal nilai rapor atau IPK?", a: "Tidak ada batas minimum nilai rapor maupun IPK pada tahap pendaftaran awal." },
   { q: "Berapa total beasiswa yang akan diterima?", a: "Dukungan Dana Pendidikan dapat mencapai total hingga Rp23.000.000 per semester sesuai hasil seleksi dan ketentuan program." },
   { q: "Bagaimana cara mengetahui hasil seleksi?", a: "Status tahapan dan pengumuman dapat dipantau melalui Portal Pendaftar menggunakan kode pendaftaran masing-masing." },
-  { q: "Apakah saya bisa mendaftar di dua jalur sekaligus?", a: "Setiap peserta memilih satu kategori dan satu jalur pendaftaran untuk satu proses seleksi." },
+  { q: "Apakah saya bisa mendaftar lebih dari satu kategori?", a: "Setiap peserta memilih satu dari tiga kategori—Prestasi, Ekonomi, atau Umum—serta satu jalur pendaftaran untuk satu proses seleksi." },
   { q: "Bagaimana jika ada kendala saat mendaftar?", a: "Hubungi tim Kejar Prestasi melalui kanal resmi yang tercantum pada website." },
 ];
 
