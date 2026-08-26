@@ -26,33 +26,28 @@ function Index() {
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.22]" style={{ backgroundImage: "linear-gradient(to right, color-mix(in oklab, var(--primary) 9%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--primary) 9%, transparent) 1px, transparent 1px)", backgroundSize: "52px 52px", maskImage: "radial-gradient(ellipse at 45% 20%, black, transparent 74%)" }} />
         <div aria-hidden="true" className="pointer-events-none absolute -right-40 top-24 h-[32rem] w-[32rem] rounded-full bg-primary/10 blur-3xl" />
         <div aria-hidden="true" className="pointer-events-none absolute -left-32 bottom-0 h-72 w-72 rounded-full bg-gold/10 blur-3xl" />
-
         <div className="container-page relative grid items-center gap-8 py-10 sm:py-14 lg:min-h-[620px] lg:grid-cols-[0.92fr_1.08fr] lg:gap-4 lg:py-16">
           <div className="relative z-10 order-1 max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/75 px-4 py-2 text-xs font-bold text-primary shadow-card backdrop-blur"><GraduationCap size={15} /> Program Beasiswa Pendidikan Nasional</div>
             <h1 className="mt-5 text-[2.55rem] font-black leading-[0.98] tracking-[-0.04em] text-foreground sm:text-5xl md:text-6xl lg:text-[4.35rem]">Raih Pendidikan,<span className="block bg-gradient-to-r from-primary via-[oklch(0.58_0.23_290)] to-[oklch(0.48_0.2_285)] bg-clip-text text-transparent">Wujudkan Prestasi</span></h1>
             <p className="mt-5 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base md:text-lg">Program beasiswa pendidikan nasional untuk pelajar dan mahasiswa Indonesia. Tanpa minimal nilai, tanpa biaya pendaftaran.</p>
-
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:max-w-2xl">
               <HeroFeature icon={<ShieldCheck size={18} />} title="Gratis 100%" text="Tidak dipungut biaya" />
               <HeroFeature icon={<GraduationCap size={18} />} title="Tanpa Minimal Nilai" text="Kesempatan untuk semua" />
               <HeroFeature icon={<CheckCircle2 size={18} />} title="Proses Transparan" text="Seleksi adil & terpercaya" />
               <HeroFeature icon={<Users size={18} />} title="Untuk Semua" text="SD hingga Mahasiswa" />
             </div>
-
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <button type="button" onClick={() => document.getElementById("timeline")?.scrollIntoView({ behavior: "smooth" })} className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-[oklch(0.78_0.17_82)] px-7 py-3.5 text-sm font-bold text-[oklch(0.18_0.12_285)] shadow-[0_12px_30px_oklch(0.78_0.17_82/0.2)] transition hover:-translate-y-0.5 hover:brightness-105 sm:w-auto">Daftar Beasiswa Sekarang <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" /></button>
               <button type="button" onClick={() => document.getElementById("timeline")?.scrollIntoView({ behavior: "smooth" })} className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-primary/25 bg-white/70 px-7 py-3.5 text-sm font-bold text-primary backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/50 hover:bg-white sm:w-auto">Lihat Timeline <ArrowRight size={16} /></button>
             </div>
           </div>
-
           <div className="relative order-2 min-h-[330px] sm:min-h-[430px] lg:min-h-[560px]">
             <div aria-hidden="true" className="absolute inset-x-2 bottom-3 top-8 rounded-[3rem] bg-primary/10 blur-3xl" />
             <div aria-hidden="true" className="absolute right-[19%] top-[8%] h-28 w-28 rounded-full bg-gold/20 blur-2xl" />
             <img src={heroImg} alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi" width={1024} height={1024} className="relative mx-auto h-full max-h-[570px] w-full object-contain object-center drop-shadow-[0_28px_42px_oklch(0.35_0.18_290/0.2)]" fetchPriority="high" />
           </div>
         </div>
-
         <div className="container-page relative pb-8 sm:pb-12">
           <div className="overflow-hidden rounded-[1.7rem] bg-gradient-to-r from-[oklch(0.31_0.2_285)] via-primary to-[oklch(0.38_0.2_285)] p-1 shadow-[0_20px_50px_oklch(0.35_0.18_285/0.18)]">
             <div className="grid overflow-hidden rounded-[1.45rem] bg-[oklch(0.32_0.2_285)] sm:grid-cols-3">
@@ -63,10 +58,8 @@ function Index() {
           </div>
         </div>
       </section>
-
       <AdSlot placement="after_hero" />
       <section className="container-page pt-12 pb-4 sm:pt-16"><Countdown /></section>
-
       <section className="container-page py-14 sm:py-16">
         <SectionHeader eyebrow="Kategori Beasiswa" title="Pilih Jalur Beasiswamu" desc="Dua kategori, satu tujuan: membuka akses pendidikan untuk seluruh anak Indonesia." />
         <div className="mt-10 grid gap-5 md:grid-cols-2">
@@ -74,7 +67,6 @@ function Index() {
           <CategoryCard tag="Beasiswa Ekonomi" icon={<HeartHandshake size={28} />} title="Untuk yang membutuhkan dukungan finansial" desc="Program beasiswa bagi pelajar dan mahasiswa yang membutuhkan dukungan finansial untuk pendidikan." to="/beasiswa-ekonomi" variant="gold" />
         </div>
       </section>
-
       <AdSlot placement="after_categories" />
       <AboutMockup />
       <BenefitsSection />
@@ -97,11 +89,11 @@ function FeaturedTabletBenefit() {
       <div className="relative grid items-center gap-7 lg:grid-cols-[1.05fr_.95fr] lg:gap-10">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-emerald-700 shadow-sm"><Crown size={14}/> Benefit Utama Platinum</div>
-          <h2 className="mt-4 max-w-xl text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl lg:text-4xl">Kesempatan memperoleh <span className="text-emerald-700">Tablet Pendidikan</span> untuk Awardee</h2>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Benefit perangkat belajar khusus peserta Jalur Akselerasi Platinum yang terpilih menjadi Awardee.</p>
+          <h2 className="mt-4 max-w-xl text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl lg:text-4xl">Kesempatan memperoleh <span className="text-emerald-700">Tablet Pendidikan & Dana Pendidikan</span> untuk Awardee</h2>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Benefit perangkat belajar dan dukungan dana pendidikan khusus peserta Jalur Akselerasi Platinum yang terpilih menjadi Awardee.</p>
           <div className="mt-5 grid max-w-xl gap-3 sm:grid-cols-3">
             <MiniBenefit icon={<Gift size={18}/>} title="Benefit Eksklusif" text="Khusus jalur Platinum" />
-            <MiniBenefit icon={<GraduationCap size={18}/>} title="Untuk Belajar" text="Mendukung aktivitas pendidikan" />
+            <MiniBenefit icon={<GraduationCap size={18}/>} title="Tablet & Dana Pendidikan" text="Dukungan untuk kebutuhan belajar" />
             <MiniBenefit icon={<Sparkles size={18}/>} title="Khusus Awardee" text="Berlaku bagi penerima terpilih" />
           </div>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
