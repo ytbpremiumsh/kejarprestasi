@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Menu, X, Search, Trophy, HeartHandshake } from "lucide-react";
+import { ChevronDown, GraduationCap, Menu, X, Search, Trophy, HeartHandshake } from "lucide-react";
 import { useBranding } from "@/hooks/use-branding";
 
 export function SiteHeader(){
@@ -38,6 +38,10 @@ export function SiteHeader(){
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary"><HeartHandshake size={18}/></span>
                 <span><b className="block text-sm">Beasiswa Ekonomi</b><small className="text-muted-foreground">Dukungan pendidikan berdasarkan kebutuhan ekonomi.</small></span>
               </Link>
+              <Link to="/pendaftaran/umum" onClick={()=>setDesktopProgramOpen(false)} className="relative mt-1 flex gap-3 rounded-xl p-3 transition hover:bg-secondary">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary"><GraduationCap size={18}/></span>
+                <span><b className="block text-sm">Beasiswa Umum</b><small className="text-muted-foreground">Program terbuka untuk dukungan pendidikan dan pengembangan diri.</small></span>
+              </Link>
             </div>}
           </div>
           <Link to="/artikel" className="px-3 py-2 text-sm font-semibold text-muted-foreground hover:text-primary">Wawasan</Link>
@@ -50,7 +54,7 @@ export function SiteHeader(){
         <nav className="grid gap-1">
           <Link to="/" onClick={()=>setOpen(false)} className="rounded-xl px-4 py-3 text-sm font-semibold hover:bg-secondary">Beranda</Link>
           <button type="button" onClick={()=>setProgramOpen(!programOpen)} className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold hover:bg-secondary">Program <ChevronDown size={15} className={programOpen?"rotate-180 transition":"transition"}/></button>
-          {programOpen&&<div className="ml-3 grid gap-1 border-l border-border pl-3"><Link to="/beasiswa-prestasi" onClick={()=>{setOpen(false);setProgramOpen(false)}} className="rounded-xl px-4 py-3 text-sm font-semibold hover:bg-secondary">Beasiswa Prestasi</Link><Link to="/beasiswa-ekonomi" onClick={()=>{setOpen(false);setProgramOpen(false)}} className="rounded-xl px-4 py-3 text-sm font-semibold hover:bg-secondary">Beasiswa Ekonomi</Link></div>}
+          {programOpen&&<div className="ml-3 grid gap-1 border-l border-border pl-3"><Link to="/beasiswa-prestasi" onClick={()=>{setOpen(false);setProgramOpen(false)}} className="rounded-xl px-4 py-3 text-sm font-semibold hover:bg-secondary">Beasiswa Prestasi</Link><Link to="/beasiswa-ekonomi" onClick={()=>{setOpen(false);setProgramOpen(false)}} className="rounded-xl px-4 py-3 text-sm font-semibold hover:bg-secondary">Beasiswa Ekonomi</Link><Link to="/pendaftaran/umum" onClick={()=>{setOpen(false);setProgramOpen(false)}} className="rounded-xl px-4 py-3 text-sm font-semibold hover:bg-secondary">Beasiswa Umum</Link></div>}
           <Link to="/artikel" onClick={()=>setOpen(false)} className="rounded-xl px-4 py-3 text-sm font-semibold hover:bg-secondary">Wawasan</Link>
           <Link to="/tentang" onClick={()=>setOpen(false)} className="rounded-xl px-4 py-3 text-sm font-semibold hover:bg-secondary">Tentang Kami</Link>
           <Link to="/cek-status" onClick={()=>setOpen(false)} className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold"><Search size={15}/> Cek Pendaftaran</Link>
