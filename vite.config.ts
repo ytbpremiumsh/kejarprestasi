@@ -7,6 +7,9 @@ import path from "node:path";
 
 // Vite SPA murni — output dist/ statis, deploy ke nginx /var/www/...
 export default defineConfig({
+  // Generate absolute asset URLs from the active domain root so every SPA route
+  // resolves images from /assets when dist/ is served by Nginx or Apache.
+  base: "/",
   plugins: [
     tsconfigPaths(),
     tanstackRouter({
@@ -30,6 +33,9 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
+    assetsDir: "assets",
+    // Keep imported images as physical deployment assets instead of data URIs.
+    assetsInlineLimit: 0,
     sourcemap: false,
     chunkSizeWarningLimit: 1500,
   },
