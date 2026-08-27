@@ -16,7 +16,7 @@ import { AutoAdInjector } from "@/components/ads/AutoAdInjector";
 import { CustomAdInjector } from "@/components/ads/CustomAdInjector";
 import { CustomCodeInjector } from "@/components/CustomCodeInjector";
 import { AnalyticsInjector } from "@/components/AnalyticsInjector";
-import { RouteLifecycle } from "@/components/RouteLifecycle";
+import { ForceReloadNavigation } from "@/components/ForceReloadNavigation";
 import { MaintenanceGate } from "@/components/MaintenanceGate";
 import { AdminBar } from "@/components/admin/AdminBar";
 
@@ -108,7 +108,7 @@ function RootComponent() {
         )}
         <CustomCodeInjector />
         <AnalyticsInjector />
-        <RouteLifecycle />
+        <ForceReloadNavigation />
         {isBareLayout ? (
           <Outlet />
         ) : (

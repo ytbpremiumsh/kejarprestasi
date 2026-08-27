@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouterState } from "@tanstack/react-router";
 
 /**
@@ -8,8 +8,16 @@ import { useRouterState } from "@tanstack/react-router";
  * pengalaman admin tetap cepat.
  */
 export function ForceReloadNavigation() {
+  const href = useRouterState({ select: (s) => s.location.href });
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const disabled = pathname.startsWith("/admin") || pathname.startsWith("/login");
+  const previousHref = useRef(href);
+
+  useEffect(() => {
+    if (disabled) { previousHref.current = href; return; }
+    if (previousHref.current !== href) window.location.reload();
+    previousHref.current = href;
+  }, [href, disabled]);
 
   useEffect(() => {
     if (disabled) return;
