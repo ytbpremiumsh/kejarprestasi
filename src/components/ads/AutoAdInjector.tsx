@@ -4,6 +4,7 @@ import { useAdSettings, type AdPosition, type AdSlotConfig } from "./AdSettings"
 
 const MARK_ATTR = "data-auto-ad-injected";
 const SLOT_ATTR = "data-auto-ad-slot";
+const UNSAFE_AREA = "form, aside, nav, header, footer, [role='dialog'], [data-no-ads], [data-slot='card'], [class*='shadow-card'], [class*='bg-card'][class*='rounded-']";
 
 function extractPublisherId(html: string) {
   return html.match(/(?:client=|data-ad-client=["'])(ca-pub-[0-9]+)/)?.[1] || "";
@@ -112,8 +113,24 @@ function injectSlot(root: HTMLElement, slot: AdSlotConfig) {
   const sel = selectorFor(slot.position);
   if (!sel) return 0;
   const isCardPos = slot.position === "before_each_card" || slot.position === "after_each_card";
-  const candidates = Array.from(root.querySelectorAll<HTMLElement>(sel)).filter((el) => {
+  const explicitAnchors = slot.position === "between_sections"
+    ? Array.from(root.querySelectorAll<HTMLElement>("[data-ad-placement]"))
+    : [];
+  const source = explicitAnchors.length ? explicitAnchors : Array.from(root.querySelectorAll<HTMLElement>(sel));
+  const candidates = source.filter((el) => {
     if (el.closest(`[${MARK_ATTR}]`)) return false;
+    const isExplicitAnchor = el.hasAttribute("data-ad-placement");
+    if (!isExplicitAnchor && el.closest(UNSAFE_AREA)) return false;
+
+    // Never add a new grid/flex child around ordinary content. This is the
+    // primary guard against ads changing card dimensions or column layouts.
+    if (!isExplicitAnchor && !isCardPos) {
+      const parent = el.parentElement;
+      if (parent) {
+        const display = window.getComputedStyle(parent).display;
+        if (display.includes("grid") || display.includes("flex")) return false;
+      }
+    }
     if (isCardPos) {
       // Skip nested cards / cards inside forms or asides — injecting here
       // breaks form grids and creates messy spacing on mobile.
@@ -198,7 +215,7 @@ export function AutoAdInjector() {
 
     let cancelled = false;
     let attempts = 0;
-    const maxAttempts = 40; // ~12s with 300ms interval
+    const maxAttempts = 12; // MutationObserver handles content rendered after the initial passes.
     const injectedPerSlot = new Map<string, number>();
     let observer: MutationObserver | null = null;
     let scheduled = false;
@@ -209,7 +226,11 @@ export function AutoAdInjector() {
       if (!root) return;
 
       let injectedThisPass = 0;
+      const globalCap = window.innerWidth < 640 ? 4 : 6;
       enabledSlots.forEach((s) => {
+        const totalInjected = Array.from(injectedPerSlot.values()).reduce((sum, count) => sum + count, 0);
+        const remaining = globalCap - totalInjected;
+        if (remaining <= 0) return;
         const prev = injectedPerSlot.get(s.id) || 0;
         const cap = Math.max(1, Number(s.max_per_page) || 3);
         if (prev >= cap) return;
@@ -227,7 +248,7 @@ export function AutoAdInjector() {
             if (!hasLiveAd) n.remove();
           });
 
-        const n = injectSlot(root, s);
+        const n = injectSlot(root, { ...s, max_per_page: Math.min(cap - prev, remaining) });
         injectedPerSlot.set(s.id, prev + n);
         injectedThisPass += n;
       });
