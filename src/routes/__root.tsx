@@ -78,6 +78,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: ({ location }) => {
+    if (location.pathname === "/pendaftaran/umum") {
+      throw redirect({ to: "/pendaftaran-umum", replace: true });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Beasiswa Pendidikan Kejar Prestasi Section #3" },
