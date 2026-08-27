@@ -93,7 +93,7 @@ function FeaturedTabletBenefit() {
           <h2 className="mt-4 max-w-xl text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl lg:text-4xl">Kesempatan memperoleh <span className="text-emerald-700">Tablet Pendidikan & Dana Pendidikan</span> untuk Awardee</h2>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Benefit perangkat belajar dan dukungan dana pendidikan hingga Rp23 juta per semester khusus peserta Jalur Akselerasi Platinum yang terpilih menjadi Awardee.</p>
           <div className="mt-5 grid max-w-xl gap-3 sm:grid-cols-2">
-            <MiniBenefit icon={<Gift size={18}/>} title="Benefit Eksklusif" text="Khusus jalur Platinum" />
+            <MiniBenefit icon={<Gift size={18}/>} title="Benefit Eksklusif" text="Bagi Peraih terpilih" />
             <MiniBenefit icon={<GraduationCap size={18}/>} title="Tablet & Dana Pendidikan" text="Hingga Rp23 juta / semester" />
           </div>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
