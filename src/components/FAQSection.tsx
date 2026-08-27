@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { HelpCircle } from "lucide-react";
+import { CheckCircle2, HelpCircle, MessageCircleQuestion, Search, Sparkles } from "lucide-react";
 
 const faqs = [
   { q: "Apa saja kategori beasiswa yang tersedia?", a: "Terdapat tiga kategori beasiswa, yaitu Beasiswa Prestasi, Beasiswa Ekonomi, dan Beasiswa Umum. Pilih satu kategori yang paling sesuai dengan profil dan kebutuhanmu." },
@@ -19,25 +19,13 @@ const faqs = [
 
 function ProfessionalFaqIllustration() {
   return (
-    <div className="relative mx-auto w-full max-w-[520px]" aria-hidden="true">
-      <svg viewBox="0 0 620 520" className="h-auto w-full overflow-visible" role="img">
-        <defs>
-          <linearGradient id="faqBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#EEF2FF" /><stop offset="55%" stopColor="#F8FAFC" /><stop offset="100%" stopColor="#FFF7ED" /></linearGradient>
-          <linearGradient id="faqCard" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FFFFFF" /><stop offset="100%" stopColor="#F8FAFC" /></linearGradient>
-          <linearGradient id="faqPurple" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#6D28D9" /><stop offset="100%" stopColor="#4F46E5" /></linearGradient>
-          <linearGradient id="faqGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FBBF24" /><stop offset="100%" stopColor="#F59E0B" /></linearGradient>
-          <filter id="faqShadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="18" stdDeviation="18" floodColor="#0F172A" floodOpacity="0.12" /></filter>
-          <filter id="softShadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="10" floodColor="#312E81" floodOpacity="0.14" /></filter>
-        </defs>
-        <rect x="38" y="30" width="544" height="438" rx="54" fill="url(#faqBg)" />
-        <circle cx="108" cy="112" r="54" fill="#DDD6FE" opacity="0.65" /><circle cx="510" cy="98" r="32" fill="#FDE68A" opacity="0.55" /><circle cx="500" cy="398" r="58" fill="#DBEAFE" opacity="0.55" />
-        <g filter="url(#faqShadow)"><rect x="118" y="118" width="384" height="254" rx="30" fill="url(#faqCard)" stroke="#E2E8F0" strokeWidth="2" /><rect x="150" y="150" width="320" height="48" rx="16" fill="#F8FAFC" /><circle cx="177" cy="174" r="11" fill="url(#faqPurple)" /><path d="M174 171c0-4 6-5 8-1 2 4-4 5-4 8" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" /><circle cx="178" cy="183" r="1.5" fill="white" /><rect x="204" y="165" width="154" height="8" rx="4" fill="#1E293B" opacity="0.88" /><rect x="204" y="179" width="108" height="6" rx="3" fill="#94A3B8" opacity="0.75" /><circle cx="438" cy="174" r="13" fill="#EEF2FF" /><path d="m433 171 5 5 5-5" fill="none" stroke="#4F46E5" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />{[0,1,2].map((i)=><g key={i} transform={`translate(0 ${i*54})`}><line x1="151" y1="218" x2="468" y2="218" stroke="#E2E8F0" /><rect x="160" y="234" width={210-i*24} height="7" rx="3.5" fill="#475569" opacity="0.8" /><rect x="160" y="247" width={128+i*18} height="5" rx="2.5" fill="#CBD5E1" /><circle cx="441" cy="241" r="12" fill="#F8FAFC" /><path d="m436 238 5 5 5-5" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></g>)}</g>
-        <g filter="url(#softShadow)"><path d="M72 184c0-36 29-65 65-65s65 29 65 65c0 29-19 54-46 62l-10 28-22-24c-30-6-52-33-52-66Z" fill="url(#faqPurple)" /><text x="137" y="207" textAnchor="middle" fontSize="72" fontWeight="800" fill="white" fontFamily="Arial, sans-serif">?</text></g>
-        <g filter="url(#softShadow)"><rect x="430" y="68" width="108" height="62" rx="22" fill="white" stroke="#E2E8F0" /><circle cx="458" cy="99" r="15" fill="url(#faqGold)" /><path d="M458 88v5m0 12v5m-11-11h5m12 0h5" stroke="white" strokeWidth="2.4" strokeLinecap="round" /><rect x="482" y="89" width="36" height="7" rx="3.5" fill="#1E293B" /><rect x="482" y="103" width="26" height="5" rx="2.5" fill="#CBD5E1" /></g>
-        <g filter="url(#softShadow)"><path d="M94 355h136c17 0 30 13 30 30v18c0 17-13 30-30 30h-73l-25 22 4-22H94c-17 0-30-13-30-30v-18c0-17 13-30 30-30Z" fill="#0F172A" /><circle cx="112" cy="394" r="6" fill="#A78BFA" /><circle cx="137" cy="394" r="6" fill="#FBBF24" /><circle cx="162" cy="394" r="6" fill="#60A5FA" /><rect x="183" y="386" width="49" height="7" rx="3.5" fill="#E2E8F0" opacity="0.9" /><rect x="183" y="401" width="32" height="5" rx="2.5" fill="#94A3B8" /></g>
-        <g transform="translate(393 356)" filter="url(#softShadow)"><rect x="0" y="0" width="124" height="78" rx="20" fill="white" stroke="#E2E8F0" /><rect x="18" y="18" width="52" height="42" rx="8" fill="#EEF2FF" /><path d="M27 32h34M27 41h25M27 50h19" stroke="#6366F1" strokeWidth="4" strokeLinecap="round" /><circle cx="92" cy="39" r="17" fill="#F1F5F9" /><path d="M85 39l5 5 9-11" fill="none" stroke="#16A34A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></g>
-        <path d="M88 85c24-35 59-51 103-49" fill="none" stroke="#C4B5FD" strokeWidth="3" strokeLinecap="round" strokeDasharray="6 12" /><path d="M527 164c25 24 35 52 28 84" fill="none" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" strokeDasharray="6 12" />
-      </svg>
+    <div className="relative mx-auto min-h-[430px] w-full max-w-[500px] overflow-hidden rounded-[2.25rem] border border-primary/15 bg-[radial-gradient(circle_at_20%_15%,rgba(167,139,250,.45),transparent_30%),radial-gradient(circle_at_85%_80%,rgba(251,191,36,.3),transparent_32%),linear-gradient(145deg,#312e81,#5b21b6_55%,#7c3aed)] p-6 text-white shadow-[0_28px_75px_rgba(76,29,149,.24)] sm:min-h-[500px] sm:p-8" aria-hidden="true">
+      <div className="absolute -right-16 -top-16 h-52 w-52 rounded-full border border-white/15"/><div className="absolute -right-5 -top-5 h-28 w-28 rounded-full border border-white/15"/><div className="absolute -bottom-16 -left-12 h-48 w-48 rounded-full bg-amber-300/15 blur-2xl"/>
+      <div className="relative flex items-center justify-between"><span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.16em] backdrop-blur"><Sparkles size={13}/> Question Hub</span><span className="grid h-10 w-10 place-items-center rounded-full bg-white/10 backdrop-blur"><Search size={17}/></span></div>
+      <div className="relative mx-auto mt-9 grid h-32 w-32 place-items-center rounded-[2.2rem] bg-white text-primary shadow-[0_20px_50px_rgba(15,23,42,.28)] sm:h-40 sm:w-40"><div className="absolute -inset-3 rounded-[2.7rem] border border-white/20"/><MessageCircleQuestion size={64} strokeWidth={1.7}/><span className="absolute -right-3 -top-3 grid h-9 w-9 place-items-center rounded-full bg-amber-400 text-xs font-black text-amber-950 shadow-lg">8</span></div>
+      <div className="relative mt-10 translate-x-3 rounded-2xl rounded-br-md border border-white/15 bg-white/95 p-4 text-foreground shadow-xl sm:translate-x-8"><div className="flex items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary"><HelpCircle size={18}/></span><div><p className="text-[9px] font-black uppercase tracking-wider text-primary">Pertanyaanmu</p><p className="mt-0.5 text-sm font-extrabold">Bagaimana program ini bekerja?</p></div></div></div>
+      <div className="relative z-10 -mt-1 -translate-x-2 rounded-2xl rounded-tl-md border border-emerald-200/60 bg-emerald-50 p-4 text-emerald-950 shadow-xl sm:-translate-x-5"><div className="flex gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-500 text-white"><CheckCircle2 size={18}/></span><div><p className="text-[9px] font-black uppercase tracking-wider text-emerald-700">Jawaban cepat</p><p className="mt-0.5 text-sm font-bold">Pilih pertanyaan untuk melihat informasi lengkap.</p></div></div></div>
+      <div className="relative mt-6 grid grid-cols-2 gap-3 text-center"><div className="rounded-2xl border border-white/15 bg-white/10 p-3 backdrop-blur"><p className="text-lg font-black">8 Topik</p><p className="text-[10px] text-white/60">Informasi utama</p></div><div className="rounded-2xl border border-white/15 bg-white/10 p-3 backdrop-blur"><p className="text-lg font-black">Ringkas</p><p className="text-[10px] text-white/60">Mudah dipahami</p></div></div>
     </div>
   );
 }
@@ -51,11 +39,12 @@ export function FAQSection() {
           <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground md:text-4xl">Pertanyaan yang Sering Diajukan</h2>
           <p className="mt-3 text-sm leading-6 text-muted-foreground md:text-base">Jawaban singkat untuk pertanyaan paling umum seputar program Beasiswa Kejar Prestasi.</p>
         </div>
-        <div className="mx-auto mt-10 grid max-w-6xl gap-8 lg:grid-cols-[0.95fr_1.35fr] lg:items-center lg:gap-12">
+        <div className="mx-auto mt-10 grid max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.35fr] lg:items-start lg:gap-12">
           <ProfessionalFaqIllustration />
-          <div className="overflow-hidden rounded-[1.75rem] border border-border bg-card p-2 shadow-[0_18px_50px_rgba(15,23,42,.08)] md:p-4">
-            <Accordion type="single" collapsible className="w-full">
-              {faqs.map((f, i) => (<AccordionItem key={i} value={`item-${i}`} className="border-border/80 last:border-b-0"><AccordionTrigger className="px-3 py-5 text-left text-sm font-bold text-foreground hover:no-underline md:px-4 md:text-base">{f.q}</AccordionTrigger><AccordionContent className="px-3 pb-5 text-sm leading-6 text-muted-foreground md:px-4">{f.a}</AccordionContent></AccordionItem>))}
+          <div>
+            <div className="mb-4 flex items-center justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-[.14em] text-primary">Pilih satu pertanyaan</p><p className="mt-1 text-sm text-muted-foreground">Klik kartu untuk membuka jawabannya.</p></div><span className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-bold text-muted-foreground shadow-sm">{faqs.length} FAQ</span></div>
+            <Accordion type="single" collapsible defaultValue="item-0" className="grid w-full gap-3">
+              {faqs.map((f, i) => (<AccordionItem key={i} value={`item-${i}`} className="group overflow-hidden rounded-2xl border border-border/80 bg-card shadow-[0_8px_25px_rgba(15,23,42,.05)] transition duration-300 data-[state=open]:-translate-y-0.5 data-[state=open]:border-primary/25 data-[state=open]:bg-[linear-gradient(135deg,white,rgba(245,243,255,.9))] data-[state=open]:shadow-[0_16px_38px_rgba(91,33,182,.12)]"><AccordionTrigger className="gap-3 px-4 py-4 text-left text-sm font-extrabold text-foreground hover:no-underline sm:px-5 sm:py-5 md:text-base"><span className="flex min-w-0 items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-border bg-secondary/50 text-[10px] font-black text-muted-foreground transition group-data-[state=open]:border-primary/15 group-data-[state=open]:bg-primary group-data-[state=open]:text-white">{String(i+1).padStart(2,"0")}</span><span>{f.q}</span></span></AccordionTrigger><AccordionContent className="px-4 pb-4 pt-0 sm:px-5 sm:pb-5"><div className="ml-12 rounded-xl border border-primary/10 bg-primary-soft/45 p-4 text-sm leading-6 text-muted-foreground"><span className="mb-2 inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[.14em] text-primary"><CheckCircle2 size={13}/> Jawaban</span><p>{f.a}</p></div></AccordionContent></AccordionItem>))}
             </Accordion>
           </div>
         </div>
