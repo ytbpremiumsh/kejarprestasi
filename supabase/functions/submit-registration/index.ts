@@ -49,13 +49,11 @@ const Input = z.object({
   extra: z.record(z.string(), z.unknown()).optional().default({}),
 });
 
-const TOKEN_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-
 function generateToken(kind: "prestasi" | "ekonomi" | "umum") {
-  const prefix = kind === "prestasi" ? "KP-PRE-" : kind === "ekonomi" ? "KP-EKO-" : "KP-UMM-";
-  const bytes = new Uint8Array(6);
-  crypto.getRandomValues(bytes);
-  return `${prefix}${Array.from(bytes, (b) => TOKEN_CHARS[b % TOKEN_CHARS.length]).join("")}`;
+  const prefix = kind === "prestasi" ? "KP3P" : kind === "ekonomi" ? "KP3E" : "KP3U";
+  const values = new Uint32Array(1);
+  crypto.getRandomValues(values);
+  return `${prefix}${String(values[0] % 1_000_000).padStart(6, "0")}`;
 }
 
 serve(async (req) => {

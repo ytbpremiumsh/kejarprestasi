@@ -26,7 +26,11 @@ export const studyCases: Record<StudyKind, string[]> = {
   ],
 };
 
-export const studyPrefix = (kind: StudyKind) => kind === "prestasi" ? "KP-PRE-" : kind === "ekonomi" ? "KP-EKO-" : "KP-UMM-";
+export const studyPrefix = (kind: StudyKind) => kind === "prestasi" ? "KP3P" : kind === "ekonomi" ? "KP3E" : "KP3U";
+export const matchesStudyPrefix = (token: string, kind: StudyKind) => {
+  const legacy = kind === "prestasi" ? "KP-PRE-" : kind === "ekonomi" ? "KP-EKO-" : "KP-UMM-";
+  return token.startsWith(studyPrefix(kind)) || token.startsWith(legacy);
+};
 export const studyLabel = (kind: StudyKind) => kind === "prestasi" ? "Prestasi" : kind === "ekonomi" ? "Ekonomi" : "Umum";
 export const studyNextPath = (kind: StudyKind) => kind === "prestasi" ? "/administrasi/prestasi" : kind === "ekonomi" ? "/administrasi/ekonomi" : "/administrasi/umum";
 const ACCESS_KEY = "kp-study-verified-access";

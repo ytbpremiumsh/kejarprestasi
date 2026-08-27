@@ -99,7 +99,7 @@ const DEFAULTS: Record<string, TplValue> = {
 
 const SAMPLE_VALUES: Record<string, string> = {
   full_name: "Andi Pratama",
-  token: "KP-PRE-A1B2C3",
+  token: "KP3P847291",
   kind: "prestasi",
   kind_label: "Beasiswa Prestasi",
   whatsapp: "08123456789",

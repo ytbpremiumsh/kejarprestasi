@@ -224,7 +224,7 @@ serve(async (req) => {
     if (data._isTest && data.subject && data.html) {
       const sampleProps = {
         fullName: "Andi Pratama",
-        token: "KP-PRE-A1B2C3",
+        token: "KP3P847291",
         kind: "prestasi",
         whatsapp: "08123456789",
         count: 5,
