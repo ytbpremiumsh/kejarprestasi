@@ -39,6 +39,11 @@ function AdminLayout() {
         navigate({ to: "/login" });
         return;
       }
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal?.nextLevel === "aal2" && aal.currentLevel === "aal1") {
+        navigate({ to: "/login" });
+        return;
+      }
       setEmail(sess.session.user.email ?? null);
       const { data, error } = await supabase
         .from("user_roles")
