@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, Crown, Gift, GraduationCap, HeartHandshake, ShieldCheck, Trophy, Users, Wallet } from "lucide-react";
-import heroImg from "@/assets/students-hero.png";
+import heroImg from "@/assets/students-hero.webp";
 import { Countdown } from "@/components/Countdown";
 import { AboutMockup } from "@/components/AboutMockup";
 import { FAQSection } from "@/components/FAQSection";
@@ -47,7 +47,7 @@ function Index() {
           <div className="relative order-2 min-h-[330px] sm:min-h-[430px] lg:min-h-[560px]">
             <div aria-hidden="true" className="absolute inset-x-2 bottom-3 top-8 rounded-[3rem] bg-primary/10 blur-3xl" />
             <div aria-hidden="true" className="absolute right-[19%] top-[8%] h-28 w-28 rounded-full bg-gold/20 blur-2xl" />
-            <img src={heroImg} alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi" width={1024} height={1024} className="relative mx-auto h-full max-h-[570px] w-full object-contain object-center drop-shadow-[0_28px_42px_oklch(0.35_0.18_290/0.2)]" fetchPriority="high" />
+            <img src={heroImg} alt="Ilustrasi siswa Indonesia penerima beasiswa Kejar Prestasi" width={1024} height={1024} decoding="async" className="relative mx-auto h-full max-h-[570px] w-full object-contain object-center drop-shadow-[0_28px_42px_oklch(0.35_0.18_290/0.2)]" fetchPriority="high" />
           </div>
         </div>
         <div className="container-page relative pb-8 sm:pb-12">

@@ -1,7 +1,7 @@
-import a1 from "@/assets/peraih-1.png";
-import a2 from "@/assets/peraih-2.png";
-import a3 from "@/assets/peraih-3.png";
-import a4 from "@/assets/peraih-4.png";
+import a1 from "@/assets/peraih-1.webp";
+import a2 from "@/assets/peraih-2.webp";
+import a3 from "@/assets/peraih-3.webp";
+import a4 from "@/assets/peraih-4.webp";
 import { Quote, Trophy, ArrowUpRight } from "lucide-react";
 
 const alumni = [
@@ -69,6 +69,7 @@ export function AlumniSection() {
                     width={768}
                     height={768}
                     loading="lazy"
+                    decoding="async"
                     className="absolute inset-0 h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-foreground/35 to-transparent" />

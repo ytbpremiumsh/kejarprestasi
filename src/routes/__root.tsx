@@ -3,7 +3,6 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
-  redirect,
   useRouter,
   useRouterState,
   HeadContent,
@@ -17,7 +16,7 @@ import { AutoAdInjector } from "@/components/ads/AutoAdInjector";
 import { CustomAdInjector } from "@/components/ads/CustomAdInjector";
 import { CustomCodeInjector } from "@/components/CustomCodeInjector";
 import { AnalyticsInjector } from "@/components/AnalyticsInjector";
-import { ForceReloadNavigation } from "@/components/ForceReloadNavigation";
+import { RouteLifecycle } from "@/components/RouteLifecycle";
 import { MaintenanceGate } from "@/components/MaintenanceGate";
 import { AdminBar } from "@/components/admin/AdminBar";
 
@@ -79,11 +78,6 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  beforeLoad: ({ location }) => {
-    if (location.pathname === "/pendaftaran/umum") {
-      throw redirect({ to: "/pendaftaran-umum", replace: true });
-    }
-  },
   head: () => ({
     meta: [
       { title: "Beasiswa Pendidikan Kejar Prestasi Section #3" },
@@ -114,7 +108,7 @@ function RootComponent() {
         )}
         <CustomCodeInjector />
         <AnalyticsInjector />
-        <ForceReloadNavigation />
+        <RouteLifecycle />
         {isBareLayout ? (
           <Outlet />
         ) : (

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Download, Instagram, MessageCircle, Info, CheckCircle2, Copy, Check, Upload, Image as ImageIcon, Users, Sparkles, ArrowRight, Share2, Camera, Layers3 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import defaultPoster from "@/assets/poster-beasiswa.png";
+import defaultPoster from "@/assets/poster-beasiswa.webp";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { supabase } from "@/integrations/supabase/client";
 
