@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as StudikasusRouteImport } from './routes/studikasus'
 import { Route as StudiKasusRouteImport } from './routes/studi-kasus'
+import { Route as PendaftaranUmumRouteImport } from './routes/pendaftaran-umum'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as CekStatusRouteImport } from './routes/cek-status'
@@ -82,6 +83,11 @@ const StudikasusRoute = StudikasusRouteImport.update({
 const StudiKasusRoute = StudiKasusRouteImport.update({
   id: '/studi-kasus',
   path: '/studi-kasus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendaftaranUmumRoute = PendaftaranUmumRouteImport.update({
+  id: '/pendaftaran-umum',
+  path: '/pendaftaran-umum',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -373,6 +379,7 @@ export interface FileRoutesByFullPath {
   '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
+  '/pendaftaran-umum': typeof PendaftaranUmumRoute
   '/studi-kasus': typeof StudiKasusRoute
   '/studikasus': typeof StudikasusRoute
   '/tentang': typeof TentangRoute
@@ -433,6 +440,7 @@ export interface FileRoutesByTo {
   '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
+  '/pendaftaran-umum': typeof PendaftaranUmumRoute
   '/studi-kasus': typeof StudiKasusRoute
   '/studikasus': typeof StudikasusRoute
   '/tentang': typeof TentangRoute
@@ -493,6 +501,7 @@ export interface FileRoutesById {
   '/cek-status': typeof CekStatusRoute
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
+  '/pendaftaran-umum': typeof PendaftaranUmumRoute
   '/studi-kasus': typeof StudiKasusRoute
   '/studikasus': typeof StudikasusRoute
   '/tentang': typeof TentangRoute
@@ -556,6 +565,7 @@ export interface FileRouteTypes {
     | '/cek-status'
     | '/daftar'
     | '/login'
+    | '/pendaftaran-umum'
     | '/studi-kasus'
     | '/studikasus'
     | '/tentang'
@@ -616,6 +626,7 @@ export interface FileRouteTypes {
     | '/cek-status'
     | '/daftar'
     | '/login'
+    | '/pendaftaran-umum'
     | '/studi-kasus'
     | '/studikasus'
     | '/tentang'
@@ -675,6 +686,7 @@ export interface FileRouteTypes {
     | '/cek-status'
     | '/daftar'
     | '/login'
+    | '/pendaftaran-umum'
     | '/studi-kasus'
     | '/studikasus'
     | '/tentang'
@@ -737,6 +749,7 @@ export interface RootRouteChildren {
   CekStatusRoute: typeof CekStatusRoute
   DaftarRoute: typeof DaftarRoute
   LoginRoute: typeof LoginRoute
+  PendaftaranUmumRoute: typeof PendaftaranUmumRoute
   StudiKasusRoute: typeof StudiKasusRoute
   StudikasusRoute: typeof StudikasusRoute
   TentangRoute: typeof TentangRoute
@@ -784,6 +797,13 @@ declare module '@tanstack/react-router' {
       path: '/studi-kasus'
       fullPath: '/studi-kasus'
       preLoaderRoute: typeof StudiKasusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pendaftaran-umum': {
+      id: '/pendaftaran-umum'
+      path: '/pendaftaran-umum'
+      fullPath: '/pendaftaran-umum'
+      preLoaderRoute: typeof PendaftaranUmumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1273,6 +1293,7 @@ const rootRouteChildren: RootRouteChildren = {
   CekStatusRoute: CekStatusRoute,
   DaftarRoute: DaftarRoute,
   LoginRoute: LoginRoute,
+  PendaftaranUmumRoute: PendaftaranUmumRoute,
   StudiKasusRoute: StudiKasusRoute,
   StudikasusRoute: StudikasusRoute,
   TentangRoute: TentangRoute,
