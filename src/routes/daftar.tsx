@@ -38,7 +38,7 @@ function DaftarSelector() {
               to="/beasiswa-prestasi"
               tone="primary"
               icon={<Trophy size={24}/>} 
-              eyebrow="Jalur Prestasi"
+              eyebrow="KATEGORI PRESTASI"
               title="Beasiswa Prestasi"
               desc="Untuk peserta yang ingin menonjolkan pencapaian akademik maupun non-akademik."
               bullets={["Tanpa minimal nilai rapor / IPK", "SD/MI hingga D3, D4/S1, dan S2", "Dana pendidikan hingga Rp23 Juta / semester"]}
@@ -50,7 +50,7 @@ function DaftarSelector() {
               to="/beasiswa-ekonomi"
               tone="emerald"
               icon={<HeartHandshake size={24}/>} 
-              eyebrow="Jalur Ekonomi"
+              eyebrow="KATEGORI EKONOMI"
               title="Beasiswa Ekonomi"
               desc="Untuk peserta yang membutuhkan dukungan pendidikan dan ingin tetap melanjutkan proses seleksi."
               bullets={["Tanpa minimal nilai rapor / IPK", "SD/MI hingga D3, D4/S1, dan S2", "Dana pendidikan hingga Rp23 Juta / semester"]}
@@ -63,8 +63,8 @@ function DaftarSelector() {
               icon={<BookOpen size={24}/>}
               eyebrow="Kategori Umum"
               title="Beasiswa Umum"
-              desc="Kategori terbuka bagi pelajar dan mahasiswa yang ingin memperoleh dukungan pendidikan dan pengembangan diri."
-              bullets={["Terbuka untuk pelajar dan mahasiswa", "Jenjang SD/MI hingga D3, D4/S1, dan S2", "Seleksi studi kasus dan administrasi"]}
+              desc="Pelajar dan mahasiswa yang ingin memperoleh dukungan pendidikan & pengembangan diri."
+              bullets={["Tanpa minimal nilai rapor / IPK", "SD/MI hingga D3, D4/S1, dan S2", "Dana pendidikan hingga Rp23 Juta / semester"]}
               stats={[{icon:<Users size={15}/>,label:"Kategori",value:"Umum"},{icon:<BadgeCheck size={15}/>,label:"Reguler",value:"Gratis"}]}
               cta="Daftar Beasiswa Umum"
             />
