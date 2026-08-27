@@ -26,6 +26,7 @@ import { Route as BagikanPosterIndexRouteImport } from './routes/bagikan-poster.
 import { Route as ArtikelIndexRouteImport } from './routes/artikel.index'
 import { Route as AdministrasiIndexRouteImport } from './routes/administrasi.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as StudiKasusFormRouteImport } from './routes/studi-kasus.form'
 import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran.sukses'
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
 import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
@@ -153,6 +154,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const StudiKasusFormRoute = StudiKasusFormRouteImport.update({
+  id: '/form',
+  path: '/form',
+  getParentRoute: () => StudiKasusRoute,
 } as any)
 const PendaftaranSuksesRoute = PendaftaranSuksesRouteImport.update({
   id: '/pendaftaran/sukses',
@@ -374,7 +380,7 @@ export interface FileRoutesByFullPath {
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
   '/pendaftaran-umum': typeof PendaftaranUmumRoute
-  '/studi-kasus': typeof StudiKasusRoute
+  '/studi-kasus': typeof StudiKasusRouteWithChildren
   '/studikasus': typeof StudikasusRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
@@ -413,6 +419,7 @@ export interface FileRoutesByFullPath {
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
+  '/studi-kasus/form': typeof StudiKasusFormRoute
   '/admin/': typeof AdminIndexRoute
   '/administrasi/': typeof AdministrasiIndexRoute
   '/artikel/': typeof ArtikelIndexRoute
@@ -434,7 +441,7 @@ export interface FileRoutesByTo {
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
   '/pendaftaran-umum': typeof PendaftaranUmumRoute
-  '/studi-kasus': typeof StudiKasusRoute
+  '/studi-kasus': typeof StudiKasusRouteWithChildren
   '/studikasus': typeof StudikasusRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
@@ -471,6 +478,7 @@ export interface FileRoutesByTo {
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
+  '/studi-kasus/form': typeof StudiKasusFormRoute
   '/admin': typeof AdminIndexRoute
   '/administrasi': typeof AdministrasiIndexRoute
   '/artikel': typeof ArtikelIndexRoute
@@ -494,7 +502,7 @@ export interface FileRoutesById {
   '/daftar': typeof DaftarRoute
   '/login': typeof LoginRoute
   '/pendaftaran-umum': typeof PendaftaranUmumRoute
-  '/studi-kasus': typeof StudiKasusRoute
+  '/studi-kasus': typeof StudiKasusRouteWithChildren
   '/studikasus': typeof StudikasusRoute
   '/tentang': typeof TentangRoute
   '/admin/adsense': typeof AdminAdsenseRoute
@@ -533,6 +541,7 @@ export interface FileRoutesById {
   '/pendaftaran/ekonomi': typeof PendaftaranEkonomiRoute
   '/pendaftaran/prestasi': typeof PendaftaranPrestasiRoute
   '/pendaftaran/sukses': typeof PendaftaranSuksesRoute
+  '/studi-kasus/form': typeof StudiKasusFormRoute
   '/admin/': typeof AdminIndexRoute
   '/administrasi/': typeof AdministrasiIndexRoute
   '/artikel/': typeof ArtikelIndexRoute
@@ -596,6 +605,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
+    | '/studi-kasus/form'
     | '/admin/'
     | '/administrasi/'
     | '/artikel/'
@@ -654,6 +664,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
+    | '/studi-kasus/form'
     | '/admin'
     | '/administrasi'
     | '/artikel'
@@ -715,6 +726,7 @@ export interface FileRouteTypes {
     | '/pendaftaran/ekonomi'
     | '/pendaftaran/prestasi'
     | '/pendaftaran/sukses'
+    | '/studi-kasus/form'
     | '/admin/'
     | '/administrasi/'
     | '/artikel/'
@@ -738,7 +750,7 @@ export interface RootRouteChildren {
   DaftarRoute: typeof DaftarRoute
   LoginRoute: typeof LoginRoute
   PendaftaranUmumRoute: typeof PendaftaranUmumRoute
-  StudiKasusRoute: typeof StudiKasusRoute
+  StudiKasusRoute: typeof StudiKasusRouteWithChildren
   StudikasusRoute: typeof StudikasusRoute
   TentangRoute: typeof TentangRoute
   AdministrasiEkonomiRoute: typeof AdministrasiEkonomiRoute
@@ -883,6 +895,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/studi-kasus/form': {
+      id: '/studi-kasus/form'
+      path: '/form'
+      fullPath: '/studi-kasus/form'
+      preLoaderRoute: typeof StudiKasusFormRouteImport
+      parentRoute: typeof StudiKasusRoute
     }
     '/pendaftaran/sukses': {
       id: '/pendaftaran/sukses'
@@ -1237,6 +1256,18 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface StudiKasusRouteChildren {
+  StudiKasusFormRoute: typeof StudiKasusFormRoute
+}
+
+const StudiKasusRouteChildren: StudiKasusRouteChildren = {
+  StudiKasusFormRoute: StudiKasusFormRoute,
+}
+
+const StudiKasusRouteWithChildren = StudiKasusRoute._addFileChildren(
+  StudiKasusRouteChildren,
+)
+
 interface BerkasEkonomiRouteChildren {
   BerkasEkonomiUploadRoute: typeof BerkasEkonomiUploadRoute
   BerkasEkonomiIndexRoute: typeof BerkasEkonomiIndexRoute
@@ -1274,7 +1305,7 @@ const rootRouteChildren: RootRouteChildren = {
   DaftarRoute: DaftarRoute,
   LoginRoute: LoginRoute,
   PendaftaranUmumRoute: PendaftaranUmumRoute,
-  StudiKasusRoute: StudiKasusRoute,
+  StudiKasusRoute: StudiKasusRouteWithChildren,
   StudikasusRoute: StudikasusRoute,
   TentangRoute: TentangRoute,
   AdministrasiEkonomiRoute: AdministrasiEkonomiRoute,
