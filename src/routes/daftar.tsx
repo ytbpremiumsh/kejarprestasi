@@ -23,7 +23,7 @@ function DaftarSelector() {
             <header className="max-w-3xl">
               <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/80 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-primary shadow-sm backdrop-blur"><GraduationCap size={14}/> Mulai Pendaftaran</span>
               <h1 className="mt-4 text-3xl font-black leading-tight tracking-tight text-foreground sm:text-4xl lg:text-5xl">Tentukan kategori beasiswa yang paling sesuai</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">Pilih satu kategori untuk melihat detail program dan menentukan jalur Reguler, Akselerasi, atau Platinum.</p>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">Pilih satu kategori untuk melihat detail Program Beasiswa Pendidikan Section #3</p>
             </header>
 
             <div className="grid grid-cols-3 gap-2 rounded-2xl border border-border bg-white/75 p-2 shadow-card backdrop-blur sm:min-w-[360px]">
