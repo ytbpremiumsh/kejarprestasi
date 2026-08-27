@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { CheckCircle2, HelpCircle, MessageCircleQuestion, Search, Sparkles } from "lucide-react";
+import { CheckCircle2, HelpCircle, MessageCircleQuestion, Search, ShieldCheck, Sparkles } from "lucide-react";
 
 const faqs = [
   { q: "Apa saja kategori beasiswa yang tersedia?", a: "Terdapat tiga kategori beasiswa, yaitu Beasiswa Prestasi, Beasiswa Ekonomi, dan Beasiswa Umum. Pilih satu kategori yang paling sesuai dengan profil dan kebutuhanmu." },
@@ -25,7 +25,7 @@ function ProfessionalFaqIllustration() {
       <div className="relative mx-auto mt-7 grid h-28 w-28 place-items-center rounded-[2rem] bg-white text-primary shadow-[0_20px_50px_rgba(15,23,42,.28)] sm:h-36 sm:w-36"><div className="absolute -inset-3 rounded-[2.5rem] border border-white/20"/><MessageCircleQuestion size={56} strokeWidth={1.7}/><span className="absolute -right-3 -top-3 grid h-9 w-9 place-items-center rounded-full bg-amber-400 text-xs font-black text-amber-950 shadow-lg">8</span></div>
       <div className="relative mt-8 translate-x-3 rounded-2xl rounded-br-md border border-white/15 bg-white/95 p-3.5 text-foreground shadow-xl sm:translate-x-7"><div className="flex items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary"><HelpCircle size={18}/></span><div><p className="text-[9px] font-black uppercase tracking-wider text-primary">Pertanyaanmu</p><p className="mt-0.5 text-sm font-extrabold">Program ini di adakan oleh siapa?</p></div></div></div>
       <div className="relative z-10 -mt-1 -translate-x-2 rounded-2xl rounded-tl-md border border-emerald-200/60 bg-emerald-50 p-4 text-emerald-950 shadow-xl sm:-translate-x-5"><div className="flex gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-500 text-white"><CheckCircle2 size={18}/></span><div><p className="text-[9px] font-black uppercase tracking-wider text-emerald-700">Jawaban cepat</p><p className="mt-0.5 text-sm font-bold">Program ini di adakan oleh Kejar Prestasi</p></div></div></div>
-      <div className="relative mt-5 grid grid-cols-2 gap-3 text-center"><div className="rounded-2xl border border-white/15 bg-white/10 p-2.5 backdrop-blur"><p className="text-base font-black">8 Topik</p><p className="text-[9px] text-white/60">Informasi utama</p></div><div className="rounded-2xl border border-white/15 bg-white/10 p-2.5 backdrop-blur"><p className="text-base font-black">Ringkas</p><p className="text-[9px] text-white/60">Mudah dipahami</p></div></div>
+      <div className="relative mt-5 flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 p-3.5 backdrop-blur"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/15 text-amber-300"><ShieldCheck size={20}/></span><div><p className="text-xs font-black uppercase tracking-[.12em]">Informasi Terverifikasi</p><p className="mt-0.5 text-[10px] text-white/65">Jawaban resmi dari tim Kejar Prestasi.</p></div></div>
     </div>
   );
 }
