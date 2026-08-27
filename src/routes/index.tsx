@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, Crown, Gift, GraduationCap, HeartHandshake, ShieldCheck, Sparkles, Trophy, Users, Wallet } from "lucide-react";
+import { ArrowRight, CheckCircle2, Crown, Gift, GraduationCap, HeartHandshake, ShieldCheck, Trophy, Users, Wallet } from "lucide-react";
 import heroImg from "@/assets/students-hero.png";
 import { Countdown } from "@/components/Countdown";
 import { AboutMockup } from "@/components/AboutMockup";
@@ -92,10 +92,9 @@ function FeaturedTabletBenefit() {
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-[.12em] text-emerald-700 shadow-sm"><Crown size={14}/> Benefit Utama Platinum</div>
           <h2 className="mt-4 max-w-xl text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl lg:text-4xl">Kesempatan memperoleh <span className="text-emerald-700">Tablet Pendidikan & Dana Pendidikan</span> untuk Awardee</h2>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Benefit perangkat belajar dan dukungan dana pendidikan hingga Rp23 juta per semester khusus peserta Jalur Akselerasi Platinum yang terpilih menjadi Awardee.</p>
-          <div className="mt-5 grid max-w-xl gap-3 sm:grid-cols-3">
-            <MiniBenefit icon={<Gift size={18}/>} title="Benefit Eksklusif" text="Berlaku bagi penerima terpilih" />
+          <div className="mt-5 grid max-w-xl gap-3 sm:grid-cols-2">
+            <MiniBenefit icon={<Gift size={18}/>} title="Benefit Eksklusif" text="Khusus jalur Platinum" />
             <MiniBenefit icon={<GraduationCap size={18}/>} title="Tablet & Dana Pendidikan" text="Hingga Rp23 juta / semester" />
-            <MiniBenefit icon={<Sparkles size={18}/>} title="Khusus Awardee" text="Berlaku bagi penerima terpilih" />
           </div>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link to="/beasiswa-prestasi" className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-6 py-3.5 text-sm font-black text-white shadow-[0_12px_28px_rgba(5,150,105,.22)] transition hover:-translate-y-0.5 hover:bg-emerald-700">Lihat Jalur Prestasi <ArrowRight size={16}/></Link>
