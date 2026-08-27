@@ -1,6 +1,36 @@
 /* Tablet mockup shared by Platinum benefit card and homepage */
 .platinum-benefit { position: relative; isolation: isolate; }
 
+.benefit-shine {
+  animation: benefit-glow 2.4s ease-in-out infinite;
+}
+.benefit-shine::after {
+  content: "";
+  position: absolute;
+  inset: -45% auto -45% -55%;
+  z-index: 1;
+  width: 38%;
+  transform: rotate(18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.92), transparent);
+  filter: blur(2px);
+  animation: benefit-sweep 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes benefit-sweep {
+  0%, 18% { left: -55%; opacity: 0; }
+  32% { opacity: .85; }
+  68% { left: 125%; opacity: .35; }
+  100% { left: 125%; opacity: 0; }
+}
+@keyframes benefit-glow {
+  0%, 100% { box-shadow: 0 0 0 rgba(245,158,11,0); }
+  50% { box-shadow: 0 0 22px rgba(245,158,11,.22); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .benefit-shine,
+  .benefit-shine::after { animation: none; }
+}
+
 .tablet-stage {
   position: relative;
   width: 122px;
