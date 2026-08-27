@@ -26,7 +26,7 @@ import { Route as BagikanPosterIndexRouteImport } from './routes/bagikan-poster.
 import { Route as ArtikelIndexRouteImport } from './routes/artikel.index'
 import { Route as AdministrasiIndexRouteImport } from './routes/administrasi.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as PendaftaranUmumRouteImport } from './routes/pendaftaran.umum'
+import { Route as PendaftaranUmumRouteImport } from './routes/pendaftaran/umum'
 import { Route as PendaftaranSuksesRouteImport } from './routes/pendaftaran.sukses'
 import { Route as PendaftaranPrestasiRouteImport } from './routes/pendaftaran.prestasi'
 import { Route as PendaftaranEkonomiRouteImport } from './routes/pendaftaran.ekonomi'
