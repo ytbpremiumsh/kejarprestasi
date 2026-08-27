@@ -96,10 +96,7 @@ function FeaturedTabletBenefit() {
             <MiniBenefit icon={<Gift size={18}/>} title="Benefit Eksklusif" text="Bagi Peraih terpilih" />
             <MiniBenefit icon={<GraduationCap size={18}/>} title="Tablet & Dana Pendidikan" text="Hingga Rp23 juta / semester" />
           </div>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Link to="/beasiswa-prestasi" className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-6 py-3.5 text-sm font-black text-white shadow-[0_12px_28px_rgba(5,150,105,.22)] transition hover:-translate-y-0.5 hover:bg-emerald-700">Lihat Jalur Prestasi <ArrowRight size={16}/></Link>
-            <Link to="/beasiswa-ekonomi" className="inline-flex items-center justify-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-6 py-3.5 text-sm font-bold text-emerald-800 transition hover:-translate-y-0.5 hover:bg-white">Lihat Jalur Ekonomi <ArrowRight size={16}/></Link>
-          </div>
+          <div className="mt-6"><button type="button" onClick={()=>document.getElementById("timeline")?.scrollIntoView({behavior:"smooth"})} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-emerald-600 px-7 py-3.5 text-sm font-black text-white shadow-[0_12px_28px_rgba(5,150,105,.22)] transition hover:-translate-y-0.5 hover:bg-emerald-700 sm:w-auto">Daftar <ArrowRight size={16}/></button></div>
         </div>
         <div className="relative mx-auto w-full max-w-[520px]">
           <div className="absolute inset-x-[12%] bottom-[7%] h-20 rounded-full bg-emerald-600/15 blur-2xl" />
