@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BadgeCheck, BookOpen, GraduationCap, HeartHandshake, ShieldCheck, Sparkles, Trophy, Users, Wallet } from "lucide-react";
+import { ArrowRight, BadgeCheck, BookOpen, CheckCircle2, ClipboardCheck, GraduationCap, HeartHandshake, School, ShieldCheck, Sparkles, Trophy, University, Users, Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/daftar")({
   head: () => ({
     meta: [
       { title: "Pilih Jalur Pendaftaran — Kejar Prestasi" },
-      { name: "description", content: "Pilih kategori Beasiswa Prestasi atau Beasiswa Ekonomi sebelum melanjutkan proses pendaftaran." },
+      { name: "description", content: "Pelajari persyaratan dan pilih kategori Beasiswa Prestasi, Ekonomi, atau Umum sebelum melanjutkan pendaftaran." },
     ],
   }),
   component: DaftarSelector,
@@ -41,7 +41,7 @@ function DaftarSelector() {
               eyebrow="Jalur Prestasi"
               title="Beasiswa Prestasi"
               desc="Untuk peserta yang ingin menonjolkan pencapaian akademik maupun non-akademik."
-              bullets={["Tanpa minimal nilai / IPK", "SD sampai Mahasiswa", "Dana pendidikan hingga Rp23 Juta / semester"]}
+              bullets={["Tanpa minimal nilai rapor / IPK", "SD/MI hingga D3, D4/S1, dan S2", "Dana pendidikan hingga Rp23 Juta / semester"]}
               stats={[{icon:<Trophy size={15}/>,label:"Fokus",value:"Prestasi"},{icon:<BadgeCheck size={15}/>,label:"Reguler",value:"Gratis"}]}
               cta="Lihat Jalur Prestasi"
             />
@@ -53,7 +53,7 @@ function DaftarSelector() {
               eyebrow="Jalur Ekonomi"
               title="Beasiswa Ekonomi"
               desc="Untuk peserta yang membutuhkan dukungan pendidikan dan ingin tetap melanjutkan proses seleksi."
-              bullets={["Tanpa minimal nilai / IPK", "SD sampai Mahasiswa", "Dana pendidikan hingga Rp23 Juta / semester"]}
+              bullets={["Tanpa minimal nilai rapor / IPK", "SD/MI hingga D3, D4/S1, dan S2", "Dana pendidikan hingga Rp23 Juta / semester"]}
               stats={[{icon:<Wallet size={15}/>,label:"Fokus",value:"Dukungan"},{icon:<BadgeCheck size={15}/>,label:"Reguler",value:"Gratis"}]}
               cta="Lihat Jalur Ekonomi"
             />
@@ -63,12 +63,14 @@ function DaftarSelector() {
               icon={<BookOpen size={24}/>}
               eyebrow="Kategori Umum"
               title="Beasiswa Umum"
-              desc="Kategori terbuka bagi mahasiswa yang ingin memperoleh dukungan pendidikan dan pengembangan diri."
-              bullets={["Terbuka untuk mahasiswa", "Seleksi studi kasus", "Administrasi berbasis portofolio"]}
+              desc="Kategori terbuka bagi pelajar dan mahasiswa yang ingin memperoleh dukungan pendidikan dan pengembangan diri."
+              bullets={["Terbuka untuk pelajar dan mahasiswa", "Jenjang SD/MI hingga D3, D4/S1, dan S2", "Seleksi studi kasus dan administrasi"]}
               stats={[{icon:<Users size={15}/>,label:"Kategori",value:"Umum"},{icon:<BadgeCheck size={15}/>,label:"Reguler",value:"Gratis"}]}
               cta="Daftar Beasiswa Umum"
             />
           </section>
+
+          <RequirementsCard />
 
           <div className="mt-7 grid gap-3 rounded-[1.6rem] border border-border bg-white/75 p-4 shadow-card backdrop-blur sm:grid-cols-3 sm:p-5">
             <BottomPoint icon={<ShieldCheck size={18}/>} title="Pilih satu kategori" text="Kategori dipilih sebelum masuk ke jalur pendaftaran." />
@@ -79,6 +81,42 @@ function DaftarSelector() {
       </section>
     </main>
   );
+}
+
+const requirements = [
+  "Merupakan Warga Negara Indonesia (WNI) dan berdomisili di Indonesia.",
+  "Tidak ada batas minimal nilai rapor maupun IPK pada tahap pendaftaran.",
+  "Memiliki tanggung jawab, kemampuan komunikasi, dan motivasi belajar yang baik.",
+  "Mengisi data secara benar serta mengikuti seluruh tahapan dan ketentuan program.",
+];
+
+function RequirementsCard() {
+  return <section className="relative mt-8 overflow-hidden rounded-[2rem] border border-primary/15 bg-white shadow-[0_20px_55px_rgba(15,23,42,.08)]">
+    <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-primary via-violet-500 to-indigo-500" />
+    <div aria-hidden="true" className="absolute -right-24 -top-28 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+    <div className="relative p-6 sm:p-8 lg:p-10">
+      <div className="grid gap-7 lg:grid-cols-[.72fr_1.28fr] lg:gap-10">
+        <div>
+          <span className="grid h-14 w-14 place-items-center rounded-2xl border border-primary/15 bg-primary-soft text-primary shadow-card"><ClipboardCheck size={25}/></span>
+          <p className="mt-6 text-xs font-black uppercase tracking-[.16em] text-primary">Sebelum Mendaftar</p>
+          <h2 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">Syarat dan Ketentuan</h2>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">Pastikan jenjang pendidikan dan profilmu sesuai sebelum memilih kategori serta jalur pendaftaran.</p>
+          <div className="mt-6 rounded-2xl border border-primary/10 bg-primary-soft/40 p-4 text-xs leading-5 text-muted-foreground"><ShieldCheck size={18} className="mb-2 text-primary"/>Pendaftaran dapat diikuti tanpa batas minimal nilai. Peserta wajib memberikan informasi yang benar dan dapat dipertanggungjawabkan.</div>
+        </div>
+
+        <div className="grid gap-5">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[.16em] text-muted-foreground">Jenjang yang dapat mengikuti</p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-border bg-secondary/25 p-4"><span className="grid h-10 w-10 place-items-center rounded-xl bg-white text-primary shadow-sm"><School size={19}/></span><h3 className="mt-3 text-sm font-extrabold">Pelajar Aktif</h3><p className="mt-1 text-xs leading-5 text-muted-foreground">SD/MI, SMP/MTs, serta SMA/SMK/MA atau sederajat.</p></div>
+              <div className="rounded-2xl border border-border bg-secondary/25 p-4"><span className="grid h-10 w-10 place-items-center rounded-xl bg-white text-primary shadow-sm"><University size={19}/></span><h3 className="mt-3 text-sm font-extrabold">Mahasiswa</h3><p className="mt-1 text-xs leading-5 text-muted-foreground">Calon mahasiswa atau mahasiswa aktif jenjang D3, D4/S1, dan S2.</p></div>
+            </div>
+          </div>
+          <div className="grid gap-2.5 sm:grid-cols-2">{requirements.map((item) => <div key={item} className="flex items-start gap-3 rounded-2xl border border-border/70 bg-white p-4 text-sm leading-6 text-foreground/85"><CheckCircle2 size={17} className="mt-1 shrink-0 text-primary"/><span>{item}</span></div>)}</div>
+        </div>
+      </div>
+    </div>
+  </section>;
 }
 
 function ProgramCard({to,tone,icon,eyebrow,title,desc,bullets,stats,cta}:{to:"/beasiswa-prestasi"|"/beasiswa-ekonomi"|"/pendaftaran-umum";tone:"primary"|"emerald";icon:React.ReactNode;eyebrow:string;title:string;desc:string;bullets:string[];stats:{icon:React.ReactNode;label:string;value:string}[];cta:string}) {
