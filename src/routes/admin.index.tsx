@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, GraduationCap, HeartHandshake, Clock, FileText, Bell, BellOff } from "lucide-react";
 import { toast } from "sonner";
+import { isAdminDemo } from "@/lib/admin-demo";
 
 // Lazy-load charts to keep recharts out of the initial admin bundle
 const LineDaily = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.LineDaily })));
@@ -66,6 +67,18 @@ function AdminOverview() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    if (isAdminDemo()) {
+      const now = new Date().toISOString();
+      setRecent([
+        { id: "demo-1", full_name: "Andi Saputra", email: "andi@example.com", kind: "prestasi", status: "pending", school_name: "SMA Negeri Contoh", education_level: "SMA", created_at: now },
+        { id: "demo-2", full_name: "Siti Rahma", email: "siti@example.com", kind: "ekonomi", status: "verified", school_name: "Universitas Contoh", education_level: "Mahasiswa", created_at: now },
+        { id: "demo-3", full_name: "Bima Pratama", email: "bima@example.com", kind: "umum", status: "pending", school_name: "SMK Negeri Contoh", education_level: "SMK", created_at: now },
+      ]);
+      setLite([{ kind: "prestasi", education_level: "SMA", created_at: now }, { kind: "ekonomi", education_level: "Mahasiswa", created_at: now }, { kind: "umum", education_level: "SMK", created_at: now }]);
+      setCounts({ total: 248, prestasi: 112, ekonomi: 79, umum: 57, pending: 31, today: 12, docs: 186 });
+      setLoading(false);
+      return;
+    }
     let active = true;
     const load = async () => {
       // Fast: today (start) ISO + 14 days back ISO
@@ -122,6 +135,7 @@ function AdminOverview() {
 
   // Realtime subscribe (only after initial paint)
   useEffect(() => {
+    if (isAdminDemo()) return;
     const channel = supabase
       .channel("admin-registrations")
       .on(

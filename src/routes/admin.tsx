@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, LogOut, Home } from "lucide-react";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { isAdminDemo, stopAdminDemo } from "@/lib/admin-demo";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/admin")({
 
 function AdminLayout() {
   const navigate = useNavigate();
+  const path = useRouterState({ select: (state) => state.location.pathname });
   const [checking, setChecking] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
@@ -26,6 +28,12 @@ function AdminLayout() {
   useEffect(() => {
     let active = true;
     const check = async () => {
+      if (isAdminDemo()) {
+        setEmail("demo@kejarprestasi.id");
+        setIsAdmin(true);
+        setChecking(false);
+        return;
+      }
       const { data: sess } = await supabase.auth.getSession();
       if (!sess.session) {
         navigate({ to: "/login" });
@@ -57,6 +65,7 @@ function AdminLayout() {
   }, [navigate]);
 
   const logout = async () => {
+    stopAdminDemo();
     await supabase.auth.signOut();
     toast.success("Anda telah keluar");
     navigate({ to: "/login" });
@@ -94,7 +103,7 @@ function AdminLayout() {
           <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background px-4">
             <SidebarTrigger />
             <div className="flex-1">
-              <p className="text-sm font-semibold text-foreground">Admin Dashboard</p>
+              <p className="text-sm font-semibold text-foreground">Admin Dashboard {isAdminDemo() && <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-700">Demo · Read Only</span>}</p>
               <p className="text-xs text-muted-foreground truncate">{email}</p>
             </div>
             <Button asChild variant="outline" size="sm">
@@ -107,7 +116,7 @@ function AdminLayout() {
             </Button>
           </header>
           <div className="px-4 py-6 md:px-6">
-            <Outlet />
+            {isAdminDemo() && path !== "/admin" ? <div className="mx-auto max-w-xl rounded-3xl border border-amber-200 bg-amber-50 p-8 text-center"><ShieldCheck className="mx-auto h-10 w-10 text-amber-600"/><h2 className="mt-4 text-xl font-extrabold">Fitur terkunci dalam mode demo</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Mode demo hanya menampilkan ringkasan simulasi dan tidak dapat membuka atau mengubah data produksi.</p><Button asChild className="mt-5"><Link to="/admin">Kembali ke Ringkasan</Link></Button></div> : <Outlet />}
           </div>
         </SidebarInset>
       </div>
