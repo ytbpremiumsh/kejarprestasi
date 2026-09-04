@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Loader2, Search, Download, RotateCcw, Trophy, RotateCw, X, FileText, ExternalLink, Eye, Users, Award, HeartHandshake } from "lucide-react";
 import { toast } from "sonner";
 import { exportRowsToXlsx } from "@/lib/excel-export";
+import { AdminPageHeader } from "@/components/admin/AdminWorkspace";
 
 export const Route = createFileRoute("/admin/kandidat")({
   component: AdminKandidat,
@@ -93,7 +94,8 @@ function AdminKandidat() {
   const totals = useMemo(() => {
     const prestasi = regs.filter((r) => r.kind === "prestasi").length;
     const ekonomi = regs.filter((r) => r.kind === "ekonomi").length;
-    return { prestasi, ekonomi, total: regs.length };
+    const umum = regs.filter((r) => r.kind === "umum").length;
+    return { prestasi, ekonomi, umum, total: regs.length };
   }, [regs]);
 
   const setStatus = async (id: string, status: "pending" | "rejected") => {
@@ -129,23 +131,13 @@ function AdminKandidat() {
   const detailDocs = detail ? docsFor(detail) : [];
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <Trophy className="h-6 w-6 text-amber-500" /> Kandidat Lolos Berkas
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {filtered.length} kandidat disetujui · siap untuk tahap berikutnya
-          </p>
-        </div>
-        <div className="flex gap-2">
+    <div className="space-y-5">
+      <AdminPageHeader eyebrow="Tahap 05 · Hasil Akhir" title="Kandidat Lolos" description={`${filtered.length} peserta telah disetujui dan siap melanjutkan proses program.`} icon={Trophy} actions={<>
           <Button variant="outline" onClick={load}><RotateCcw className="h-4 w-4 mr-1" />Refresh</Button>
           <Button onClick={exportExcel}><Download className="h-4 w-4 mr-1" />Export Excel</Button>
-        </div>
-      </div>
+        </>} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
           label="Total Kandidat"
           value={totals.total}
@@ -167,6 +159,7 @@ function AdminKandidat() {
           gradient="from-emerald-500/15 to-emerald-500/5"
           iconBg="bg-emerald-500/15 text-emerald-600"
         />
+        <StatCard label="Beasiswa Umum" value={totals.umum} icon={<Users className="h-5 w-5" />} gradient="from-sky-500/15 to-sky-500/5" iconBg="bg-sky-500/15 text-sky-600" />
       </div>
 
       <Card className="rounded-2xl p-4 shadow-soft">

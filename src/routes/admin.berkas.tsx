@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { exportRowsToXlsx } from "@/lib/excel-export";
+import { AdminPageHeader } from "@/components/admin/AdminWorkspace";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { uniqueLatestDocuments } from "@/lib/document-utils";
@@ -271,19 +272,13 @@ function AdminBerkas() {
     );
     const prestasi = all.filter((d) => d.kind === "prestasi").length;
     const ekonomi = all.filter((d) => d.kind === "ekonomi").length;
-    return { prestasi, ekonomi, total: all.length };
+    const umum = all.filter((d) => d.kind === "umum").length;
+    return { prestasi, ekonomi, umum, total: all.length };
   }, [docs]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Pengiriman Berkas</h1>
-          <p className="text-sm text-muted-foreground">
-            {grouped.length} pengirim · {docs.length} berkas total
-          </p>
-        </div>
-        <div className="flex gap-2">
+    <div className="space-y-5">
+      <AdminPageHeader eyebrow="Tahap 03 · Administrasi" title="Pengiriman Berkas" description={`${grouped.length} peserta telah mengirimkan ${docs.length} berkas. Tinjau dokumen dan tentukan status administrasinya.`} icon={FolderArchive} actions={<>
           <Button variant="outline" onClick={load}>
             <RotateCcw className="h-4 w-4 mr-1" />
             Refresh
@@ -298,10 +293,9 @@ function AdminBerkas() {
             <Download className="h-4 w-4 mr-1" />
             Export Excel
           </Button>
-        </div>
-      </div>
+        </>} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
           label="Total Pengirim Berkas"
           value={totals.total}
@@ -323,6 +317,7 @@ function AdminBerkas() {
           gradient="from-emerald-500/15 to-emerald-500/5"
           iconBg="bg-emerald-500/15 text-emerald-600"
         />
+        <StatCard label="Berkas Umum" value={totals.umum} icon={<Users className="h-5 w-5" />} gradient="from-sky-500/15 to-sky-500/5" iconBg="bg-sky-500/15 text-sky-600" />
       </div>
 
       <Card className="rounded-2xl p-4 shadow-soft">

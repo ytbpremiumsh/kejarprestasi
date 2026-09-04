@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { exportRowsToXlsx, exportRowsToCsv } from "@/lib/excel-export";
 import { TokenBadge } from "@/components/admin/TokenBadge";
 import { uniqueLatestDocuments } from "@/lib/document-utils";
+import { AdminPageHeader } from "@/components/admin/AdminWorkspace";
 
 export const Route = createFileRoute("/admin/pendaftar")({
   component: AdminPendaftar,
@@ -98,7 +99,8 @@ function AdminPendaftar() {
   const totals = useMemo(() => {
     const prestasi = rows.filter((r) => r.kind === "prestasi").length;
     const ekonomi = rows.filter((r) => r.kind === "ekonomi").length;
-    return { prestasi, ekonomi, total: rows.length };
+    const umum = rows.filter((r) => r.kind === "umum").length;
+    return { prestasi, ekonomi, umum, total: rows.length };
   }, [rows]);
 
   const filtered = useMemo(() => {
@@ -210,15 +212,8 @@ function AdminPendaftar() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Pendaftar</h1>
-          <p className="text-sm text-muted-foreground">
-            {filtered.length} dari {rows.length} pendaftar
-          </p>
-        </div>
-        <div className="flex gap-2">
+    <div className="space-y-5">
+      <AdminPageHeader eyebrow="Tahap 01 · Registrasi" title="Data Pendaftar" description={`${filtered.length} dari ${rows.length} peserta ditampilkan. Cari, periksa profil, dan ekspor data pendaftaran dari seluruh kategori.`} icon={Users} actions={<>
           <Button variant="outline" onClick={load}>
             <RotateCcw className="h-4 w-4 mr-1" />
             Refresh
@@ -237,10 +232,9 @@ function AdminPendaftar() {
             <Download className="h-4 w-4 mr-1" />
             Export Excel
           </Button>
-        </div>
-      </div>
+        </>} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <StatCard
           label="Total Pendaftar"
           value={totals.total}
@@ -262,6 +256,7 @@ function AdminPendaftar() {
           gradient="from-emerald-500/15 to-emerald-500/5"
           iconBg="bg-emerald-500/15 text-emerald-600"
         />
+        <StatCard label="Beasiswa Umum" value={totals.umum} icon={<Users className="h-5 w-5" />} gradient="from-sky-500/15 to-sky-500/5" iconBg="bg-sky-500/15 text-sky-600" />
         <StatCard
           label="Sudah Kirim Berkas"
           value={counts.submitted}

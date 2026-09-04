@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, GraduationCap, HeartHandshake, Clock, FileText, Bell, BellOff } from "lucide-react";
+import { Loader2, GraduationCap, HeartHandshake, Clock, FileText, Bell, BellOff, LayoutDashboard, Users, PenLine, FolderCheck, ListChecks, Trophy, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { isAdminDemo } from "@/lib/admin-demo";
+import { AdminPageHeader } from "@/components/admin/AdminWorkspace";
 
 // Lazy-load charts to keep recharts out of the initial admin bundle
 const LineDaily = lazy(() => import("@/components/admin/DashboardCharts").then((m) => ({ default: m.LineDaily })));
@@ -228,24 +229,26 @@ function AdminOverview() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <audio
         ref={audioRef}
         preload="none"
         src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Statistik Pendaftaran</h1>
-          <p className="text-sm text-muted-foreground">
-            Update real-time {loading ? "· memuat…" : `· ${counts.today} pendaftar hari ini`}
-          </p>
-        </div>
-        <Button variant="outline" size="sm" onClick={toggleNotif}>
+      <AdminPageHeader eyebrow="Command Center" title="Ringkasan Program" description={`Pantau aktivitas pendaftaran dan progres seleksi secara real-time${loading ? "." : ` · ${counts.today} pendaftar masuk hari ini.`}`} icon={LayoutDashboard} actions={<Button variant="outline" size="sm" onClick={toggleNotif}>
           {notif ? <Bell className="h-4 w-4 mr-1.5" /> : <BellOff className="h-4 w-4 mr-1.5" />}
           {notif ? "Notifikasi: ON" : "Notifikasi: OFF"}
-        </Button>
+        </Button>} />
+
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+        {[
+          {step:"01",label:"Pendaftar",to:"/admin/pendaftar",Icon:Users},
+          {step:"02",label:"Pengiriman Esai",to:"/admin/esai",Icon:PenLine},
+          {step:"03",label:"Pengiriman Berkas",to:"/admin/berkas",Icon:FolderCheck},
+          {step:"04",label:"Tahapan Seleksi",to:"/admin/seleksi",Icon:ListChecks},
+          {step:"05",label:"Kandidat Lolos",to:"/admin/kandidat",Icon:Trophy},
+        ].map(({step,label,to,Icon}) => <Link key={to} to={to} className="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"><span className="grid h-9 w-9 place-items-center rounded-xl bg-slate-950 text-white"><Icon className="h-4 w-4"/></span><span className="min-w-0 flex-1"><span className="block text-[9px] font-black uppercase tracking-wider text-violet-600">Tahap {step}</span><span className="block truncate text-xs font-bold text-slate-800">{label}</span></span><ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-violet-600"/></Link>)}
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
