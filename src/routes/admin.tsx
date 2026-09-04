@@ -108,7 +108,7 @@ function AdminLayout() {
           <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-slate-200/80 bg-white/90 px-3 backdrop-blur-xl sm:px-5">
             <SidebarTrigger className="rounded-xl border border-slate-200 bg-white" />
             <div className="flex-1">
-              <p className="text-sm font-black text-slate-950">Admin Dashboard {isAdminDemo() && <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-700">Demo · Read Only</span>}</p>
+              <p className="text-sm font-black text-indigo-950">Admin Dashboard {isAdminDemo() && <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-700">Demo · Read Only</span>}</p>
               <p className="hidden truncate text-xs text-slate-500 sm:block">Kelola program dan proses seleksi dalam satu tempat</p>
             </div>
             <Button asChild variant="outline" size="sm">
