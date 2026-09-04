@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Wrench, Clock, Mail, ArrowRight } from "lucide-react";
+import { Wrench, Clock, Mail, ArrowRight, LockKeyhole } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export type MaintenanceConfig = {
@@ -125,6 +125,10 @@ export function MaintenancePage({ config }: { config: MaintenanceConfig }) {
             )}
           </div>
         )}
+
+        <a href="/login" className="mt-8 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-muted-foreground transition hover:bg-secondary hover:text-foreground">
+          <LockKeyhole className="h-3.5 w-3.5" /> Akses Administrator
+        </a>
 
         <p className="mt-12 text-xs text-muted-foreground">
           © {new Date().getFullYear()} Beasiswa Kejar Prestasi

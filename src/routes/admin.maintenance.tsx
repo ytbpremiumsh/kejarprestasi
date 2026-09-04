@@ -122,8 +122,8 @@ function AdminMaintenance() {
             <Wrench className="h-6 w-6 text-primary" /> Mode Maintenance
           </h1>
           <p className="text-sm text-muted-foreground">
-            Aktifkan untuk menampilkan halaman pemeliharaan kepada semua pengunjung.
-            Admin tetap dapat mengakses situs.
+            Aktifkan untuk menampilkan halaman pemeliharaan kepada pengunjung umum.
+            Administrator yang sudah login tetap dapat mengakses seluruh situs.
           </p>
         </div>
         <div className="flex gap-2">
@@ -146,7 +146,7 @@ function AdminMaintenance() {
           <div>
             <p className="font-semibold text-foreground">Aktifkan Mode Maintenance</p>
             <p className="text-sm text-muted-foreground">
-              Semua halaman publik akan menampilkan halaman pemeliharaan.
+              Semua halaman publik akan menampilkan halaman pemeliharaan bagi pengguna non-admin.
             </p>
           </div>
           <Switch
